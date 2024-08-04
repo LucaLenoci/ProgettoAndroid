@@ -1,6 +1,8 @@
 package com.example.progetto_mobile;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,6 +21,12 @@ public class MainActivity extends AppCompatActivity {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
+        });
+
+        View accediButton = findViewById(R.id.buttonAccedi);
+        accediButton.setOnClickListener(v -> {
+            // avvia l'activity del login
+            startActivity(new Intent(MainActivity.this, LoginActivity.class));
         });
     }
 }
