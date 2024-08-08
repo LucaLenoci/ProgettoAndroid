@@ -19,6 +19,9 @@
             android:name=".HomeGenitoreActivity"
             android:exported="false" />
         <activity
+            android:name=".HomeBambinoActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>

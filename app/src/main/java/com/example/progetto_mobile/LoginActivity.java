@@ -40,10 +40,10 @@ public class LoginActivity extends AppCompatActivity {
 
         // -- BOTTONI PER SIMULARE IL LOGIN --
 
-//        View bambinoButton = findViewById(R.id.buttonLoginBambino);
-//        bambinoButton.setOnClickListener(v -> {
-//            startActivity(new Intent(LoginActivity.this, HomeBambinoActivity.class));
-//        });
+        View bambinoButton = findViewById(R.id.buttonLoginBambino);
+           bambinoButton.setOnClickListener(v -> {
+               startActivity(new Intent(LoginActivity.this, HomeBambinoActivity.class));
+       });
 
         View genitoreButton = findViewById(R.id.buttonLoginGenitore);
         genitoreButton.setOnClickListener(v -> {
