@@ -124,18 +124,21 @@ public class HomeBambinoActivity extends AppCompatActivity {
                 intent = new Intent(HomeBambinoActivity.this, MainActivity.class);
                 break;
             case 2:
-                intent = new Intent(HomeBambinoActivity.this, LoginActivity.class);
+                intent = new Intent(HomeBambinoActivity.this, DenominazioneImmaginiActivity.class);
                 break;
             case 3:
                 intent = new Intent(HomeBambinoActivity.this, MainActivity.class);
                 break;
             case 4:
-                intent = new Intent(HomeBambinoActivity.this, MainActivity.class);
+                intent = new Intent(HomeBambinoActivity.this, LoginActivity.class);
                 break;
             default:
                 return; // No valid button number
         }
         startActivity(intent);
     }
+
+
+
 
 }

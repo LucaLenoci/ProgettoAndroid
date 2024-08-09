@@ -25,8 +25,10 @@ public class MainActivity extends AppCompatActivity {
 
         View accediButton = findViewById(R.id.buttonAccedi);
         accediButton.setOnClickListener(v -> {
-            // avvia l'activity del login
+            // Start the login activity
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
         });
+
+
     }
 }
