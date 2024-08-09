@@ -3,25 +3,76 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!-- Top-left button -->
+
+    <!-- Top-right button -->
+
+    <!-- Bottom-left button -->
+
+    <Button
+        android:id="@+id/button1"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="160dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:text="Esercizio 1" />
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="295dp"
+        android:layout_marginTop="160dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:text="Esercizio 3" />
+
+    <Button
+        android:id="@+id/button3"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_marginLeft="155dp"
+        android:layout_marginTop="160dp"
+        android:text="Esercizio 2" />
+
+    <!-- Bottom-right button -->
+
+    <!-- JoystickView at the bottom center -->
+
+    <Button
+        android:id="@+id/button4"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_above="@id/joystick"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="160dp"
+        android:layout_marginBottom="249dp"
+        android:text="Esci" />
+
     <com.example.progetto_mobile.JoystickView
         android:id="@+id/joystick"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
+        android:layout_width="285dp"
+        android:layout_height="221dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="16dp" />
 
+    <!-- Movable object positioned relative to the joystick -->
     <ImageView
         android:id="@+id/movable_object"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="40dp"
+        android:layout_height="46dp"
         android:layout_above="@+id/joystick"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginStart="177dp"
-        android:layout_marginTop="216dp"
-        android:layout_marginEnd="184dp"
-        android:layout_marginBottom="149dp"
+        android:layout_marginStart="181dp"
+        android:layout_marginTop="332dp"
+        android:layout_marginEnd="190dp"
+        android:layout_marginBottom="116dp"
         android:src="@mipmap/ic_launcher_round" />
+
 </RelativeLayout>
