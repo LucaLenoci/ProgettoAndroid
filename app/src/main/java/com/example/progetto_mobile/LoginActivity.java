@@ -109,8 +109,11 @@ public class LoginActivity extends AppCompatActivity {
     private void reload() { }
 
     private void updateUI(FirebaseUser user) {
+        Intent intent;
         if (user != null) {
             Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show();
+            intent = new Intent(LoginActivity.this, DataAccess.class);
+            startActivity(intent);
         } else {
             Toast.makeText(this, "Login Failed", Toast.LENGTH_SHORT).show();
         }

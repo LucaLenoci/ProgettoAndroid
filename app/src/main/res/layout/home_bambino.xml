@@ -5,41 +5,40 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+
     <ImageView
         android:id="@+id/ProfilePic"
         android:layout_width="101dp"
         android:layout_height="107dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/Cognome"
-        app:layout_constraintHorizontal_bias="0.809"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.102"
-        tools:srcCompat="@tools:sample/avatars" />
+        android:layout_marginTop="60dp"
+        android:layout_marginEnd="212dp"
+        android:src="@drawable/a"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/Età"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/Eta"
+        android:layout_width="56dp"
+        android:layout_height="26dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginBottom="44dp"
         android:text="Età"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/textView6"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.539"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintHorizontal_bias="0.006"
+        app:layout_constraintStart_toEndOf="@+id/ProfilePic"
         app:layout_constraintTop_toBottomOf="@+id/Cognome"
-        app:layout_constraintVertical_bias="0.018" />
+        app:layout_constraintVertical_bias="0.904" />
 
     <TextView
         android:id="@+id/Cognome"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="68dp"
+        android:layout_height="22dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
         android:text="Cognome"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.6"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/Nome"
-        app:layout_constraintVertical_bias="0.019" />
+        app:layout_constraintStart_toEndOf="@+id/ProfilePic"
+        app:layout_constraintTop_toBottomOf="@+id/Nome" />
 
     <TextView
         android:id="@+id/Nome"
@@ -48,10 +47,10 @@
         android:text="Nome"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.565"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintHorizontal_bias="0.114"
+        app:layout_constraintStart_toEndOf="@+id/ProfilePic"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.105" />
+        app:layout_constraintVertical_bias="0.089" />
 
     <ProgressBar
         android:id="@+id/progressBar2"

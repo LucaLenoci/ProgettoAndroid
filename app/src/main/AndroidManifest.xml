@@ -22,6 +22,9 @@
             android:name=".LoginActivity"
             android:exported="false" />
         <activity
+            android:name=".DataAccess"
+            android:exported="false" />
+        <activity
             android:name=".HomeGenitoreActivity"
             android:exported="false" />
         <activity
