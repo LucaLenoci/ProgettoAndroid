@@ -26,7 +26,6 @@ public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "EmailPassword";
     String email;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

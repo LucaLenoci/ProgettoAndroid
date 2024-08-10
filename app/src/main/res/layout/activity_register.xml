@@ -15,21 +15,57 @@
         android:maxWidth="300dp"
         android:text="Registrati per seguire i progressi di tuo/a figlio/a"
         android:textSize="20sp"
-        app:layout_constraintBottom_toTopOf="@+id/editTextTextEmail"
+        app:layout_constraintBottom_toTopOf="@+id/editTextNome"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
+        android:id="@+id/editTextNome"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_margin="20dp"
+        android:ems="10"
+        android:hint="Nome"
+        android:inputType="text"
+        app:layout_constraintBottom_toTopOf="@+id/editTextCognome"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
+        android:id="@+id/editTextCognome"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_margin="20dp"
+        android:ems="10"
+        android:hint="Cognome"
+        android:inputType="text"
+        app:layout_constraintBottom_toTopOf="@+id/editTextEta"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
+        android:id="@+id/editTextEta"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:ems="10"
+        android:hint="Età"
+        android:inputType="number"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/editTextTextEmail"
         android:layout_width="wrap_content"
         android:layout_height="48dp"
+        android:layout_margin="20dp"
         android:ems="10"
         android:hint="@string/prompt_email"
         android:inputType="textEmailAddress"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/editTextEta" />
 
     <EditText
         android:id="@+id/editTextTextPassword2"
@@ -52,4 +88,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editTextTextPassword2" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
