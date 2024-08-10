@@ -24,6 +24,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private static final String TAG = "EmailPassword";
+    String email;
 
 
     @Override
@@ -44,7 +45,7 @@ public class LoginActivity extends AppCompatActivity {
         EditText passwordField = findViewById(R.id.editTextTextPassword);
 
         accediButton.setOnClickListener(v -> {
-            String email = emailField.getText().toString().trim();
+            email = emailField.getText().toString().trim();
             String password = passwordField.getText().toString().trim();
 
             if (!email.isEmpty() && !password.isEmpty()) {
@@ -58,7 +59,7 @@ public class LoginActivity extends AppCompatActivity {
 
         View bambinoButton = findViewById(R.id.buttonLoginBambino);
         bambinoButton.setOnClickListener(v -> {
-            startActivity(new Intent(LoginActivity.this, HomeBambinoActivity.class));
+            startActivity(new Intent(LoginActivity.this, HomeEserciziBambinoActivity.class));
         });
 
         View genitoreButton = findViewById(R.id.buttonLoginGenitore);
@@ -113,6 +114,7 @@ public class LoginActivity extends AppCompatActivity {
         if (user != null) {
             Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show();
             intent = new Intent(LoginActivity.this, DataAccess.class);
+            intent.putExtra("key", email);
             startActivity(intent);
         } else {
             Toast.makeText(this, "Login Failed", Toast.LENGTH_SHORT).show();

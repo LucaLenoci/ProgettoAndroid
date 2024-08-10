@@ -1,7 +1,7 @@
 package com.example.progetto_mobile;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,18 +18,19 @@ public class DataAccess extends AppCompatActivity {
     private static final String TAG = "FirestoreExample";
     private FirebaseFirestore db;
     private User user;
+    private Intent intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.home_bambino);
-
         // Initialize Firestore
         db = FirebaseFirestore.getInstance();
 
+        Intent intent = getIntent();
+        String email = intent.getStringExtra("key");
         // Query the collection and store data
-        queryAndStoreData("lucaxl10@gmail.com");
+        queryAndStoreData(email);
     }
 
     private void queryAndStoreData(String email) {
@@ -60,21 +61,26 @@ public class DataAccess extends AppCompatActivity {
     }
 
     private void updateUI() {
-        // Access individual fields and update the UI
-        TextView nomeField = findViewById(R.id.Nome);
-        TextView cognomeField = findViewById(R.id.Cognome);
-        TextView etaField = findViewById(R.id.Eta);
+        Intent intent = null;
 
-        // Log all user data for debugging
-        Log.d(TAG, "User Data:");
-        Log.d(TAG, "Cognome: " + user.getCognome());
-        Log.d(TAG, "Eta: " + user.getEta());
-        Log.d(TAG, "Nome: " + user.getNome());
-        Log.d(TAG, "Tipologia: " + user.getTipologia());
-        Log.d(TAG, "Email: " + user.getEmail());
+        switch (user.getTipologia()) {
+            case 0:
+                intent = new Intent(DataAccess.this, HomeBambinoActivity.class);
+                break;
 
-        nomeField.setText(user.getNome());
-        cognomeField.setText(user.getCognome());
-        etaField.setText(String.valueOf(user.getEta()));
+            case 1:
+                intent = new Intent(DataAccess.this, HomeGenitoreActivity.class);
+                break;
+
+            default:
+                // Handle unexpected cases if necessary
+                break;
+        }
+
+        if (intent != null) {
+            intent.putExtra("user", user);
+            startActivity(intent);
+            finish();
+        }
     }
 }

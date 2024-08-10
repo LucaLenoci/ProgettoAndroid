@@ -1,6 +1,8 @@
 package com.example.progetto_mobile;
 
-public class User {
+import java.io.Serializable;
+
+public class User  implements Serializable {
     private String Cognome;
     private int Eta;
     private String Nome;
