@@ -15,6 +15,7 @@ firebaseFirestore = "25.0.0"
 googleGmsGoogleServices = "4.4.2"
 
 [libraries]
+firebase-storage = { module = "com.google.firebase:firebase-storage" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
