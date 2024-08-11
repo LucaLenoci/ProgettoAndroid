@@ -75,7 +75,6 @@
         android:layout_marginTop="332dp"
         android:layout_marginEnd="190dp"
         android:layout_marginBottom="116dp"
-        android:src="@mipmap/ic_launcher_round"
-        app:srcCompat="@drawable/avatar_1" />
+        android:src="@drawable/avatar_1" />
 
 </RelativeLayout>
