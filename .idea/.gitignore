@@ -2,6 +2,9 @@
 /shelf/
 /workspace.xml
 
+# File che forse potrebbe dare fastidio tra pc diversi
+/deploymentTargetSelector.xml
+
 # File di Marco - penso per CodeWhisperer
 /.name
 /aws.xml
