@@ -1,5 +1,6 @@
 package com.example.progetto_mobile;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
@@ -20,6 +21,7 @@ import com.google.firebase.storage.StorageReference;
 
 import java.util.List;
 
+// TODO: onLongClickListener su un tema ti fa rinominare e eliminare il tema
 public class GestisciTemiActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
@@ -63,6 +65,7 @@ public class GestisciTemiActivity extends AppCompatActivity {
         });
     }
 
+    // TODO: togliere il textView 'aggiungi un tema' quando ci sono 0 temi e ne aggiungi uno
     private void listUserThemes(StorageReference userFolderRef) {
         userFolderRef.listAll().addOnSuccessListener(listResult -> {
             List<StorageReference> themeFolders = listResult.getPrefixes();
@@ -88,6 +91,9 @@ public class GestisciTemiActivity extends AppCompatActivity {
 
     private void openThemeFolder(String themeName) {
         // Logica per aprire la cartella tema e visualizzare il contenuto.
+        Intent intent = new Intent(GestisciTemiActivity.this, GestisciSingoloTemaActivity.class);
+        intent.putExtra("themeName", themeName);
+        startActivity(intent);
     }
 
     private void showAddThemeDialog() {
