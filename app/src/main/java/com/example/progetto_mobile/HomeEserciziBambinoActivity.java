@@ -121,7 +121,7 @@ public class HomeEserciziBambinoActivity extends AppCompatActivity {
         Intent intent;
         switch (buttonNumber) {
             case 1:
-                intent = new Intent(HomeEserciziBambinoActivity.this, MainActivity.class);
+                intent = new Intent(HomeEserciziBambinoActivity.this, RiconoscimentoCoppieMinimeActivity.class);
                 break;
             case 2:
                 intent = new Intent(HomeEserciziBambinoActivity.this, DenominazioneImmaginiActivity.class);
