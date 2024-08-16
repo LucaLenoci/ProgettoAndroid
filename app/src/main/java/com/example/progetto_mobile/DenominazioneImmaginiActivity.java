@@ -2,26 +2,21 @@ package com.example.progetto_mobile;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.FileDownloadTask;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.firebase.storage.FileDownloadTask;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
@@ -30,37 +25,74 @@ import java.util.Locale;
 public class DenominazioneImmaginiActivity extends AppCompatActivity {
     private static final int RQ_SPEECH_REC = 102;
     private TextView tvText;
+    private TextView tvText_2;
+    private FirebaseFirestore db;
+    private EsercizioTipo1 currentExercise;
 
     FirebaseStorage storage = FirebaseStorage.getInstance();
-    StorageReference imagesRef = storage.getReferenceFromUrl("gs://progetto-mobile-24.appspot.com/lucaxl10@gmail.com/images");
-    String fileName = "1.jpg";
-    StorageReference imageRef = imagesRef.child(fileName);
-
+    StorageReference imagesRef = storage.getReferenceFromUrl("gs://progetto-mobile-24.appspot.com/immagini");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.denominazione_immagini);  // Assuming you have a separate layout file
 
-        imageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-            @Override
-            public void onSuccess(Uri uri) {
-                // Use the URI to load the image into an ImageView
-                String imageUrl = uri.toString();
-                Log.d("Image URL", imageUrl);
-                displayImage(imageUrl);
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Handle any errors
-            }
-        });
+        // Initialize Firestore
+        db = FirebaseFirestore.getInstance();
+
+        // Fetch the exercise data from Firestore
+        fetchExerciseData();
 
         Button btnButton = findViewById(R.id.btn_button);
         tvText = findViewById(R.id.tv_text);
+        tvText_2 = findViewById(R.id.textView9);
 
         btnButton.setOnClickListener(v -> askSpeechInput());
+    }
+
+    private void fetchExerciseData() {
+        // Firestore query to get the specific document
+        db.collection("esercizi")
+                .document("1")
+                .collection("tipo1")
+                .document("16-08-2024")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            // Map the document data to the currentExercise object
+                            currentExercise = document.toObject(EsercizioTipo1.class);
+
+                            // Logging the data (optional)
+                            Log.d("Firestore", "DocumentSnapshot data: " + document.getData());
+
+                            // Use the data (e.g., display it or trigger other actions)
+                            loadExerciseData(currentExercise);
+                        } else {
+                            Log.d("Firestore", "No such document");
+                        }
+                    } else {
+                        Log.d("Firestore", "get failed with ", task.getException());
+                    }
+                });
+
+    }
+
+    private void loadExerciseData(EsercizioTipo1 exercise) {
+        // Assuming Exercise class has a method to get the image file name
+        String imageFileName = exercise.getRisposta_corretta() + ".jpg";  // Modify according to your Exercise class structure
+        StorageReference imageRef = imagesRef.child(imageFileName);
+
+        imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+            String imageUrl = uri.toString();
+            Log.d("Image URL", imageUrl);
+            displayImage(imageUrl);
+        }).addOnFailureListener(exception -> {
+            Log.e("Firebase Storage", "Failed to get download URL", exception);
+        });
+
+        tvText_2.setText(exercise.getRisposta_corretta());
     }
 
     @Override
@@ -70,7 +102,15 @@ public class DenominazioneImmaginiActivity extends AppCompatActivity {
         if (requestCode == RQ_SPEECH_REC && resultCode == Activity.RESULT_OK) {
             ArrayList<String> result = data != null ? data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS) : null;
             if (result != null && !result.isEmpty()) {
-                tvText.setText(result.get(0));
+                String recognizedText = result.get(0);
+                tvText.setText(recognizedText);
+
+                // Compare the recognized text with the correct answer
+                if (currentExercise != null && recognizedText.equalsIgnoreCase(currentExercise.getRisposta_corretta())) {
+                    Toast.makeText(this, "Correct!", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, "Try again!", Toast.LENGTH_SHORT).show();
+                }
             }
         }
     }
