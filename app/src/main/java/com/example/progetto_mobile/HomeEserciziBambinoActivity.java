@@ -127,7 +127,7 @@ public class HomeEserciziBambinoActivity extends AppCompatActivity {
                 intent = new Intent(HomeEserciziBambinoActivity.this, DenominazioneImmaginiActivity.class);
                 break;
             case 3:
-                intent = new Intent(HomeEserciziBambinoActivity.this, MainActivity.class);
+                intent = new Intent(HomeEserciziBambinoActivity.this, RipetizioneSequenzeParoleActivity.class);
                 break;
             case 4:
                 intent = new Intent(HomeEserciziBambinoActivity.this, LoginActivity.class);
