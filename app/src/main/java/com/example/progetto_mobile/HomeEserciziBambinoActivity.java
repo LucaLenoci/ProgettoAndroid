@@ -1,12 +1,16 @@
 package com.example.progetto_mobile;
+
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +19,7 @@ public class HomeEserciziBambinoActivity extends AppCompatActivity {
     private ImageView movableObject;
     private float centerX, centerY;
     private List<Button> buttons;  // List to hold all the buttons
+    private boolean isNavigating = false;  // Flag to prevent multiple intents
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +42,10 @@ public class HomeEserciziBambinoActivity extends AppCompatActivity {
             buttons.get(i).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    navigateToView(buttonNumber);
+                    if (!isNavigating) {  // Only navigate if not already navigating
+                        isNavigating = true;
+                        navigateToView(buttonNumber);
+                    }
                 }
             });
         }
@@ -79,6 +87,7 @@ public class HomeEserciziBambinoActivity extends AppCompatActivity {
         for (Button button : buttons) {
             if (isColliding(movableObject, button)) {
                 button.performClick();  // Trigger button click if colliding
+                break;  // Stop checking other buttons after a collision is detected
             }
         }
     }
@@ -115,8 +124,6 @@ public class HomeEserciziBambinoActivity extends AppCompatActivity {
                 object1Bottom > y2;
     }
 
-
-
     private void navigateToView(int buttonNumber) {
         Intent intent;
         switch (buttonNumber) {
@@ -133,12 +140,14 @@ public class HomeEserciziBambinoActivity extends AppCompatActivity {
                 intent = new Intent(HomeEserciziBambinoActivity.this, LoginActivity.class);
                 break;
             default:
+                isNavigating = false; // Reset the flag if no valid button number
                 return; // No valid button number
         }
+
         startActivity(intent);
+        finish();
+
+        // Use a handler to reset the flag after a small delay
+        new Handler(Looper.getMainLooper()).postDelayed(() -> isNavigating = false, 500);
     }
-
-
-
-
 }
