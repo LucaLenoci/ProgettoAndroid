@@ -1,11 +1,24 @@
 package com.example.progetto_mobile;
+import android.graphics.Color;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.Voice;
 import android.util.Log;
+import android.util.Size;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import nl.dionsegijn.konfetti.core.Party;
+import nl.dionsegijn.konfetti.core.PartyFactory;
+import nl.dionsegijn.konfetti.core.Position;
+import nl.dionsegijn.konfetti.core.emitter.Emitter;
+import nl.dionsegijn.konfetti.core.emitter.EmitterConfig;
+import nl.dionsegijn.konfetti.core.emitter.PartyEmitter;
+import nl.dionsegijn.konfetti.core.models.Shape;
+import nl.dionsegijn.konfetti.xml.KonfettiView;
+
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -15,9 +28,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 public class RiconoscimentoCoppieMinimeActivity extends AppCompatActivity implements TextToSpeech.OnInitListener {
 
@@ -26,12 +41,15 @@ public class RiconoscimentoCoppieMinimeActivity extends AppCompatActivity implem
     StorageReference imagesRef = storage.getReferenceFromUrl("gs://progetto-mobile-24.appspot.com/immagini");
     private FirebaseFirestore db;
     private EsercizioTipo2 currentExercise;
+    private KonfettiView konfettiView;
+    private MediaPlayer successSound;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.riconoscimento_coppie_minime);
+        konfettiView = findViewById(R.id.konfettiView);
         // Initialize Firestore
         db = FirebaseFirestore.getInstance();
 
@@ -64,6 +82,9 @@ public class RiconoscimentoCoppieMinimeActivity extends AppCompatActivity implem
 
         button1.setOnClickListener(v -> checkAnswer(1));
         button2.setOnClickListener(v -> checkAnswer(2));
+
+        successSound = MediaPlayer.create(this, R.raw.success_sound); // Replace `success_sound` with your actual sound file name
+
     }
 
     @Override
@@ -165,9 +186,25 @@ public class RiconoscimentoCoppieMinimeActivity extends AppCompatActivity implem
         if (currentExercise != null) {
             if (selectedButton == currentExercise.getImmagine_corretta()) {
                 Toast.makeText(this, "Correct!", Toast.LENGTH_SHORT).show();
+                showConfettiEffect();
+                if (successSound != null) {
+                    successSound.start();
+                }
             } else {
                 Toast.makeText(this, "Incorrect. Try again!", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    private void showConfettiEffect() {
+        EmitterConfig emitterConfig = new Emitter(100L, TimeUnit.MILLISECONDS).max(100);
+        konfettiView.start(
+                new PartyFactory(emitterConfig)
+                        .spread(360)
+                        .shapes(Arrays.asList(Shape.Square.INSTANCE, Shape.Circle.INSTANCE))
+                        .colors(Arrays.asList(0xfce18a, 0xff726d, 0xf4306d, 0xb48def))
+                        .setSpeedBetween(0f, 30f)
+                        .position(new Position.Relative(0.5, 0.3))
+                        .build());
     }
 }
