@@ -17,6 +17,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -27,18 +29,20 @@ import java.util.Set;
 public class RipetizioneSequenzeParoleActivity extends AppCompatActivity implements TextToSpeech.OnInitListener {
     private static final int RQ_SPEECH_REC = 102;
     private TextView tvText;
-
-    FirebaseStorage storage = FirebaseStorage.getInstance();
-    StorageReference imagesRef = storage.getReferenceFromUrl("gs://progetto-mobile-24.appspot.com/lucaxl10@gmail.com/images");
-    String fileName = "1.jpg";
-    StorageReference imageRef = imagesRef.child(fileName);
     private TextToSpeech tts;
+    private FirebaseFirestore db;
+    private EsercizioTipo3 currentExercise;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ripetizione_sequenze_parole);  // Assuming you have a separate layout file
+
+        db = FirebaseFirestore.getInstance();
+
+        fetchExerciseData();
+
 
         Button btnButton = findViewById(R.id.btn_button_2);
         tvText = findViewById(R.id.tv_text_2);
@@ -47,7 +51,7 @@ public class RipetizioneSequenzeParoleActivity extends AppCompatActivity impleme
 
         Button speakButton = findViewById(R.id.speak_button_2);
         speakButton.setOnClickListener(v -> {
-            String textToSpeak = "Banana Ananas Limone";
+            String textToSpeak = currentExercise.getRisposta_corretta();
 
             // Get a list of available languages
             Set<Locale> languages = tts.getAvailableLanguages();
@@ -68,18 +72,6 @@ public class RipetizioneSequenzeParoleActivity extends AppCompatActivity impleme
         tts = new TextToSpeech(this, this);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == RQ_SPEECH_REC && resultCode == Activity.RESULT_OK) {
-            ArrayList<String> result = data != null ? data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS) : null;
-            if (result != null && !result.isEmpty()) {
-                tvText.setText(result.get(0));
-            }
-        }
-    }
-
     private void askSpeechInput() {
         if (!SpeechRecognizer.isRecognitionAvailable(this)) {
             Toast.makeText(this, "Speech recognition is not available", Toast.LENGTH_SHORT).show();
@@ -91,6 +83,36 @@ public class RipetizioneSequenzeParoleActivity extends AppCompatActivity impleme
             startActivityForResult(intent, RQ_SPEECH_REC);
         }
     }
+
+
+    private void fetchExerciseData() {
+        // Firestore query to get the specific document
+        db.collection("esercizi")
+                .document("1")
+                .collection("tipo3")
+                .document("16-08-2024")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            // Map the document data to the currentExercise object
+                            currentExercise = document.toObject(EsercizioTipo3.class);
+
+                            // Logging the data (optional)
+                            Log.d("Firestore", "DocumentSnapshot data: " + document.getData());
+
+                            // Use the data (e.g., display it or trigger other actions)
+                        } else {
+                            Log.d("Firestore", "No such document");
+                        }
+                    } else {
+                        Log.d("Firestore", "get failed with ", task.getException());
+                    }
+                });
+
+    }
+
 
     @Override
     public void onInit(int status) {
@@ -108,5 +130,24 @@ public class RipetizioneSequenzeParoleActivity extends AppCompatActivity impleme
             tts.shutdown();
         }
         super.onDestroy();
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RQ_SPEECH_REC && resultCode == Activity.RESULT_OK) {
+            ArrayList<String> result = data != null ? data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS) : null;
+            if (result != null && !result.isEmpty()) {
+                String recognizedText = result.get(0);
+                tvText.setText(recognizedText);
+
+                // Compare the recognized text with the correct answer
+                if (currentExercise != null && recognizedText.equalsIgnoreCase(currentExercise.getRisposta_corretta())) {
+                    Toast.makeText(this, "Correct!", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, "Try again!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
     }
 }
