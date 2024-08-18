@@ -2,6 +2,7 @@ package com.example.progetto_mobile;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
@@ -20,7 +21,17 @@ import com.google.firebase.storage.StorageReference;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
+
+import nl.dionsegijn.konfetti.core.Party;
+import nl.dionsegijn.konfetti.core.PartyFactory;
+import nl.dionsegijn.konfetti.core.Position;
+import nl.dionsegijn.konfetti.core.emitter.Emitter;
+import nl.dionsegijn.konfetti.core.emitter.EmitterConfig;
+import nl.dionsegijn.konfetti.core.models.Shape;
+import nl.dionsegijn.konfetti.xml.KonfettiView;
 
 public class DenominazioneImmaginiActivity extends AppCompatActivity {
     private static final int RQ_SPEECH_REC = 102;
@@ -28,6 +39,8 @@ public class DenominazioneImmaginiActivity extends AppCompatActivity {
     private TextView tvText_2;
     private FirebaseFirestore db;
     private EsercizioTipo1 currentExercise;
+    private KonfettiView konfettiView;
+    private MediaPlayer successSound;
 
     FirebaseStorage storage = FirebaseStorage.getInstance();
     StorageReference imagesRef = storage.getReferenceFromUrl("gs://progetto-mobile-24.appspot.com/immagini");
@@ -35,12 +48,13 @@ public class DenominazioneImmaginiActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.denominazione_immagini);  // Assuming you have a separate layout file
+        setContentView(R.layout.denominazione_immagini);
 
-        // Initialize Firestore
+        // Initialize Firestore and other components
         db = FirebaseFirestore.getInstance();
+        konfettiView = findViewById(R.id.konfettiView);
+        successSound = MediaPlayer.create(this, R.raw.success_sound); // Ensure the sound file is in res/raw
 
-        // Fetch the exercise data from Firestore
         fetchExerciseData();
 
         Button btnButton = findViewById(R.id.btn_button);
@@ -51,7 +65,6 @@ public class DenominazioneImmaginiActivity extends AppCompatActivity {
     }
 
     private void fetchExerciseData() {
-        // Firestore query to get the specific document
         db.collection("esercizi")
                 .document("1")
                 .collection("tipo1")
@@ -61,13 +74,8 @@ public class DenominazioneImmaginiActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         DocumentSnapshot document = task.getResult();
                         if (document.exists()) {
-                            // Map the document data to the currentExercise object
                             currentExercise = document.toObject(EsercizioTipo1.class);
-
-                            // Logging the data (optional)
                             Log.d("Firestore", "DocumentSnapshot data: " + document.getData());
-
-                            // Use the data (e.g., display it or trigger other actions)
                             loadExerciseData(currentExercise);
                         } else {
                             Log.d("Firestore", "No such document");
@@ -76,11 +84,9 @@ public class DenominazioneImmaginiActivity extends AppCompatActivity {
                         Log.d("Firestore", "get failed with ", task.getException());
                     }
                 });
-
     }
 
     private void loadExerciseData(EsercizioTipo1 exercise) {
-        // Assuming Exercise class has a method to get the image file name
         String imageFileName = exercise.getRisposta_corretta() + ".jpg";  // Modify according to your Exercise class structure
         StorageReference imageRef = imagesRef.child(imageFileName);
 
@@ -105,9 +111,12 @@ public class DenominazioneImmaginiActivity extends AppCompatActivity {
                 String recognizedText = result.get(0);
                 tvText.setText(recognizedText);
 
-                // Compare the recognized text with the correct answer
                 if (currentExercise != null && recognizedText.equalsIgnoreCase(currentExercise.getRisposta_corretta())) {
                     Toast.makeText(this, "Correct!", Toast.LENGTH_SHORT).show();
+                    showConfettiEffect();
+                    if (successSound != null) {
+                        successSound.start();
+                    }
                 } else {
                     Toast.makeText(this, "Try again!", Toast.LENGTH_SHORT).show();
                 }
@@ -133,5 +142,27 @@ public class DenominazioneImmaginiActivity extends AppCompatActivity {
         Glide.with(this)
                 .load(imageUrl)
                 .into(imageView);
+    }
+
+    private void showConfettiEffect() {
+        EmitterConfig emitterConfig = new Emitter(100L, TimeUnit.MILLISECONDS).max(100);
+        konfettiView.start(
+                new PartyFactory(emitterConfig)
+                        .spread(360)
+                        .shapes(Arrays.asList(Shape.Square.INSTANCE, Shape.Circle.INSTANCE))
+                        .colors(Arrays.asList(0xfce18a, 0xff726d, 0xf4306d, 0xb48def))
+                        .setSpeedBetween(0f, 30f)
+                        .position(new Position.Relative(0.5, 0.3))
+                        .build()
+        );
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (successSound != null) {
+            successSound.release();
+            successSound = null;
+        }
+        super.onDestroy();
     }
 }

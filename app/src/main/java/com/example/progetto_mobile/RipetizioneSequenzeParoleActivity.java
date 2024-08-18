@@ -2,7 +2,7 @@ package com.example.progetto_mobile;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
@@ -23,8 +23,18 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
+
+import nl.dionsegijn.konfetti.core.Party;
+import nl.dionsegijn.konfetti.core.PartyFactory;
+import nl.dionsegijn.konfetti.core.Position;
+import nl.dionsegijn.konfetti.core.emitter.Emitter;
+import nl.dionsegijn.konfetti.core.emitter.EmitterConfig;
+import nl.dionsegijn.konfetti.core.models.Shape;
+import nl.dionsegijn.konfetti.xml.KonfettiView;
 
 public class RipetizioneSequenzeParoleActivity extends AppCompatActivity implements TextToSpeech.OnInitListener {
     private static final int RQ_SPEECH_REC = 102;
@@ -32,17 +42,20 @@ public class RipetizioneSequenzeParoleActivity extends AppCompatActivity impleme
     private TextToSpeech tts;
     private FirebaseFirestore db;
     private EsercizioTipo3 currentExercise;
-
+    private KonfettiView konfettiView;
+    private MediaPlayer successSound;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.ripetizione_sequenze_parole);  // Assuming you have a separate layout file
+        setContentView(R.layout.ripetizione_sequenze_parole);
 
         db = FirebaseFirestore.getInstance();
 
-        fetchExerciseData();
+        konfettiView = findViewById(R.id.konfettiView_2);
+        successSound = MediaPlayer.create(this, R.raw.success_sound); // Ensure you have the correct file in the res/raw folder
 
+        fetchExerciseData();
 
         Button btnButton = findViewById(R.id.btn_button_2);
         tvText = findViewById(R.id.tv_text_2);
@@ -84,9 +97,7 @@ public class RipetizioneSequenzeParoleActivity extends AppCompatActivity impleme
         }
     }
 
-
     private void fetchExerciseData() {
-        // Firestore query to get the specific document
         db.collection("esercizi")
                 .document("1")
                 .collection("tipo3")
@@ -96,13 +107,8 @@ public class RipetizioneSequenzeParoleActivity extends AppCompatActivity impleme
                     if (task.isSuccessful()) {
                         DocumentSnapshot document = task.getResult();
                         if (document.exists()) {
-                            // Map the document data to the currentExercise object
                             currentExercise = document.toObject(EsercizioTipo3.class);
-
-                            // Logging the data (optional)
                             Log.d("Firestore", "DocumentSnapshot data: " + document.getData());
-
-                            // Use the data (e.g., display it or trigger other actions)
                         } else {
                             Log.d("Firestore", "No such document");
                         }
@@ -110,9 +116,7 @@ public class RipetizioneSequenzeParoleActivity extends AppCompatActivity impleme
                         Log.d("Firestore", "get failed with ", task.getException());
                     }
                 });
-
     }
-
 
     @Override
     public void onInit(int status) {
@@ -129,9 +133,14 @@ public class RipetizioneSequenzeParoleActivity extends AppCompatActivity impleme
             tts.stop();
             tts.shutdown();
         }
+        if (successSound != null) {
+            successSound.release();
+            successSound = null;
+        }
         super.onDestroy();
     }
 
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
@@ -141,13 +150,29 @@ public class RipetizioneSequenzeParoleActivity extends AppCompatActivity impleme
                 String recognizedText = result.get(0);
                 tvText.setText(recognizedText);
 
-                // Compare the recognized text with the correct answer
                 if (currentExercise != null && recognizedText.equalsIgnoreCase(currentExercise.getRisposta_corretta())) {
                     Toast.makeText(this, "Correct!", Toast.LENGTH_SHORT).show();
+                    showConfettiEffect();
+                    if (successSound != null) {
+                        successSound.start();
+                    }
                 } else {
                     Toast.makeText(this, "Try again!", Toast.LENGTH_SHORT).show();
                 }
             }
         }
+    }
+
+    private void showConfettiEffect() {
+        EmitterConfig emitterConfig = new Emitter(100L, TimeUnit.MILLISECONDS).max(100);
+        konfettiView.start(
+                new PartyFactory(emitterConfig)
+                        .spread(360)
+                        .shapes(Arrays.asList(Shape.Square.INSTANCE, Shape.Circle.INSTANCE))
+                        .colors(Arrays.asList(0xfce18a, 0xff726d, 0xf4306d, 0xb48def))
+                        .setSpeedBetween(0f, 30f)
+                        .position(new Position.Relative(0.5, 0.3))
+                        .build()
+        );
     }
 }
