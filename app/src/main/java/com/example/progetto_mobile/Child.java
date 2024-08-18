@@ -2,9 +2,10 @@ package com.example.progetto_mobile;
 
 import com.google.firebase.firestore.DocumentReference;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Child {
+public class Child implements Serializable {
     private String nome;
     private int progresso;
     private List<DocumentReference> eserciziTipo1;
