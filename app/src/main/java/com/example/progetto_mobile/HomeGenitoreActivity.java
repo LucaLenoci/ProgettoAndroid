@@ -22,7 +22,9 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 // TODO: aggiungere il setOnClickListener sulle dashboard
 public class HomeGenitoreActivity extends AppCompatActivity {
@@ -42,7 +44,6 @@ public class HomeGenitoreActivity extends AppCompatActivity {
 
         TextView tvBenvenuto = findViewById(R.id.textViewBenvenutoGenitore);
         Button btnGestisciTemi = findViewById(R.id.buttonGestisciTemi);
-//        Button btnCorreggiEsercizi = findViewById(R.id.buttonCorreggiEsercizi);
         linearLayoutFigli = findViewById(R.id.linearLayoutFigli);
 
         Intent intent = getIntent();
@@ -55,9 +56,6 @@ public class HomeGenitoreActivity extends AppCompatActivity {
 
         btnGestisciTemi.setOnClickListener(v ->
                 startActivity(new Intent(HomeGenitoreActivity.this, GestisciTemiActivity.class)));
-
-//        btnCorreggiEsercizi.setOnClickListener(v ->
-//                startActivity(new Intent(HomeGenitoreActivity.this, CorreggiEserciziActivity.class)));
     }
 
     @SuppressWarnings("unchecked")
@@ -79,15 +77,23 @@ public class HomeGenitoreActivity extends AppCompatActivity {
                             for (DocumentReference figlioRef : figliRefs) {
                                 figlioRef.get().addOnSuccessListener(figlioSnapshot -> {
                                     if (figlioSnapshot.exists()) {
-                                        Child child = figlioSnapshot.toObject(Child.class);
-                                        if (child != null) {
-                                            Log.d("HomeGenitoreActivity", "Figlio: " + child.getNome());
-                                            Log.d("HomeGenitoreActivity", "Esercizi tipo1: " + child.getEserciziTipo1());
-                                            Log.d("HomeGenitoreActivity", "Esercizi tipo2: " + child.getEserciziTipo2());
-                                            Log.d("HomeGenitoreActivity", "Esercizi tipo3: " + child.getEserciziTipo3());
+                                        String nome = figlioSnapshot.getString("nome");
+                                        int progresso = figlioSnapshot.getLong("progresso").intValue();
 
+                                        List<DocumentReference> eserciziTipo1Refs = (List<DocumentReference>) figlioSnapshot.get("eserciziTipo1");
+                                        List<DocumentReference> eserciziTipo2Refs = (List<DocumentReference>) figlioSnapshot.get("eserciziTipo2");
+                                        List<DocumentReference> eserciziTipo3Refs = (List<DocumentReference>) figlioSnapshot.get("eserciziTipo3");
+
+                                        Log.d("HomeGenitoreActivity", "Nome figlio: " + nome);
+                                        Log.d("HomeGenitoreActivity", "Progresso figlio: " + progresso);
+                                        Log.d("HomeGenitoreActivity", "Esercizi tipo 1: " + eserciziTipo1Refs.size());
+                                        Log.d("HomeGenitoreActivity", "Esercizi tipo 2: " + eserciziTipo2Refs.size());
+                                        Log.d("HomeGenitoreActivity", "Esercizi tipo 3: " + eserciziTipo3Refs.size());
+
+                                        getEserciziDetails(eserciziTipo1Refs, eserciziTipo2Refs, eserciziTipo3Refs, (eserciziTipo1, eserciziTipo2, eserciziTipo3) -> {
+                                            Child child = new Child(nome, progresso, eserciziTipo1, eserciziTipo2, eserciziTipo3);
                                             addChildDashboard(child);
-                                        }
+                                        });
                                     }
                                 });
                             }
@@ -95,6 +101,56 @@ public class HomeGenitoreActivity extends AppCompatActivity {
                     }
                 })
                 .addOnFailureListener(e -> Toast.makeText(this, "Errore nel recupero dei dati", Toast.LENGTH_SHORT).show());
+    }
+
+    private void getEserciziDetails(List<DocumentReference> tipo1Refs, List<DocumentReference> tipo2Refs,
+                                    List<DocumentReference> tipo3Refs, EserciziCallback callback) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        List<EsercizioTipo1> eserciziTipo1 = new ArrayList<>();
+        List<EsercizioTipo2> eserciziTipo2 = new ArrayList<>();
+        List<EsercizioTipo3> eserciziTipo3 = new ArrayList<>();
+
+        AtomicInteger counter = new AtomicInteger(tipo1Refs.size() + tipo2Refs.size() + tipo3Refs.size());
+
+        for (DocumentReference ref : tipo1Refs) {
+            ref.get().addOnSuccessListener(doc -> {
+                if (doc.exists()) {
+                    EsercizioTipo1 esercizio = doc.toObject(EsercizioTipo1.class);
+                    eserciziTipo1.add(esercizio);
+                }
+                if (counter.decrementAndGet() == 0) {
+                    callback.onComplete(eserciziTipo1, eserciziTipo2, eserciziTipo3);
+                }
+            });
+        }
+
+        for (DocumentReference ref : tipo2Refs) {
+            ref.get().addOnSuccessListener(doc -> {
+                if (doc.exists()) {
+                    EsercizioTipo2 esercizio = doc.toObject(EsercizioTipo2.class);
+                    eserciziTipo2.add(esercizio);
+                }
+                if (counter.decrementAndGet() == 0) {
+                    callback.onComplete(eserciziTipo1, eserciziTipo2, eserciziTipo3);
+                }
+            });
+        }
+
+        for (DocumentReference ref : tipo3Refs) {
+            ref.get().addOnSuccessListener(doc -> {
+                if (doc.exists()) {
+                    EsercizioTipo3 esercizio = doc.toObject(EsercizioTipo3.class);
+                    eserciziTipo3.add(esercizio);
+                }
+                if (counter.decrementAndGet() == 0) {
+                    callback.onComplete(eserciziTipo1, eserciziTipo2, eserciziTipo3);
+                }
+            });
+        }
+    }
+
+    interface EserciziCallback {
+        void onComplete(List<EsercizioTipo1> tipo1, List<EsercizioTipo2> tipo2, List<EsercizioTipo3> tipo3);
     }
 
     private void showEmptyChildrenMessage() {
@@ -122,22 +178,29 @@ public class HomeGenitoreActivity extends AppCompatActivity {
             Log.e("HomeGenitoreActivity", "getAllEsercizi() returned null for child: " + child.getNome());
         }
 
+        childDashboard.setOnClickListener(v -> {
+            Intent intent = new Intent(HomeGenitoreActivity.this, DashboardBambinoActivity.class);
+            intent.putExtra("child", child);
+            startActivity(intent);
+        });
         linearLayoutFigli.addView(childDashboard);
     }
 
-    private void addExerciseInfo(LinearLayout container, List<List<DocumentReference>> allEsercizi) {
+    private void addExerciseInfo(LinearLayout container, List<List<?>> allEsercizi) {
         String[] tipi = {"Tipo 1", "Tipo 2", "Tipo 3"};
         for (int i = 0; i < allEsercizi.size(); i++) {
-            List<DocumentReference> esercizi = allEsercizi.get(i);
+            List<?> esercizi = allEsercizi.get(i);
             if (esercizi != null && !esercizi.isEmpty()) {
-                for (DocumentReference exerciseRef : esercizi) {
-                    int finalI = i;
-                    exerciseRef.get().addOnSuccessListener(documentSnapshot -> {
-                        if (documentSnapshot.exists()) {
-                            boolean esercizioCorretto = Boolean.TRUE.equals(documentSnapshot.getBoolean("esercizio_corretto"));
-                            addExerciseView(container, tipi[finalI], esercizioCorretto);
-                        }
-                    });
+                for (Object esercizio : esercizi) {
+                    boolean esercizioCorretto = false;
+                    if (esercizio instanceof EsercizioTipo1) {
+                        esercizioCorretto = ((EsercizioTipo1) esercizio).isEsercizio_corretto();
+                    } else if (esercizio instanceof EsercizioTipo2) {
+                        esercizioCorretto = ((EsercizioTipo2) esercizio).isEsercizio_corretto();
+                    } else if (esercizio instanceof EsercizioTipo3) {
+                        esercizioCorretto = ((EsercizioTipo3) esercizio).isEsercizio_corretto();
+                    }
+                    addExerciseView(container, tipi[i], esercizioCorretto);
                 }
             }
         }

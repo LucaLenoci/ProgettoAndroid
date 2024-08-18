@@ -1,23 +1,21 @@
 package com.example.progetto_mobile;
 
-import com.google.firebase.firestore.DocumentReference;
-
 import java.io.Serializable;
 import java.util.List;
 
 public class Child implements Serializable {
     private String nome;
     private int progresso;
-    private List<DocumentReference> eserciziTipo1;
-    private List<DocumentReference> eserciziTipo2;
-    private List<DocumentReference> eserciziTipo3;
+    private List<EsercizioTipo1> eserciziTipo1;
+    private List<EsercizioTipo2> eserciziTipo2;
+    private List<EsercizioTipo3> eserciziTipo3;
 
     public Child() {
         // Default constructor required for Firestore
     }
 
-    public Child(String nome, int progresso, List<DocumentReference> eserciziTipo1,
-                 List<DocumentReference> eserciziTipo2, List<DocumentReference> eserciziTipo3) {
+    public Child(String nome, int progresso, List<EsercizioTipo1> eserciziTipo1,
+                 List<EsercizioTipo2> eserciziTipo2, List<EsercizioTipo3> eserciziTipo3) {
         this.nome = nome;
         this.progresso = progresso;
         this.eserciziTipo1 = eserciziTipo1;
@@ -42,31 +40,31 @@ public class Child implements Serializable {
         this.progresso = progresso;
     }
 
-    public List<DocumentReference> getEserciziTipo1() {
+    public List<EsercizioTipo1> getEserciziTipo1() {
         return eserciziTipo1;
     }
 
-    public void setEserciziTipo1(List<DocumentReference> eserciziTipo1) {
+    public void setEserciziTipo1(List<EsercizioTipo1> eserciziTipo1) {
         this.eserciziTipo1 = eserciziTipo1;
     }
 
-    public List<DocumentReference> getEserciziTipo2() {
+    public List<EsercizioTipo2> getEserciziTipo2() {
         return eserciziTipo2;
     }
 
-    public void setEserciziTipo2(List<DocumentReference> eserciziTipo2) {
+    public void setEserciziTipo2(List<EsercizioTipo2> eserciziTipo2) {
         this.eserciziTipo2 = eserciziTipo2;
     }
 
-    public List<DocumentReference> getEserciziTipo3() {
+    public List<EsercizioTipo3> getEserciziTipo3() {
         return eserciziTipo3;
     }
 
-    public void setEserciziTipo3(List<DocumentReference> eserciziTipo3) {
+    public void setEserciziTipo3(List<EsercizioTipo3> eserciziTipo3) {
         this.eserciziTipo3 = eserciziTipo3;
     }
 
-    public List<List<DocumentReference>> getAllEsercizi() {
+    public List<List<?>> getAllEsercizi() {
         return List.of(eserciziTipo1, eserciziTipo2, eserciziTipo3);
     }
 }

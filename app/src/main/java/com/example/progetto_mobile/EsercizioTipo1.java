@@ -1,5 +1,7 @@
 package com.example.progetto_mobile;
 
+import androidx.annotation.NonNull;
+
 import java.io.Serializable;
 
 public class EsercizioTipo1 implements Serializable {
@@ -50,5 +52,16 @@ public class EsercizioTipo1 implements Serializable {
 
     public void setSuggerimento(String suggerimento) {
         this.suggerimento = suggerimento;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return String.format(
+                "Esercizio corretto: %b,\n" +
+                        "Risposta: %s,\n" +
+                        "Risposta corretta: %s,\n" +
+                        "Suggerimento: %s",
+                isEsercizio_corretto(), getRisposta(), getRisposta_corretta(), getSuggerimento());
     }
 }

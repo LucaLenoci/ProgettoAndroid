@@ -1,6 +1,9 @@
 package com.example.progetto_mobile;
 
+import androidx.annotation.NonNull;
+
 import java.io.Serializable;
+import java.util.Locale;
 
 public class EsercizioTipo2 implements Serializable {
     private boolean esercizio_corretto;
@@ -57,4 +60,15 @@ public class EsercizioTipo2 implements Serializable {
         this.risposta_corretta = risposta_corretta;
     }
 
+    @NonNull
+    @Override
+    public String toString() {
+        return String.format(Locale.ITALY,
+                "Esercizio corretto: %b,\n" +
+                        "Risposta: %s\n" +
+                        "Risposta corretta: %s\n" +
+                        "Risposta sbagliata: %s\n" +
+                        "Immagine corretta: %d",
+                isEsercizio_corretto(), getRisposta(), getRisposta_corretta(), getRisposta_sbagliata(), getImmagine_corretta());
+    }
 }
