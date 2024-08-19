@@ -44,9 +44,13 @@ public class RiconoscimentoCoppieMinimeActivity extends AppCompatActivity implem
     private KonfettiView konfettiView;
     private MediaPlayer successSound;
 
+    String selectedDate;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        selectedDate = getIntent().getStringExtra("selectedDate");
 
         setContentView(R.layout.riconoscimento_coppie_minime);
         konfettiView = findViewById(R.id.konfettiView);
@@ -110,7 +114,7 @@ public class RiconoscimentoCoppieMinimeActivity extends AppCompatActivity implem
         db.collection("esercizi")
                 .document("1")
                 .collection("tipo2")
-                .document("16-08-2024")
+                .document(selectedDate)
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {

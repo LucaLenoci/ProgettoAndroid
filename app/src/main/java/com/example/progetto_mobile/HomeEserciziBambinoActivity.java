@@ -25,6 +25,8 @@ public class HomeEserciziBambinoActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.esercizi_giornalieri_bambino);
+        // Retrieve the date passed from HomeBambinoActivity
+        String selectedDate = getIntent().getStringExtra("selectedDate");
 
         JoystickView joystick = findViewById(R.id.joystick);
         movableObject = findViewById(R.id.movable_object);
@@ -44,7 +46,7 @@ public class HomeEserciziBambinoActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     if (!isNavigating) {  // Only navigate if not already navigating
                         isNavigating = true;
-                        navigateToView(buttonNumber);
+                        navigateToView(buttonNumber, selectedDate);
                     }
                 }
             });
@@ -124,7 +126,7 @@ public class HomeEserciziBambinoActivity extends AppCompatActivity {
                 object1Bottom > y2;
     }
 
-    private void navigateToView(int buttonNumber) {
+    private void navigateToView(int buttonNumber, String selectedDate) {
         Intent intent;
         switch (buttonNumber) {
             case 1:
@@ -144,10 +146,15 @@ public class HomeEserciziBambinoActivity extends AppCompatActivity {
                 return; // No valid button number
         }
 
+        // Add the selected date as an extra to the intent
+        intent.putExtra("selectedDate", selectedDate);
+
+        // Start the activity and finish the current one
         startActivity(intent);
         finish();
 
         // Use a handler to reset the flag after a small delay
         new Handler(Looper.getMainLooper()).postDelayed(() -> isNavigating = false, 500);
     }
+
 }

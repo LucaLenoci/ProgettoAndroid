@@ -44,11 +44,14 @@ public class DenominazioneImmaginiActivity extends AppCompatActivity {
 
     FirebaseStorage storage = FirebaseStorage.getInstance();
     StorageReference imagesRef = storage.getReferenceFromUrl("gs://progetto-mobile-24.appspot.com/immagini");
+    String selectedDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.denominazione_immagini);
+
+        selectedDate = getIntent().getStringExtra("selectedDate");
 
         // Initialize Firestore and other components
         db = FirebaseFirestore.getInstance();
@@ -68,7 +71,7 @@ public class DenominazioneImmaginiActivity extends AppCompatActivity {
         db.collection("esercizi")
                 .document("1")
                 .collection("tipo1")
-                .document("16-08-2024")
+                .document(selectedDate)
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {

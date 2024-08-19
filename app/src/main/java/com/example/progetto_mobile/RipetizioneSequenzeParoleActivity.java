@@ -44,11 +44,15 @@ public class RipetizioneSequenzeParoleActivity extends AppCompatActivity impleme
     private EsercizioTipo3 currentExercise;
     private KonfettiView konfettiView;
     private MediaPlayer successSound;
+    String selectedDate;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ripetizione_sequenze_parole);
+
+        selectedDate = getIntent().getStringExtra("selectedDate");
 
         db = FirebaseFirestore.getInstance();
 
@@ -101,7 +105,7 @@ public class RipetizioneSequenzeParoleActivity extends AppCompatActivity impleme
         db.collection("esercizi")
                 .document("1")
                 .collection("tipo3")
-                .document("16-08-2024")
+                .document(selectedDate)
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {

@@ -58,7 +58,7 @@ public class LoginActivity extends AppCompatActivity {
 
         View bambinoButton = findViewById(R.id.buttonLoginBambino);
         bambinoButton.setOnClickListener(v -> {
-            startActivity(new Intent(LoginActivity.this, HomeEserciziBambinoActivity.class));
+            startActivity(new Intent(LoginActivity.this, HomeBambinoActivity.class));
         });
 
         View genitoreButton = findViewById(R.id.buttonLoginGenitore);
