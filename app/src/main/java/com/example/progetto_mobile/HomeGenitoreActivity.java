@@ -27,7 +27,6 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
-// TODO: aggiungere il setOnClickListener sulle dashboard
 public class HomeGenitoreActivity extends AppCompatActivity {
 
     private LinearLayout linearLayoutFigli;
@@ -105,7 +104,6 @@ public class HomeGenitoreActivity extends AppCompatActivity {
     }
 
     private void getEserciziDetails(List<DocumentReference> tipo1Refs, List<DocumentReference> tipo2Refs, List<DocumentReference> tipo3Refs, EserciziCallback callback) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
         List<EsercizioTipo1> eserciziTipo1 = new ArrayList<>();
         List<EsercizioTipo2> eserciziTipo2 = new ArrayList<>();
         List<EsercizioTipo3> eserciziTipo3 = new ArrayList<>();
@@ -190,7 +188,7 @@ public class HomeGenitoreActivity extends AppCompatActivity {
     }
 
     private void addExerciseInfo(LinearLayout container, List<List<?>> allEsercizi) {
-        String[] tipi = {"Tipo 1", "Tipo 2", "Tipo 3"};
+        String[] tipi = {"Denominazione immagine", "Riconoscimento coppie minime", "Ripetizione sequenza di parole"};
         for (int i = 0; i < allEsercizi.size(); i++) {
             List<?> esercizi = allEsercizi.get(i);
             if (esercizi != null && !esercizi.isEmpty()) {
@@ -216,7 +214,7 @@ public class HomeGenitoreActivity extends AppCompatActivity {
         TextView textViewExerciseName = exerciseView.findViewById(R.id.textViewExerciseName);
         TextView textViewExerciseStatus = exerciseView.findViewById(R.id.textViewExerciseStatus);
 
-        textViewExerciseName.setText(String.format("Esercizio %s", tipo));
+        textViewExerciseName.setText(tipo);
         textViewExerciseStatus.setText(esercizioCorretto ? "Completato" : "In corso");
 
         container.addView(exerciseView);
