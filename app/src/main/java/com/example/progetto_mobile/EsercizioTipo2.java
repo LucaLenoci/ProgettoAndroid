@@ -7,6 +7,7 @@ import java.util.Locale;
 
 public class EsercizioTipo2 implements Serializable {
     private boolean esercizio_corretto;
+    // TODO: su firestore il campo 'risposta' non c'è
     private String risposta;
     private String risposta_corretta;
     private String risposta_sbagliata;
