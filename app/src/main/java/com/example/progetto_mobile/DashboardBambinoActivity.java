@@ -30,14 +30,37 @@ public class DashboardBambinoActivity extends AppCompatActivity {
         Intent intent = getIntent();
         Child child = (Child) intent.getSerializableExtra("child");
         if (child != null) {
+            String listaEserciziTipo1 = "";
+            String listaEserciziTipo2 = "";
+            String listaEserciziTipo3 = "";
+
+            for (int i = 0; i < child.getEserciziTipo1().size(); i++) {
+                listaEserciziTipo1 = listaEserciziTipo1.concat("\nEs "+(i+1)+":\n").concat(child.getEserciziTipo1().get(i).toString());
+                listaEserciziTipo1 = i == child.getEserciziTipo1().size() - 1
+                        ? listaEserciziTipo1
+                        : listaEserciziTipo1.concat("\n");
+            }
+            for (int i = 0; i < child.getEserciziTipo2().size(); i++) {
+                listaEserciziTipo2 = listaEserciziTipo2.concat("\nEs "+(i+1)+":\n").concat(child.getEserciziTipo2().get(i).toString());
+                listaEserciziTipo2 = i == child.getEserciziTipo2().size() - 1
+                        ? listaEserciziTipo2
+                        : listaEserciziTipo2.concat("\n");
+            }
+            for (int i = 0; i < child.getEserciziTipo3().size(); i++) {
+                listaEserciziTipo3 = listaEserciziTipo3.concat("\nEs "+(i+1)+":\n").concat(child.getEserciziTipo3().get(i).toString());
+                listaEserciziTipo3 = i == child.getEserciziTipo3().size() - 1
+                        ? listaEserciziTipo3
+                        : listaEserciziTipo3.concat("\n");
+            }
+
             String text = String.format(Locale.ITALY,
                     "Nome: %s,\n" +
                             "Progresso: %d,\n" +
                             "Esercizi tipo 1: %s,\n" +
                             "Esercizi tipo 2: %s,\n" +
                             "Esercizi tipo 3: %s\n",
-                    child.getNome(), child.getProgresso(), child.getEserciziTipo1().toString(),
-                    child.getEserciziTipo2().toString(), child.getEserciziTipo3().toString());
+                    child.getNome(), child.getProgresso(), listaEserciziTipo1,
+                    listaEserciziTipo2, listaEserciziTipo3);
             textView.setText(text);
         }
     }

@@ -18,13 +18,14 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 // TODO: aggiungere il setOnClickListener sulle dashboard
 public class HomeGenitoreActivity extends AppCompatActivity {
@@ -103,50 +104,52 @@ public class HomeGenitoreActivity extends AppCompatActivity {
                 .addOnFailureListener(e -> Toast.makeText(this, "Errore nel recupero dei dati", Toast.LENGTH_SHORT).show());
     }
 
-    private void getEserciziDetails(List<DocumentReference> tipo1Refs, List<DocumentReference> tipo2Refs,
-                                    List<DocumentReference> tipo3Refs, EserciziCallback callback) {
+    private void getEserciziDetails(List<DocumentReference> tipo1Refs, List<DocumentReference> tipo2Refs, List<DocumentReference> tipo3Refs, EserciziCallback callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         List<EsercizioTipo1> eserciziTipo1 = new ArrayList<>();
         List<EsercizioTipo2> eserciziTipo2 = new ArrayList<>();
         List<EsercizioTipo3> eserciziTipo3 = new ArrayList<>();
 
-        AtomicInteger counter = new AtomicInteger(tipo1Refs.size() + tipo2Refs.size() + tipo3Refs.size());
+        // Utilizziamo Tasks.whenAllComplete per gestire tutte le richieste asincrone
+        List<Task<?>> allTasks = new ArrayList<>();
 
+        // Aggiungi task per EsercizioTipo1
         for (DocumentReference ref : tipo1Refs) {
-            ref.get().addOnSuccessListener(doc -> {
+            allTasks.add(ref.get().addOnSuccessListener(doc -> {
                 if (doc.exists()) {
-                    EsercizioTipo1 esercizio = doc.toObject(EsercizioTipo1.class);
-                    eserciziTipo1.add(esercizio);
+                    eserciziTipo1.add(doc.toObject(EsercizioTipo1.class));
                 }
-                if (counter.decrementAndGet() == 0) {
-                    callback.onComplete(eserciziTipo1, eserciziTipo2, eserciziTipo3);
-                }
-            });
+            }));
         }
 
+        // Aggiungi task per EsercizioTipo2
         for (DocumentReference ref : tipo2Refs) {
-            ref.get().addOnSuccessListener(doc -> {
+            allTasks.add(ref.get().addOnSuccessListener(doc -> {
                 if (doc.exists()) {
-                    EsercizioTipo2 esercizio = doc.toObject(EsercizioTipo2.class);
-                    eserciziTipo2.add(esercizio);
+                    eserciziTipo2.add(doc.toObject(EsercizioTipo2.class));
                 }
-                if (counter.decrementAndGet() == 0) {
-                    callback.onComplete(eserciziTipo1, eserciziTipo2, eserciziTipo3);
-                }
-            });
+            }));
         }
 
+        // Aggiungi task per EsercizioTipo3
         for (DocumentReference ref : tipo3Refs) {
-            ref.get().addOnSuccessListener(doc -> {
+            allTasks.add(ref.get().addOnSuccessListener(doc -> {
                 if (doc.exists()) {
-                    EsercizioTipo3 esercizio = doc.toObject(EsercizioTipo3.class);
-                    eserciziTipo3.add(esercizio);
+                    eserciziTipo3.add(doc.toObject(EsercizioTipo3.class));
                 }
-                if (counter.decrementAndGet() == 0) {
-                    callback.onComplete(eserciziTipo1, eserciziTipo2, eserciziTipo3);
-                }
-            });
+            }));
         }
+
+        // Attendi il completamento di tutti i task
+        Tasks.whenAllComplete(allTasks)
+                .addOnSuccessListener(tasks -> {
+                    // Tutti i task sono completati, chiama il callback
+                    callback.onComplete(eserciziTipo1, eserciziTipo2, eserciziTipo3);
+                })
+                .addOnFailureListener(e -> {
+                    // Gestisci eventuali errori
+                    Log.e("getEserciziDetails", "Error retrieving esercizi", e);
+                });
     }
 
     interface EserciziCallback {
