@@ -2,6 +2,7 @@ package com.example.progetto_mobile;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.ProgressBar;
@@ -17,6 +18,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Map;
 
 public class HomeBambinoActivity extends AppCompatActivity {
 
@@ -46,6 +48,8 @@ public class HomeBambinoActivity extends AppCompatActivity {
             selectedDate = String.format(Locale.getDefault(), "%02d-%02d-%04d", dayOfMonth, correctedMonth, year);
         });
 
+        getChildFromFirestore();
+
         Intent intent = getIntent();
         User user = (User) intent.getSerializableExtra("user");
         if (user != null) {
@@ -55,7 +59,7 @@ public class HomeBambinoActivity extends AppCompatActivity {
             tvNome.setText(nome);
             tvCognome.setText(cognome);
             tvEta.setText(eta);
-            getProgressoFromFirestore(user.getEmail());
+
         }
 
         // Set up the button click listener
@@ -63,35 +67,70 @@ public class HomeBambinoActivity extends AppCompatActivity {
             // Intent to open EserciziBambinoActivity
             Intent intentEsercizi = new Intent(HomeBambinoActivity.this, HomeEserciziBambinoActivity.class);
             intentEsercizi.putExtra("selectedDate", selectedDate);
+            intentEsercizi.putExtra("bambinoId", "1");
             startActivity(intentEsercizi);
         });
     }
 
-    private void getProgressoFromFirestore(String email) {
+    private void getChildFromFirestore() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("users")
-                .whereEqualTo("email", email)
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    if (!queryDocumentSnapshots.isEmpty()) {
-                        QueryDocumentSnapshot documentSnapshot = (QueryDocumentSnapshot) queryDocumentSnapshots.getDocuments().get(0);
-                        DocumentReference infoRef = (DocumentReference) documentSnapshot.get("infoRef");
 
-                        if (infoRef == null) {
-                            Toast.makeText(HomeBambinoActivity.this, "Riferimento non trovato", Toast.LENGTH_SHORT).show();
+        // Reference to the specific document with ID "1" in the "bambini" collection
+        DocumentReference docRef = db.collection("bambini").document("1");
+
+        // Fetch the document
+        docRef.get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        // Document exists, retrieve data
+                        Map<String, Object> data = documentSnapshot.getData();
+
+                        if (data != null) {
+                            // Data retrieved successfully, handle the data
+                            // For example, print the data to log
+                            Log.d("FirestoreData", "Document data: " + data.toString());
+
+                            // Access specific fields if needed
+                            Object infoRefObject = data.get("infoRef");
+                            Long progressoLong = (Long) data.get("progresso");
+                            String nomeString = (String) data.get("nome");
+
+
+                            // Example handling of fields
+                            if (infoRefObject != null) {
+                                Log.d("FirestoreData", "InfoRef: " + infoRefObject.toString());
+                            } else {
+                                Log.d("FirestoreData", "InfoRef not found");
+                            }
+
+                            if (progressoLong != null) {
+                                int progresso = progressoLong.intValue();
+                                // Update UI with the progress value
+                                progressBar.setProgress(progresso);
+                            } else {
+                                Log.d("FirestoreData", "Progresso not found");
+                            }
+
+                            if (nomeString != null) {
+                                // Update UI with the progress value
+                                tvNome.setText(nomeString);
+                            } else {
+                                Log.d("FirestoreData", "Nome not found");
+                            }
                         } else {
-                            infoRef.get().addOnSuccessListener(infoSnapshot -> {
-                                if (infoSnapshot.exists()) {
-                                    int progresso = infoSnapshot.getLong("progresso").intValue();
-                                    progressBar.setProgress(progresso);
-                                } else {
-                                    Toast.makeText(HomeBambinoActivity.this, "Bambino non trovato", Toast.LENGTH_SHORT).show();
-                                }
-                            });
+                            Log.d("FirestoreData", "No data found in the document");
                         }
                     } else {
-                        Toast.makeText(HomeBambinoActivity.this, "Utente non trovato", Toast.LENGTH_SHORT).show();
+                        // Document does not exist
+                        Log.d("FirestoreData", "No such document");
+                        Toast.makeText(HomeBambinoActivity.this, "Documento non trovato", Toast.LENGTH_SHORT).show();
                     }
+                })
+                .addOnFailureListener(e -> {
+                    // Handle the error
+                    Log.e("FirestoreError", "Error fetching document", e);
+                    Toast.makeText(HomeBambinoActivity.this, "Errore di lettura documento", Toast.LENGTH_SHORT).show();
                 });
     }
+
 }

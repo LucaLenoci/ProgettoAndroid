@@ -45,12 +45,14 @@ public class RiconoscimentoCoppieMinimeActivity extends AppCompatActivity implem
     private MediaPlayer successSound;
 
     String selectedDate;
+    String bambinoId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         selectedDate = getIntent().getStringExtra("selectedDate");
+        bambinoId = getIntent().getStringExtra("bambinoId");
 
         setContentView(R.layout.riconoscimento_coppie_minime);
         konfettiView = findViewById(R.id.konfettiView);
@@ -112,7 +114,7 @@ public class RiconoscimentoCoppieMinimeActivity extends AppCompatActivity implem
     private void fetchExerciseData() {
         // Firestore query to get the specific document
         db.collection("esercizi")
-                .document("1")
+                .document(bambinoId)
                 .collection("tipo2")
                 .document(selectedDate)
                 .get()

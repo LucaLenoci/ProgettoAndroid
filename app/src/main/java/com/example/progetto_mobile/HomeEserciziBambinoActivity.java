@@ -27,6 +27,8 @@ public class HomeEserciziBambinoActivity extends AppCompatActivity {
         setContentView(R.layout.esercizi_giornalieri_bambino);
         // Retrieve the date passed from HomeBambinoActivity
         String selectedDate = getIntent().getStringExtra("selectedDate");
+        String bambinoId = getIntent().getStringExtra("bambinoId");
+
 
         JoystickView joystick = findViewById(R.id.joystick);
         movableObject = findViewById(R.id.movable_object);
@@ -46,7 +48,7 @@ public class HomeEserciziBambinoActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     if (!isNavigating) {  // Only navigate if not already navigating
                         isNavigating = true;
-                        navigateToView(buttonNumber, selectedDate);
+                        navigateToView(buttonNumber, selectedDate, bambinoId);
                     }
                 }
             });
@@ -126,7 +128,7 @@ public class HomeEserciziBambinoActivity extends AppCompatActivity {
                 object1Bottom > y2;
     }
 
-    private void navigateToView(int buttonNumber, String selectedDate) {
+    private void navigateToView(int buttonNumber, String selectedDate, String bambinoId) {
         Intent intent;
         switch (buttonNumber) {
             case 1:
@@ -148,6 +150,7 @@ public class HomeEserciziBambinoActivity extends AppCompatActivity {
 
         // Add the selected date as an extra to the intent
         intent.putExtra("selectedDate", selectedDate);
+        intent.putExtra("bambinoId", bambinoId);
 
         // Start the activity and finish the current one
         startActivity(intent);

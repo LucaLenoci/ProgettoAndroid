@@ -45,6 +45,7 @@ public class RipetizioneSequenzeParoleActivity extends AppCompatActivity impleme
     private KonfettiView konfettiView;
     private MediaPlayer successSound;
     String selectedDate;
+    String bambinoId;
 
 
     @Override
@@ -53,6 +54,7 @@ public class RipetizioneSequenzeParoleActivity extends AppCompatActivity impleme
         setContentView(R.layout.ripetizione_sequenze_parole);
 
         selectedDate = getIntent().getStringExtra("selectedDate");
+        bambinoId = getIntent().getStringExtra("bambinoId");
 
         db = FirebaseFirestore.getInstance();
 
@@ -103,7 +105,7 @@ public class RipetizioneSequenzeParoleActivity extends AppCompatActivity impleme
 
     private void fetchExerciseData() {
         db.collection("esercizi")
-                .document("1")
+                .document(bambinoId)
                 .collection("tipo3")
                 .document(selectedDate)
                 .get()
