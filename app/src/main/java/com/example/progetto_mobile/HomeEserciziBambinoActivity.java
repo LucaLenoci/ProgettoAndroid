@@ -1,15 +1,20 @@
 package com.example.progetto_mobile;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,14 +26,20 @@ public class HomeEserciziBambinoActivity extends AppCompatActivity {
     private List<Button> buttons;  // List to hold all the buttons
     private boolean isNavigating = false;  // Flag to prevent multiple intents
 
+    private String selectedDate;
+    private String bambinoId;
+    private FirebaseFirestore db;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.esercizi_giornalieri_bambino);
-        // Retrieve the date passed from HomeBambinoActivity
-        String selectedDate = getIntent().getStringExtra("selectedDate");
-        String bambinoId = getIntent().getStringExtra("bambinoId");
 
+        // Retrieve the date passed from HomeBambinoActivity
+        selectedDate = getIntent().getStringExtra("selectedDate");
+        bambinoId = getIntent().getStringExtra("bambinoId");
+
+        db = FirebaseFirestore.getInstance();
 
         JoystickView joystick = findViewById(R.id.joystick);
         movableObject = findViewById(R.id.movable_object);
@@ -64,6 +75,9 @@ public class HomeEserciziBambinoActivity extends AppCompatActivity {
                 moveObject(x, y);
             }
         });
+
+        // Check the status of each exercise and disable/green the button if completed
+        checkExerciseStatus();
     }
 
     private void moveObject(float x, float y) {
@@ -128,36 +142,88 @@ public class HomeEserciziBambinoActivity extends AppCompatActivity {
                 object1Bottom > y2;
     }
 
-    private void navigateToView(int buttonNumber, String selectedDate, String bambinoId) {
-        Intent intent;
+    private void checkExerciseStatus() {
+        // Check the status of each exercise and disable/green the button if completed
+        for (int i = 0; i < buttons.size(); i++) {
+            final int buttonNumber = i + 1;
+            String exerciseDocId = getExerciseDocumentId(buttonNumber);
+
+            db.collection("esercizi")
+                    .document(bambinoId)
+                    .collection("tipo"+buttonNumber)
+                    .document(selectedDate)
+                    .get()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful() && task.getResult() != null) {
+                            DocumentSnapshot document = task.getResult();
+                            if (document.exists() && document.getBoolean("esercizio_corretto") != null && document.getBoolean("esercizio_corretto")) {
+                                // If the exercise is correct, disable the button and set its background color to green
+                                Button button = buttons.get(buttonNumber - 1);
+                                button.setEnabled(false);
+                                button.setTextColor(Color.GREEN);
+                            }
+                        }
+                    });
+        }
+    }
+
+    private String getExerciseDocumentId(int buttonNumber) {
+        // Map the button number to the corresponding exercise document ID
         switch (buttonNumber) {
             case 1:
-                intent = new Intent(HomeEserciziBambinoActivity.this, RiconoscimentoCoppieMinimeActivity.class);
-                break;
+                return "esercizio1";  // Replace with your actual document IDs
             case 2:
-                intent = new Intent(HomeEserciziBambinoActivity.this, DenominazioneImmaginiActivity.class);
-                break;
+                return "esercizio2";
             case 3:
-                intent = new Intent(HomeEserciziBambinoActivity.this, RipetizioneSequenzeParoleActivity.class);
-                break;
+                return "esercizio3";
             case 4:
-                intent = new Intent(HomeEserciziBambinoActivity.this, LoginActivity.class);
-                break;
+                return "esercizio4";
             default:
-                isNavigating = false; // Reset the flag if no valid button number
-                return; // No valid button number
+                return null;
+        }
+    }
+
+    private void navigateToView(int buttonNumber, String selectedDate, String bambinoId) {
+        Intent intent;
+        buttons = new ArrayList<>();
+        buttons.add(findViewById(R.id.button1));  // Add your buttons by their IDs
+        buttons.add(findViewById(R.id.button2));
+        buttons.add(findViewById(R.id.button3));
+        buttons.add(findViewById(R.id.button4));
+
+
+        if(buttons.get(buttonNumber-1).isEnabled()){
+            Log.d("ButtonState", "Button " + buttonNumber + " is enabled. Proceeding with action.");
+            switch (buttonNumber) {
+                case 1:
+                    intent = new Intent(HomeEserciziBambinoActivity.this, DenominazioneImmaginiActivity.class);
+                    break;
+                case 2:
+                    intent = new Intent(HomeEserciziBambinoActivity.this, RiconoscimentoCoppieMinimeActivity.class);
+                    break;
+                case 3:
+                    intent = new Intent(HomeEserciziBambinoActivity.this, RipetizioneSequenzeParoleActivity.class);
+                    break;
+                case 4:
+                    intent = new Intent(HomeEserciziBambinoActivity.this, LoginActivity.class);
+                    break;
+                default:
+                    isNavigating = false; // Reset the flag if no valid button number
+                    return; // No valid button number
+            }
+
+            // Add the selected date as an extra to the intent
+            intent.putExtra("selectedDate", selectedDate);
+            intent.putExtra("bambinoId", bambinoId);
+
+            // Start the activity and finish the current one
+            startActivity(intent);
+            finish();
         }
 
-        // Add the selected date as an extra to the intent
-        intent.putExtra("selectedDate", selectedDate);
-        intent.putExtra("bambinoId", bambinoId);
 
-        // Start the activity and finish the current one
-        startActivity(intent);
-        finish();
 
         // Use a handler to reset the flag after a small delay
         new Handler(Looper.getMainLooper()).postDelayed(() -> isNavigating = false, 500);
     }
-
 }

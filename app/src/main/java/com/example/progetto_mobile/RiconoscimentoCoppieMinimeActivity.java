@@ -195,6 +195,11 @@ public class RiconoscimentoCoppieMinimeActivity extends AppCompatActivity implem
                 showConfettiEffect();
                 if (successSound != null) {
                     successSound.start();
+                    updateCoinsInFirebase();
+                    Button btnButton = findViewById(R.id.button1);
+                    btnButton.setEnabled(false);
+                    Button btnButton_2 = findViewById(R.id.button2);
+                    btnButton_2.setEnabled(false);
                 }
             } else {
                 Toast.makeText(this, "Incorrect. Try again!", Toast.LENGTH_SHORT).show();
@@ -212,5 +217,44 @@ public class RiconoscimentoCoppieMinimeActivity extends AppCompatActivity implem
                         .setSpeedBetween(0f, 30f)
                         .position(new Position.Relative(0.5, 0.3))
                         .build());
+    }
+
+    private void updateCoinsInFirebase() {
+        // Reference to the child's document in Firestore
+        db.collection("bambini").document(bambinoId)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            Long currentCoins = document.getLong("coins");
+                            if (currentCoins != null) {
+                                // Increment the coins by 1
+                                db.collection("bambini").document(bambinoId)
+                                        .update("coins", currentCoins + 1)
+                                        .addOnSuccessListener(aVoid -> {
+                                            Log.d("Firestore", "Coins updated successfully.");
+                                        })
+                                        .addOnFailureListener(e -> {
+                                            Log.e("Firestore", "Error updating coins", e);
+                                        });
+
+                                db.collection("esercizi")
+                                        .document(bambinoId)
+                                        .collection("tipo2")
+                                        .document(selectedDate)
+                                        .update("esercizio_corretto", true)
+                                        .addOnSuccessListener(aVoid -> {
+                                            Log.d("Firestore", "Esercizio corretto updated successfully.");
+                                        })
+                                        .addOnFailureListener(e -> {
+                                            Log.e("Firestore", "Error updating esercizio corretto", e);
+                                        });
+                            }
+                        }
+                    } else {
+                        Log.d("Firestore", "Failed to fetch document: ", task.getException());
+                    }
+                });
     }
 }

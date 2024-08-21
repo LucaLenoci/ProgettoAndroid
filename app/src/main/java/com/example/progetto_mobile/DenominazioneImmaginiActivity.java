@@ -121,6 +121,9 @@ public class DenominazioneImmaginiActivity extends AppCompatActivity {
                     showConfettiEffect();
                     if (successSound != null) {
                         successSound.start();
+                        updateCoinsInFirebase();
+                        Button btnButton = findViewById(R.id.btn_button);
+                        btnButton.setEnabled(false);
                     }
                 } else {
                     Toast.makeText(this, "Try again!", Toast.LENGTH_SHORT).show();
@@ -169,5 +172,45 @@ public class DenominazioneImmaginiActivity extends AppCompatActivity {
             successSound = null;
         }
         super.onDestroy();
+    }
+
+    private void updateCoinsInFirebase() {
+        // Reference to the child's document in Firestore
+        db.collection("bambini").document(bambinoId)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            Long currentCoins = document.getLong("coins");
+                            if (currentCoins != null) {
+                                // Increment the coins by 1
+                                db.collection("bambini").document(bambinoId)
+                                        .update("coins", currentCoins + 1)
+                                        .addOnSuccessListener(aVoid -> {
+                                            Log.d("Firestore", "Coins updated successfully.");
+                                        })
+                                        .addOnFailureListener(e -> {
+                                            Log.e("Firestore", "Error updating coins", e);
+                                        });
+
+                                db.collection("esercizi")
+                                        .document(bambinoId)
+                                        .collection("tipo1")
+                                        .document(selectedDate)
+                                        .update("esercizio_corretto", true)
+                                        .addOnSuccessListener(aVoid -> {
+                                            Log.d("Firestore", "Esercizio corretto updated successfully.");
+                                        })
+                                        .addOnFailureListener(e -> {
+                                            Log.e("Firestore", "Error updating esercizio corretto", e);
+                                        });
+                            }
+
+                        }
+                    } else {
+                        Log.d("Firestore", "Failed to fetch document: ", task.getException());
+                    }
+                });
     }
 }
