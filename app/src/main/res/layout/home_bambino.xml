@@ -24,14 +24,14 @@
         android:text="Età"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/ProfilePic"
-        app:layout_constraintTop_toBottomOf="@+id/Cognome" />
+        app:layout_constraintTop_toBottomOf="@+id/Coins" />
 
     <TextView
-        android:id="@+id/Cognome"
+        android:id="@+id/Coins"
         android:layout_width="0dp"
         android:layout_height="22dp"
         android:layout_marginStart="20dp"
-        android:text="Cognome"
+        android:text="Coins: "
         app:layout_constraintBottom_toBottomOf="@+id/ProfilePic"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/ProfilePic"
@@ -42,8 +42,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
-        android:text="Nome"
-        app:layout_constraintBottom_toTopOf="@+id/Cognome"
+        android:text="Nome: "
+        app:layout_constraintBottom_toTopOf="@+id/Coins"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/ProfilePic" />
 

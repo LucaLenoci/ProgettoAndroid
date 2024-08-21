@@ -23,7 +23,7 @@ import java.util.Map;
 public class HomeBambinoActivity extends AppCompatActivity {
 
     private String selectedDate;
-    private TextView tvNome, tvCognome, tvEta;
+    private TextView tvNome, tvCoins, tvEta;
     private ProgressBar progressBar;
 
     @Override
@@ -32,7 +32,7 @@ public class HomeBambinoActivity extends AppCompatActivity {
         setContentView(R.layout.home_bambino);
 
         tvNome = findViewById(R.id.Nome);
-        tvCognome = findViewById(R.id.Cognome);
+        tvCoins = findViewById(R.id.Coins);
         tvEta = findViewById(R.id.Eta);
         progressBar = findViewById(R.id.progressBar);
         CalendarView calendarView = findViewById(R.id.calendarView);
@@ -54,10 +54,8 @@ public class HomeBambinoActivity extends AppCompatActivity {
         User user = (User) intent.getSerializableExtra("user");
         if (user != null) {
             String nome = "Nome: " + user.getNome();
-            String cognome = "Cognome: " + user.getCognome();
             String eta = "Età: " + user.getEta();
             tvNome.setText(nome);
-            tvCognome.setText(cognome);
             tvEta.setText(eta);
 
         }
@@ -94,6 +92,7 @@ public class HomeBambinoActivity extends AppCompatActivity {
                             Object infoRefObject = data.get("infoRef");
                             Long progressoLong = (Long) data.get("progresso");
                             String nomeString = (String) data.get("nome");
+                            Long coinsLong = (Long) data.get("coins");
 
 
                             // Example handling of fields
@@ -111,9 +110,17 @@ public class HomeBambinoActivity extends AppCompatActivity {
                                 Log.d("FirestoreData", "Progresso not found");
                             }
 
+                            if (coinsLong != null) {
+                                String coins = coinsLong.toString();
+                                // Update UI with the progress value
+                                tvCoins.append(coins);
+                            } else {
+                                Log.d("FirestoreData", "Coins not found");
+                            }
+
                             if (nomeString != null) {
                                 // Update UI with the progress value
-                                tvNome.setText(nomeString);
+                                tvNome.append(nomeString);
                             } else {
                                 Log.d("FirestoreData", "Nome not found");
                             }
