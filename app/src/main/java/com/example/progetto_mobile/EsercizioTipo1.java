@@ -9,16 +9,20 @@ public class EsercizioTipo1 implements Serializable {
     private String risposta;
     private String risposta_corretta;
     private String suggerimento;
+    private String suggerimento2;
+    private String suggerimento3;
 
     public EsercizioTipo1() {
         // Default constructor required for serialization or other purposes
     }
 
-    public EsercizioTipo1(boolean esercizioCorretto, String risposta, String rispostaCorretta, String suggerimento) {
+    public EsercizioTipo1(boolean esercizioCorretto, String risposta, String rispostaCorretta, String suggerimento, String suggerimento2, String suggerimento3) {
         this.esercizio_corretto = esercizioCorretto;
         this.risposta = risposta;
         this.risposta_corretta = rispostaCorretta;
         this.suggerimento = suggerimento;
+        this.suggerimento2 = suggerimento2;
+        this.suggerimento3 = suggerimento3;
     }
 
     // Getters and Setters
@@ -49,6 +53,13 @@ public class EsercizioTipo1 implements Serializable {
     public String getSuggerimento() {
         return suggerimento;
     }
+    public String getSuggerimento2() {
+        return suggerimento2;
+    }
+    public String getSuggerimento3() {
+        return suggerimento3;
+    }
+
 
     public void setSuggerimento(String suggerimento) {
         this.suggerimento = suggerimento;
