@@ -124,7 +124,7 @@ public class RegisterActivity extends AppCompatActivity {
                             user.put("cognome", cognome);
                             user.put("eta", Integer.parseInt(eta));
                             user.put("email", email);
-                            user.put("tipologia", 1);
+                            user.put("tipologia", 2);
 //                            User user = new User(cognome, Integer.parseInt(eta), nome, 1, email);
 
                             // Aggiungi l'user a Firestore

@@ -63,13 +63,17 @@ public class DataAccess extends AppCompatActivity {
     private void updateUI() {
         Intent intent = null;
 
-        switch (0) {
+        switch (user.getTipologia()) {
             case 0:
                 intent = new Intent(DataAccess.this, HomeBambinoActivity.class);
                 break;
 
             case 1:
                 intent = new Intent(DataAccess.this, HomeGenitoreActivity.class);
+                break;
+
+            case 2:
+                intent = new Intent(DataAccess.this, HomeLogopedistaActivity.class);
                 break;
 
             default:
