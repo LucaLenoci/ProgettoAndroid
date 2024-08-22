@@ -38,7 +38,6 @@ import nl.dionsegijn.konfetti.xml.KonfettiView;
 public class DenominazioneImmaginiActivity extends AppCompatActivity implements TextToSpeech.OnInitListener {
     private static final int RQ_SPEECH_REC = 102;
     private TextView tvText;
-    private TextView tvText_2;
     private TextToSpeech tts;
     private FirebaseFirestore db;
     private EsercizioTipo1 currentExercise;
@@ -47,7 +46,6 @@ public class DenominazioneImmaginiActivity extends AppCompatActivity implements 
     private boolean isSuggestion1Used = false;
     private boolean isSuggestion2Used = false;
     private boolean isSuggestion3Used = false;
-
 
     FirebaseStorage storage = FirebaseStorage.getInstance();
     StorageReference imagesRef = storage.getReferenceFromUrl("gs://progetto-mobile-24.appspot.com/immagini");
@@ -65,99 +63,43 @@ public class DenominazioneImmaginiActivity extends AppCompatActivity implements 
         // Initialize Firestore and other components
         db = FirebaseFirestore.getInstance();
         konfettiView = findViewById(R.id.konfettiView);
-        successSound = MediaPlayer.create(this, R.raw.success_sound); // Ensure the sound file is in res/raw
+        successSound = MediaPlayer.create(this, R.raw.success_sound);
 
         fetchExerciseData();
 
+        // Button and TTS initialization for suggestion 1
         Button speakButton = findViewById(R.id.suggerimento1);
         speakButton.setOnClickListener(v -> {
             String textToSpeak = currentExercise.getSuggerimento();
-
-            // Check if the suggestion has been used
             if (!isSuggestion1Used) {
-                updateSuggerimentiUsatiInFirebase();
+                updateSuggerimentiUsatiInFirebase(0);
                 isSuggestion1Used = true;
             }
-
-            // Get a list of available languages
-            Set<Locale> languages = tts.getAvailableLanguages();
-
-            // Find a desired language (e.g., Italian)
-            Locale selectedLanguage = Locale.ITALIAN; // Replace with your desired language
-
-            // Set the language
-            if (languages.contains(selectedLanguage)) {
-                tts.setLanguage(selectedLanguage);
-            }
-
-            float speechRate = 1.0f; // Adjust this value as needed
-            tts.setSpeechRate(speechRate);
-
-            tts.speak(textToSpeak, TextToSpeech.QUEUE_FLUSH, null);
+            speakText(textToSpeak);
         });
 
-        // Initialize TextToSpeech and pass 'this' as the OnInitListener
-        tts = new TextToSpeech(this, this);
-
+        // Button and TTS initialization for suggestion 2
         Button speakButton_2 = findViewById(R.id.suggerimento2);
         speakButton_2.setOnClickListener(v -> {
             String textToSpeak = currentExercise.getSuggerimento2();
-
-            // Check if the suggestion has been used
             if (!isSuggestion2Used) {
-                updateSuggerimentiUsatiInFirebase();
+                updateSuggerimentiUsatiInFirebase(1);
                 isSuggestion2Used = true;
             }
-
-            // Get a list of available languages
-            Set<Locale> languages = tts.getAvailableLanguages();
-
-            // Find a desired language (e.g., Italian)
-            Locale selectedLanguage = Locale.ITALIAN; // Replace with your desired language
-
-            // Set the language
-            if (languages.contains(selectedLanguage)) {
-                tts.setLanguage(selectedLanguage);
-            }
-
-            float speechRate = 1.0f; // Adjust this value as needed
-            tts.setSpeechRate(speechRate);
-
-            tts.speak(textToSpeak, TextToSpeech.QUEUE_FLUSH, null);
+            speakText(textToSpeak);
         });
 
-        // Initialize TextToSpeech and pass 'this' as the OnInitListener
-        tts = new TextToSpeech(this, this);
-
+        // Button and TTS initialization for suggestion 3
         Button speakButton_3 = findViewById(R.id.suggerimento3);
         speakButton_3.setOnClickListener(v -> {
             String textToSpeak = currentExercise.getSuggerimento3();
-
-            // Check if the suggestion has been used
             if (!isSuggestion3Used) {
-                updateSuggerimentiUsatiInFirebase();
+                updateSuggerimentiUsatiInFirebase(2);
                 isSuggestion3Used = true;
             }
-
-
-            // Get a list of available languages
-            Set<Locale> languages = tts.getAvailableLanguages();
-
-            // Find a desired language (e.g., Italian)
-            Locale selectedLanguage = Locale.ITALIAN; // Replace with your desired language
-
-            // Set the language
-            if (languages.contains(selectedLanguage)) {
-                tts.setLanguage(selectedLanguage);
-            }
-
-            float speechRate = 1.0f; // Adjust this value as needed
-            tts.setSpeechRate(speechRate);
-
-            tts.speak(textToSpeak, TextToSpeech.QUEUE_FLUSH, null);
+            speakText(textToSpeak);
         });
 
-        // Initialize TextToSpeech and pass 'this' as the OnInitListener
         tts = new TextToSpeech(this, this);
 
         Button btnButton = findViewById(R.id.btn_button);
@@ -166,7 +108,6 @@ public class DenominazioneImmaginiActivity extends AppCompatActivity implements 
         btnButton.setOnClickListener(v -> askSpeechInput());
     }
 
-    // Override the onInit method to handle TextToSpeech initialization
     @Override
     public void onInit(int status) {
         if (status == TextToSpeech.SUCCESS) {
@@ -187,7 +128,15 @@ public class DenominazioneImmaginiActivity extends AppCompatActivity implements 
                         DocumentSnapshot document = task.getResult();
                         if (document.exists()) {
                             currentExercise = document.toObject(EsercizioTipo1.class);
-                            Log.d("Firestore", "DocumentSnapshot data: " + document.getData());
+
+                            // Initialize suggestion usage status
+                            ArrayList<Boolean> suggerimentiList = (ArrayList<Boolean>) document.get("suggerimenti");
+                            if (suggerimentiList != null && suggerimentiList.size() == 3) {
+                                isSuggestion1Used = suggerimentiList.get(0);
+                                isSuggestion2Used = suggerimentiList.get(1);
+                                isSuggestion3Used = suggerimentiList.get(2);
+                            }
+
                             loadExerciseData(currentExercise);
                         } else {
                             Log.d("Firestore", "No such document");
@@ -199,7 +148,7 @@ public class DenominazioneImmaginiActivity extends AppCompatActivity implements 
     }
 
     private void loadExerciseData(EsercizioTipo1 exercise) {
-        String imageFileName = exercise.getRisposta_corretta() + ".jpg";  // Modify according to your Exercise class structure
+        String imageFileName = exercise.getRisposta_corretta() + ".jpg";
         StorageReference imageRef = imagesRef.child(imageFileName);
 
         imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
@@ -209,8 +158,6 @@ public class DenominazioneImmaginiActivity extends AppCompatActivity implements 
         }).addOnFailureListener(exception -> {
             Log.e("Firebase Storage", "Failed to get download URL", exception);
         });
-
-
     }
 
     @Override
@@ -282,7 +229,6 @@ public class DenominazioneImmaginiActivity extends AppCompatActivity implements 
     }
 
     private void updateCoinsInFirebase() {
-        // Reference to the child's document in Firestore
         db.collection("bambini").document(bambinoId)
                 .get()
                 .addOnCompleteListener(task -> {
@@ -291,7 +237,6 @@ public class DenominazioneImmaginiActivity extends AppCompatActivity implements 
                         if (document.exists()) {
                             Long currentCoins = document.getLong("coins");
                             if (currentCoins != null) {
-                                // Increment the coins by 1
                                 db.collection("bambini").document(bambinoId)
                                         .update("coins", currentCoins + 1)
                                         .addOnSuccessListener(aVoid -> {
@@ -307,13 +252,12 @@ public class DenominazioneImmaginiActivity extends AppCompatActivity implements 
                                         .document(selectedDate)
                                         .update("esercizio_corretto", true)
                                         .addOnSuccessListener(aVoid -> {
-                                            Log.d("Firestore", "Esercizio corretto updated successfully.");
+                                            Log.d("Firestore", "Exercise marked as completed.");
                                         })
                                         .addOnFailureListener(e -> {
-                                            Log.e("Firestore", "Error updating esercizio corretto", e);
+                                            Log.e("Firestore", "Error marking exercise as completed", e);
                                         });
                             }
-
                         }
                     } else {
                         Log.d("Firestore", "Failed to fetch document: ", task.getException());
@@ -321,7 +265,7 @@ public class DenominazioneImmaginiActivity extends AppCompatActivity implements 
                 });
     }
 
-    private void updateSuggerimentiUsatiInFirebase() {
+    private void updateSuggerimentiUsatiInFirebase(int suggerimentoIndex) {
         db.collection("esercizi")
                 .document(bambinoId)
                 .collection("tipo1")
@@ -332,21 +276,33 @@ public class DenominazioneImmaginiActivity extends AppCompatActivity implements 
                         DocumentSnapshot document = task.getResult();
                         if (document.exists()) {
                             Long currentSuggerimentiUsati = document.getLong("suggerimentiUsati");
+                            ArrayList<Boolean> suggerimentiList = (ArrayList<Boolean>) document.get("suggerimenti");
+
                             if (currentSuggerimentiUsati == null) {
                                 currentSuggerimentiUsati = 0L;
                             }
 
-                            db.collection("esercizi")
-                                    .document(bambinoId)
-                                    .collection("tipo1")
-                                    .document(selectedDate)
-                                    .update("suggerimentiUsati", currentSuggerimentiUsati + 1)
-                                    .addOnSuccessListener(aVoid -> {
-                                        Log.d("Firestore", "SuggerimentiUsati updated successfully.");
-                                    })
-                                    .addOnFailureListener(e -> {
-                                        Log.e("Firestore", "Error updating suggerimentiUsati", e);
-                                    });
+                            if (suggerimentiList == null || suggerimentiList.size() != 3) {
+                                // Initialize array if it doesn't exist or is not the correct size
+                                suggerimentiList = new ArrayList<>(Arrays.asList(false, false, false));
+                            }
+
+                            if (!suggerimentiList.get(suggerimentoIndex)) {
+                                // If the suggestion has not been used yet
+                                suggerimentiList.set(suggerimentoIndex, true);
+                                db.collection("esercizi")
+                                        .document(bambinoId)
+                                        .collection("tipo1")
+                                        .document(selectedDate)
+                                        .update("suggerimentiUsati", currentSuggerimentiUsati + 1,
+                                                "suggerimenti", suggerimentiList)
+                                        .addOnSuccessListener(aVoid -> {
+                                            Log.d("Firestore", "SuggerimentiUsati updated successfully.");
+                                        })
+                                        .addOnFailureListener(e -> {
+                                            Log.e("Firestore", "Error updating suggerimentiUsati", e);
+                                        });
+                            }
                         }
                     } else {
                         Log.d("Firestore", "Failed to fetch document: ", task.getException());
@@ -354,5 +310,11 @@ public class DenominazioneImmaginiActivity extends AppCompatActivity implements 
                 });
     }
 
-
+    private void speakText(String textToSpeak) {
+        if (tts != null) {
+            float speechRate = 1.0f; // Adjust this value as needed
+            tts.setSpeechRate(speechRate);
+            tts.speak(textToSpeak, TextToSpeech.QUEUE_FLUSH, null, null);
+        }
+    }
 }
