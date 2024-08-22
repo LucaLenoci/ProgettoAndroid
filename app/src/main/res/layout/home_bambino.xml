@@ -9,32 +9,22 @@
 
 
     <ImageView
-        android:id="@+id/ProfilePic"
-        android:layout_width="200dp"
-        android:layout_height="150dp"
-        android:src="@drawable/a"
+        android:id="@+id/imageView7"
+        android:layout_width="414dp"
+        android:layout_height="750dp"
+        android:scaleType="fitXY"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/round_rect" />
 
-    <TextView
-        android:id="@+id/Eta"
-        android:layout_width="0dp"
-        android:layout_height="26dp"
-        android:layout_marginStart="20dp"
-        android:text="Età"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/ProfilePic"
-        app:layout_constraintTop_toBottomOf="@+id/Coins" />
-
-    <TextView
-        android:id="@+id/Coins"
-        android:layout_width="0dp"
-        android:layout_height="22dp"
-        android:layout_marginStart="20dp"
-        android:text="Coins: "
-        app:layout_constraintBottom_toBottomOf="@+id/ProfilePic"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/ProfilePic"
+    <ImageView
+        android:id="@+id/ProfilePic"
+        android:layout_width="132dp"
+        android:layout_height="117dp"
+        android:layout_marginTop="32dp"
+        android:src="@drawable/boy"
+        app:layout_constraintStart_toEndOf="@+id/imageButton"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
@@ -42,10 +32,29 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
+        android:layout_marginBottom="4dp"
+        android:fontFamily="sans-serif-smallcaps"
         android:text="Nome: "
+        android:textSize="18dp"
         app:layout_constraintBottom_toTopOf="@+id/Coins"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/ProfilePic" />
+
+    <TextView
+        android:id="@+id/Coins"
+        android:layout_width="0dp"
+        android:layout_height="22dp"
+        android:layout_marginStart="20dp"
+        android:fontFamily="sans-serif-smallcaps"
+        android:text="Monete Attuali: "
+        android:textSize="18dp"
+        app:layout_constraintBottom_toBottomOf="@+id/ProfilePic"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/ProfilePic"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.692" />
 
     <TextView
         android:id="@+id/textView6"
@@ -60,9 +69,9 @@
 
     <CalendarView
         android:id="@+id/calendarView"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="70dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.491"
         app:layout_constraintStart_toStartOf="parent"
@@ -70,23 +79,26 @@
 
     <Button
         android:id="@+id/button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="277dp"
+        android:layout_height="53dp"
         android:text="ESERCIZIO DI OGGI"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/button5"
-        app:layout_constraintTop_toBottomOf="@+id/calendarView" />
-
-    <Button
-        android:id="@+id/button5"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="ESCI"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/button"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/calendarView" />
+        app:layout_constraintTop_toBottomOf="@+id/imageView7"
+        app:layout_constraintVertical_bias="0.48000002" />
+
+    <ImageButton
+        android:id="@+id/imageButton"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/left"
+        android:contentDescription="@string/indietro"
+        android:background="@android:color/transparent"/>
 
     <TextView
         android:id="@+id/textView3"

@@ -33,7 +33,6 @@ public class HomeBambinoActivity extends AppCompatActivity {
 
         tvNome = findViewById(R.id.Nome);
         tvCoins = findViewById(R.id.Coins);
-        tvEta = findViewById(R.id.Eta);
         progressBar = findViewById(R.id.progressBar);
         CalendarView calendarView = findViewById(R.id.calendarView);
         Button esercizioButton = findViewById(R.id.button);
