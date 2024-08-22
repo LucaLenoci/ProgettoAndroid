@@ -34,8 +34,9 @@
 
     <TextView
         android:id="@+id/textView"
-        android:layout_width="227dp"
-        android:layout_height="137dp"
+        android:layout_width="226dp"
+        android:layout_height="122dp"
+        android:fontFamily="sans-serif-smallcaps"
         android:text="L'unica app che guida i bambini nel loro percorso logopedistico                    passo dopo passo"
         android:textAlignment="center"
         android:textSize="20sp"
