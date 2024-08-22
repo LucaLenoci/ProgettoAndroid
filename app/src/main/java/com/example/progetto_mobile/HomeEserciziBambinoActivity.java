@@ -205,7 +205,7 @@ public class HomeEserciziBambinoActivity extends AppCompatActivity {
                     intent = new Intent(HomeEserciziBambinoActivity.this, RipetizioneSequenzeParoleActivity.class);
                     break;
                 case 4:
-                    intent = new Intent(HomeEserciziBambinoActivity.this, LoginActivity.class);
+                    intent = new Intent(HomeEserciziBambinoActivity.this, AvatarActivity.class);
                     break;
                 default:
                     isNavigating = false; // Reset the flag if no valid button number

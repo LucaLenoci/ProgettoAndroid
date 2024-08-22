@@ -38,6 +38,9 @@
             android:name=".DenominazioneImmaginiActivity"
             android:exported="false" />
         <activity
+            android:name=".AvatarActivity"
+            android:exported="false" />
+        <activity
             android:name=".LoginActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustPan" />

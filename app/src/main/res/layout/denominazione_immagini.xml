@@ -115,7 +115,7 @@
         app:layout_constraintStart_toEndOf="@+id/suggerimento2" />
 
     <TextView
-        android:id="@+id/textView10"
+        android:id="@+id/textavatar1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="12dp"

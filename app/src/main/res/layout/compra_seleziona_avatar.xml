@@ -34,10 +34,9 @@
         app:srcCompat="@drawable/cat_background1" />
 
     <Button
-        android:id="@+id/button8"
+        android:id="@+id/buttonavatar3"
         android:layout_width="135dp"
         android:layout_height="50dp"
-        android:text="5"
         android:textAlignment="viewStart"
         android:textSize="20dp"
         app:layout_constraintBottom_toBottomOf="@+id/imageView4"
@@ -48,10 +47,9 @@
         app:layout_constraintVertical_bias="0.947" />
 
     <Button
-        android:id="@+id/button9"
+        android:id="@+id/buttonavatar4"
         android:layout_width="135dp"
         android:layout_height="50dp"
-        android:text="10"
         android:textAlignment="viewStart"
         android:textSize="20dp"
         app:layout_constraintBottom_toBottomOf="@+id/imageView5"
@@ -88,19 +86,19 @@
         app:srcCompat="@drawable/cat_background1" />
 
     <ImageView
-        android:id="@+id/imageView6"
+        android:id="@+id/avatar1"
         android:layout_width="100dp"
         android:layout_height="125dp"
         app:layout_constraintBottom_toBottomOf="@+id/imageView2"
         app:layout_constraintEnd_toEndOf="@+id/imageView2"
         app:layout_constraintHorizontal_bias="0.485"
         app:layout_constraintStart_toStartOf="@+id/imageView2"
-        app:layout_constraintTop_toBottomOf="@+id/textView10"
+        app:layout_constraintTop_toBottomOf="@+id/textavatar1"
         app:layout_constraintVertical_bias="0.0"
-        app:srcCompat="@drawable/avatar_1" />
+         />
 
     <ImageView
-        android:id="@+id/imageView8"
+        android:id="@+id/avatar2"
         android:layout_width="127dp"
         android:layout_height="161dp"
         app:layout_constraintBottom_toBottomOf="@+id/imageView3"
@@ -109,10 +107,10 @@
         app:layout_constraintStart_toStartOf="@+id/imageView3"
         app:layout_constraintTop_toTopOf="@+id/imageView3"
         app:layout_constraintVertical_bias="0.22"
-        app:srcCompat="@drawable/superman" />
+         />
 
     <ImageView
-        android:id="@+id/imageView10"
+        android:id="@+id/avatar3"
         android:layout_width="123dp"
         android:layout_height="146dp"
         app:layout_constraintBottom_toBottomOf="@+id/imageView4"
@@ -121,23 +119,23 @@
         app:layout_constraintStart_toStartOf="@+id/imageView4"
         app:layout_constraintTop_toTopOf="@+id/imageView4"
         app:layout_constraintVertical_bias="0.324"
-        app:srcCompat="@drawable/ironman" />
+         />
 
     <Button
+        android:id="@+id/buttonavatar1"
         android:layout_width="135dp"
         android:layout_height="50dp"
-        android:text="SELEZIONATO"
-        android:textSize="10dp"
+        android:textAlignment="viewStart"
+        android:textSize="20dp"
         app:layout_constraintBottom_toBottomOf="@+id/imageView2"
-        app:layout_constraintEnd_toEndOf="@+id/imageView6"
-        app:layout_constraintStart_toStartOf="@+id/imageView6"
-        app:layout_constraintTop_toBottomOf="@+id/imageView6" />
+        app:layout_constraintEnd_toEndOf="@+id/avatar1"
+        app:layout_constraintStart_toStartOf="@+id/avatar1"
+        app:layout_constraintTop_toBottomOf="@+id/avatar1" />
 
     <Button
-        android:id="@+id/button6"
+        android:id="@+id/buttonavatar2"
         android:layout_width="135dp"
         android:layout_height="50dp"
-        android:text="3"
         android:textAlignment="viewStart"
         android:textSize="20dp"
         app:layout_constraintBottom_toBottomOf="@+id/imageView3"
@@ -148,23 +146,35 @@
         app:layout_constraintVertical_bias="0.958" />
 
     <ImageView
+        android:id="@+id/imageView19"
+        android:layout_width="26dp"
+        android:layout_height="26dp"
+        app:layout_constraintBottom_toBottomOf="@+id/buttonavatar1"
+        app:layout_constraintEnd_toEndOf="@+id/buttonavatar1"
+        app:layout_constraintHorizontal_bias="0.8"
+        app:layout_constraintStart_toStartOf="@+id/buttonavatar1"
+        app:layout_constraintTop_toTopOf="@+id/buttonavatar1"
+        app:layout_constraintVertical_bias="0.49"
+        app:srcCompat="@drawable/coin" />
+
+    <ImageView
         android:id="@+id/imageView9"
         android:layout_width="26dp"
         android:layout_height="26dp"
-        app:layout_constraintBottom_toBottomOf="@+id/button6"
-        app:layout_constraintEnd_toEndOf="@+id/button6"
+        app:layout_constraintBottom_toBottomOf="@+id/buttonavatar2"
+        app:layout_constraintEnd_toEndOf="@+id/buttonavatar2"
         app:layout_constraintHorizontal_bias="0.8"
-        app:layout_constraintStart_toStartOf="@+id/button6"
-        app:layout_constraintTop_toTopOf="@+id/button6"
+        app:layout_constraintStart_toStartOf="@+id/buttonavatar2"
+        app:layout_constraintTop_toTopOf="@+id/buttonavatar2"
         app:layout_constraintVertical_bias="0.49"
         app:srcCompat="@drawable/coin" />
 
     <TextView
-        android:id="@+id/textView10"
+        android:id="@+id/textavatar1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif-smallcaps"
-        android:text="Nano Bastardo"
+        android:text="Avatar1"
         app:layout_constraintBottom_toBottomOf="@+id/imageView2"
         app:layout_constraintEnd_toEndOf="@+id/imageView2"
         app:layout_constraintHorizontal_bias="0.492"
@@ -173,33 +183,33 @@
         app:layout_constraintVertical_bias="0.064" />
 
     <TextView
-        android:id="@+id/textView11"
+        android:id="@+id/textavatar2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif-smallcaps"
-        android:text="Pene Sparalaser"
+        android:text="Avatar2"
         app:layout_constraintBottom_toBottomOf="@+id/imageView3"
-        app:layout_constraintEnd_toEndOf="@+id/imageView8"
+        app:layout_constraintEnd_toEndOf="@+id/avatar2"
         app:layout_constraintHorizontal_bias="0.685"
-        app:layout_constraintStart_toStartOf="@+id/imageView8"
+        app:layout_constraintStart_toStartOf="@+id/avatar2"
         app:layout_constraintTop_toTopOf="@+id/imageView3"
         app:layout_constraintVertical_bias="0.064" />
 
     <TextView
-        android:id="@+id/textView12"
+        android:id="@+id/textavatar3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif-smallcaps"
-        android:text="Pene Dilatta"
-        app:layout_constraintBottom_toTopOf="@+id/imageView10"
-        app:layout_constraintEnd_toEndOf="@+id/imageView10"
+        android:text="Avatar3"
+        app:layout_constraintBottom_toTopOf="@+id/avatar3"
+        app:layout_constraintEnd_toEndOf="@+id/avatar3"
         app:layout_constraintHorizontal_bias="0.488"
-        app:layout_constraintStart_toStartOf="@+id/imageView10"
+        app:layout_constraintStart_toStartOf="@+id/avatar3"
         app:layout_constraintTop_toTopOf="@+id/imageView4"
         app:layout_constraintVertical_bias="1.0" />
 
     <ImageView
-        android:id="@+id/imageView12"
+        android:id="@+id/avatar4"
         android:layout_width="111dp"
         android:layout_height="133dp"
         app:layout_constraintBottom_toBottomOf="@+id/imageView5"
@@ -208,15 +218,15 @@
         app:layout_constraintStart_toStartOf="@+id/imageView5"
         app:layout_constraintTop_toTopOf="@+id/imageView5"
         app:layout_constraintVertical_bias="0.275"
-        app:srcCompat="@drawable/batman" />
+         />
 
     <TextView
-        android:id="@+id/textView14"
+        android:id="@+id/textavatar4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif-smallcaps"
-        android:text="Segaiolo Notturno"
-        app:layout_constraintBottom_toTopOf="@+id/imageView12"
+        android:text="Avatar4"
+        app:layout_constraintBottom_toTopOf="@+id/avatar4"
         app:layout_constraintEnd_toEndOf="@+id/imageView5"
         app:layout_constraintHorizontal_bias="0.464"
         app:layout_constraintStart_toStartOf="@+id/imageView5" />
@@ -225,11 +235,11 @@
         android:id="@+id/imageView13"
         android:layout_width="26dp"
         android:layout_height="26dp"
-        app:layout_constraintBottom_toBottomOf="@+id/button8"
-        app:layout_constraintEnd_toEndOf="@+id/button8"
+        app:layout_constraintBottom_toBottomOf="@+id/buttonavatar3"
+        app:layout_constraintEnd_toEndOf="@+id/buttonavatar3"
         app:layout_constraintHorizontal_bias="0.8"
-        app:layout_constraintStart_toStartOf="@+id/button8"
-        app:layout_constraintTop_toTopOf="@+id/button8"
+        app:layout_constraintStart_toStartOf="@+id/buttonavatar3"
+        app:layout_constraintTop_toTopOf="@+id/buttonavatar3"
         app:layout_constraintVertical_bias="0.49"
         app:srcCompat="@drawable/coin" />
 
@@ -237,11 +247,11 @@
         android:id="@+id/imageView14"
         android:layout_width="26dp"
         android:layout_height="26dp"
-        app:layout_constraintBottom_toBottomOf="@+id/button9"
-        app:layout_constraintEnd_toEndOf="@+id/button9"
+        app:layout_constraintBottom_toBottomOf="@+id/buttonavatar4"
+        app:layout_constraintEnd_toEndOf="@+id/buttonavatar4"
         app:layout_constraintHorizontal_bias="0.8"
-        app:layout_constraintStart_toStartOf="@+id/button9"
-        app:layout_constraintTop_toTopOf="@+id/button9"
+        app:layout_constraintStart_toStartOf="@+id/buttonavatar4"
+        app:layout_constraintTop_toTopOf="@+id/buttonavatar4"
         app:layout_constraintVertical_bias="0.49"
         app:srcCompat="@drawable/coin" />
 
@@ -277,17 +287,17 @@
         android:layout_height="35dp"
         app:layout_constraintBottom_toBottomOf="@+id/imageView15"
         app:layout_constraintEnd_toEndOf="@+id/imageView15"
-        app:layout_constraintStart_toEndOf="@+id/textView16"
+        app:layout_constraintStart_toEndOf="@+id/moneteBambino"
         app:layout_constraintTop_toTopOf="@+id/imageView15"
         app:srcCompat="@drawable/coin" />
 
     <TextView
-        android:id="@+id/textView16"
+        android:id="@+id/moneteBambino"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
         android:fontFamily="sans-serif-smallcaps"
-        android:text="BOH?"
+        android:text="00"
         app:layout_constraintBottom_toBottomOf="@+id/imageView15"
         app:layout_constraintStart_toEndOf="@+id/textView15"
         app:layout_constraintTop_toTopOf="@+id/imageView15"
