@@ -43,8 +43,8 @@
 
     <TextView
         android:id="@+id/textView"
-        android:layout_width="162dp"
-        android:layout_height="113dp"
+        android:layout_width="160dp"
+        android:layout_height="77dp"
         android:layout_marginTop="200dp"
         android:text="Effettua l'accesso"
         android:textAlignment="center"

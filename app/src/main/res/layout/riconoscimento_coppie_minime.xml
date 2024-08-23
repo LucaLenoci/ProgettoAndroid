@@ -7,6 +7,17 @@
     android:background="?attr/colorPrimaryContainer"
     tools:context=".RiconoscimentoCoppieMinimeActivity">
 
+    <!-- KonfettiView for confetti effect -->
+    <ImageView
+        android:id="@+id/imageView6"
+        android:layout_width="match_parent"
+        android:layout_height="657dp"
+        app:layout_constraintBottom_toBottomOf="@+id/textView10"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/round_rect" />
+
     <nl.dionsegijn.konfetti.xml.KonfettiView
         android:id="@+id/konfettiView"
         android:layout_width="match_parent"
@@ -19,6 +30,8 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="horizontal"
+        android:padding="16dp"
+        android:background="@drawable/rounded_background"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -28,50 +41,105 @@
             android:id="@+id/image1"
             android:layout_width="150dp"
             android:layout_height="150dp"
-            android:layout_margin="8dp" />
+            android:layout_margin="8dp"
+            android:background="?attr/colorSurface"
+            android:elevation="4dp"
+            android:padding="8dp"
+            android:scaleType="centerCrop"
+            android:clipToOutline="true"
+            android:outlineProvider="background" />
 
         <ImageView
             android:id="@+id/image2"
             android:layout_width="150dp"
             android:layout_height="150dp"
-            android:layout_margin="8dp" />
+            android:layout_margin="8dp"
+            android:background="?attr/colorSurface"
+            android:elevation="4dp"
+            android:padding="8dp"
+            android:scaleType="centerCrop"
+            android:clipToOutline="true"
+            android:outlineProvider="background" />
     </LinearLayout>
 
     <!-- Button to listen to the word -->
-    <Button
+    <ImageButton
         android:id="@+id/speak_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Ascolta Parola"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/circular_button_background"
+        android:backgroundTint="?attr/colorPrimary"
+        android:contentDescription="Ascolta Parola"
+        android:padding="12dp"
+        android:src="@drawable/speaker"
+        android:textColor="?attr/colorOnPrimary"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/linearLayout"
-        app:layout_constraintVertical_bias="0.1" />
+        app:layout_constraintTop_toBottomOf="@id/linearLayout" />
 
     <!-- LinearLayout for the two buttons at the bottom -->
+    <TextView
+        android:id="@+id/textView10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:fontFamily="sans-serif-smallcaps"
+        android:text="Ascolta"
+        android:textSize="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/speak_button" />
+
     <LinearLayout
+        android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="horizontal"
+        android:padding="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <Button
+        <ImageButton
             android:id="@+id/button1"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="60dp"
+            android:layout_marginEnd="8dp"
             android:layout_weight="1"
-            android:text="1" />
+            android:background="@drawable/rounded_button"
+            android:contentDescription="Freccia Sinistra"
+            android:padding="12dp"
+            android:src="@drawable/left"
+            app:tint="?attr/colorOnPrimary" /> <!-- Freccia verso sinistra -->
 
-        <Button
+        <ImageButton
             android:id="@+id/button2"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="60dp"
+            android:layout_marginStart="8dp"
             android:layout_weight="1"
-            android:text="2" />
+            android:background="@drawable/rounded_button"
+            android:contentDescription="Freccia Destra"
+            android:padding="12dp"
+            android:src="@drawable/right"
+            app:tint="?attr/colorOnPrimary" /> <!-- Freccia verso destra -->
+
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/textView11"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:fontFamily="@font/adlam_display"
+        android:text="Scegli l'Immagine Corretta dopo aver Ascoltato la Parola"
+        android:textAlignment="center"
+        android:textSize="30sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/konfettiView" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
