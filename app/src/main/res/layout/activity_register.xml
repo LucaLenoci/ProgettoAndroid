@@ -8,12 +8,12 @@
     tools:context=".RegisterActivity">
 
     <TextView
-        android:id="@+id/textView8"
+        android:id="@+id/textViewRegisterLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="50dp"
         android:maxWidth="300dp"
-        android:text="Registrati per seguire i progressi di tuo/a figlio/a"
+        android:text="Registrati"
         android:textSize="20sp"
         app:layout_constraintBottom_toTopOf="@+id/editTextNome"
         app:layout_constraintEnd_toEndOf="parent"
