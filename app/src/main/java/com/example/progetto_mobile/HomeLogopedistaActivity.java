@@ -1,6 +1,8 @@
 package com.example.progetto_mobile;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Button;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,6 +21,13 @@ public class HomeLogopedistaActivity extends AppCompatActivity {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
+        });
+
+        Button btnRegistraGenitore = findViewById(R.id.buttonRegistraGenitore);
+        btnRegistraGenitore.setOnClickListener(v -> {
+            Intent intent = new Intent(HomeLogopedistaActivity.this, RegisterActivity.class);
+            intent.putExtra("from", "registraGenitore");
+            startActivity(intent);
         });
     }
 }

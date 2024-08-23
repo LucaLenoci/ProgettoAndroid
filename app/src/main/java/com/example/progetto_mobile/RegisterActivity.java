@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -32,7 +33,9 @@ import java.util.Map;
 
 public class RegisterActivity extends AppCompatActivity {
 
+    private int tipologia;
     private static final String TAG = "FirestoreExample";
+    private TextView tvLabel;
     private EditText etEmail, etPassword, etNome, etCognome, etEta;
     private FirebaseAuth auth;
     private FirebaseUser fbUser;
@@ -50,6 +53,7 @@ public class RegisterActivity extends AppCompatActivity {
             return insets;
         });
 
+        tvLabel = findViewById(R.id.textViewRegisterLabel);
         etNome = findViewById(R.id.editTextNome);
         etCognome = findViewById(R.id.editTextCognome);
         etEta = findViewById(R.id.editTextEta);
@@ -60,6 +64,19 @@ public class RegisterActivity extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         usersRef = db.collection("users");
+
+        Intent intent = getIntent();
+        String from = intent.getStringExtra("from");
+        if (from != null && from.equals("registraLogopedista")){
+            tipologia = 1;
+            tvLabel.setText("Registrati come un nuovo logopedista");
+        }
+        else if (from != null && from.equals("registraGenitore")){
+            tipologia = 2;
+            tvLabel.setText("Registra un genitore");
+        }
+
+        Log.d("RegisterIntent", "Tipologia: " + from + tipologia);
 
         btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -124,7 +141,7 @@ public class RegisterActivity extends AppCompatActivity {
                             user.put("cognome", cognome);
                             user.put("eta", Integer.parseInt(eta));
                             user.put("email", email);
-                            user.put("tipologia", 2);
+                            user.put("tipologia", tipologia);
 //                            User user = new User(cognome, Integer.parseInt(eta), nome, 1, email);
 
                             // Aggiungi l'user a Firestore

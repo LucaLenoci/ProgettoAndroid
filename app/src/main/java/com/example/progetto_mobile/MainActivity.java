@@ -32,7 +32,9 @@ public class MainActivity extends AppCompatActivity {
         View registratiButton = findViewById(R.id.buttonRegistrati);
         registratiButton.setOnClickListener(v -> {
             // Start the registration activity
-            startActivity(new Intent(MainActivity.this, RegisterActivity.class));
+            Intent intent = new Intent(MainActivity.this, RegisterActivity.class);
+            intent.putExtra("from", "registraLogopedista");
+            startActivity(intent);
         });
     }
 }
