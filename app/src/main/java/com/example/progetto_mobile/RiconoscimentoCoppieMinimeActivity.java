@@ -7,6 +7,7 @@ import android.speech.tts.Voice;
 import android.util.Log;
 import android.util.Size;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -61,7 +62,7 @@ public class RiconoscimentoCoppieMinimeActivity extends AppCompatActivity implem
 
         fetchExerciseData();
 
-        Button speakButton = findViewById(R.id.speak_button);
+        ImageButton speakButton = findViewById(R.id.speak_button);
         speakButton.setOnClickListener(v -> {
             String textToSpeak = currentExercise.getRisposta_corretta();
 
@@ -83,8 +84,8 @@ public class RiconoscimentoCoppieMinimeActivity extends AppCompatActivity implem
         });
         tts = new TextToSpeech(this, this);
 
-        Button button1 = findViewById(R.id.button1);
-        Button button2 = findViewById(R.id.button2);
+        ImageButton button1 = findViewById(R.id.button1);
+        ImageButton button2 = findViewById(R.id.button2);
 
         button1.setOnClickListener(v -> checkAnswer(1));
         button2.setOnClickListener(v -> checkAnswer(2));
