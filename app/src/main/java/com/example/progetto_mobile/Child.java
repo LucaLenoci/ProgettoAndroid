@@ -10,9 +10,7 @@ public class Child implements Serializable {
     private List<EsercizioTipo2> eserciziTipo2;
     private List<EsercizioTipo3> eserciziTipo3;
 
-    public Child() {
-        // Default constructor required for Firestore
-    }
+    public Child() {}
 
     public Child(String nome, int progresso, List<EsercizioTipo1> eserciziTipo1,
                  List<EsercizioTipo2> eserciziTipo2, List<EsercizioTipo3> eserciziTipo3) {

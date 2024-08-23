@@ -24,23 +24,22 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 public class RegisterActivity extends AppCompatActivity {
 
+    private String from;
     private int tipologia;
     private static final String TAG = "FirestoreExample";
-    private TextView tvLabel;
     private EditText etEmail, etPassword, etNome, etCognome, etEta;
     private FirebaseAuth auth;
     private FirebaseUser fbUser;
     private FirebaseFirestore db;
-    private CollectionReference usersRef;
+    private CollectionReference collectionRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +52,7 @@ public class RegisterActivity extends AppCompatActivity {
             return insets;
         });
 
-        tvLabel = findViewById(R.id.textViewRegisterLabel);
+        TextView tvLabel = findViewById(R.id.textViewRegisterLabel);
         etNome = findViewById(R.id.editTextNome);
         etCognome = findViewById(R.id.editTextCognome);
         etEta = findViewById(R.id.editTextEta);
@@ -63,20 +62,22 @@ public class RegisterActivity extends AppCompatActivity {
 
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
-        usersRef = db.collection("users");
 
         Intent intent = getIntent();
-        String from = intent.getStringExtra("from");
+        from = intent.getStringExtra("from");
         if (from != null && from.equals("registraLogopedista")){
-            tipologia = 1;
             tvLabel.setText("Registrati come un nuovo logopedista");
+            collectionRef = db.collection("logopedisti");
+            tipologia = 2;
         }
         else if (from != null && from.equals("registraGenitore")){
-            tipologia = 2;
             tvLabel.setText("Registra un genitore");
+            collectionRef = db.collection("genitori");
+            tipologia = 1;
         }
 
         Log.d("RegisterIntent", "Tipologia: " + from + tipologia);
+        Log.d("RegisterIntent", "Collection: " + collectionRef.getPath());
 
         btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -119,61 +120,42 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void addUserToFirestore(String nome, String cognome, String eta, String email) {
-        // Recupera l'ultimo ID disponibile
-        usersRef.get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        User user = null;
+        if (tipologia == 1)
+            user = new Genitore(nome, cognome, Integer.parseInt(eta), email, tipologia,
+                    Collections.emptyList());
+        else if (tipologia == 2)
+            user = new Logopedista(nome, cognome, Integer.parseInt(eta), email, tipologia,
+                    Collections.emptyList(), Collections.emptyList());
+
+        // Aggiungi l'user a Firestore
+        collectionRef
+                .add(user)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            int newId = 1; // Nel caso non ci siano utenti
-
-                            // Trova l'ultimo ID
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                Log.d(TAG, document.getId() + " => " + document.getData());
-                                int currentId = Integer.parseInt(document.getId());
-                                if (currentId >= newId)
-                                    newId = currentId + 1;
-                            }
-
-                            // Crea un nuovo User
-                            Map<String, Object> user = new HashMap<>();
-                            user.put("nome", nome);
-                            user.put("cognome", cognome);
-                            user.put("eta", Integer.parseInt(eta));
-                            user.put("email", email);
-                            user.put("tipologia", tipologia);
-//                            User user = new User(cognome, Integer.parseInt(eta), nome, 1, email);
-
-                            // Aggiungi l'user a Firestore
-                            usersRef.document(String.valueOf(newId))
-                                    .set(user)
-                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                        @Override
-                                        public void onSuccess(Void unused) {
-//                                            Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
-                                            Toast.makeText(RegisterActivity.this, "User registered successfully", Toast.LENGTH_SHORT).show();
-                                            FirebaseAuth.getInstance().signOut();
-                                            startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
-                                            finish();
-                                        }
-                                    })
-                                    .addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                            Log.w(TAG, "Error adding document", e);
-                                            Toast.makeText(RegisterActivity.this, "Error saving user data", Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
-                        } else {
-                            Toast.makeText(RegisterActivity.this, "Error retrieving users", Toast.LENGTH_SHORT).show();
+                    public void onSuccess(DocumentReference documentReference) {
+                        Log.d(TAG, "DocumentSnapshot/Reference added with ID: " + documentReference.getId());
+                        Log.d(TAG, "DocumentReference path: " + documentReference.getPath());
+                        Toast.makeText(RegisterActivity.this, "User registered successfully", Toast.LENGTH_SHORT).show();
+                        addToGeneralUsersCollection(email, documentReference.getId());
+                        if (from.equals("registraLogopedista")) {
+                            FirebaseAuth.getInstance().signOut();
+                            startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+                            finish();
                         }
                     }
-        });
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error adding document", e);
+                        Toast.makeText(RegisterActivity.this, "Error saving user data", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     // TODO: togliere la funzione duplicata 'signIn'
     private void signIn(String email, String password) {
-        // [START sign_in_with_email]
         auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -187,6 +169,26 @@ public class RegisterActivity extends AppCompatActivity {
                         }
                     }
                 });
-        // [END sign_in_with_email]
+    }
+
+    private void addToGeneralUsersCollection(String email, String documentId) {
+        Map<String, Object> user = new HashMap<>();
+        user.put("email", email);
+        user.put("infoRef", db.document(collectionRef.getPath().concat("/").concat(documentId)));
+        db.collection("users")
+                .add(user)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        Log.d(TAG, "DocumentReference added with ID: " + documentReference.getId());
+                        Log.d(TAG, "DocumentReference path: " + documentReference.getPath());
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error adding document", e);
+                    }
+                });
     }
 }

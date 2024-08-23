@@ -1,64 +1,83 @@
 package com.example.progetto_mobile;
 
+import android.annotation.SuppressLint;
+
+import androidx.annotation.NonNull;
+
 import java.io.Serializable;
 
-public class User  implements Serializable {
-    private String Cognome;
-    private int Eta;
-    private String Nome;
-    private int Tipologia;
-    private String Email;
+public class User implements Serializable {
+
+    private String nome;
+    private String cognome;
+    private int eta;
+    private String email;
+    private int tipologia;
 
     public User() {
         // Default constructor required for Firestore
     }
 
-    public User(String Cognome, int Eta, String Nome, int Tipologia, String Email) {
-        this.Cognome = Cognome;
-        this.Eta = Eta;
-        this.Nome = Nome;
-        this.Tipologia = Tipologia;
-        this.Email = Email;
+    public User(String nome, String cognome, int eta, String email, int tipologia) {
+        this.nome = nome;
+        this.cognome = cognome;
+        this.eta = eta;
+        this.email = email;
+        this.tipologia = tipologia;
     }
 
     // Getters and Setters
     public String getCognome() {
-        return Cognome;
+        return cognome;
     }
 
     public void setCognome(String cognome) {
-        this.Cognome = cognome;
+        this.cognome = cognome;
     }
 
     public int getEta() {
-        return Eta;
+        return eta;
     }
 
     public void setEta(int eta) {
-        this.Eta = eta;
+        this.eta = eta;
     }
 
     public String getNome() {
-        return Nome;
+        return nome;
     }
 
     public void setNome(String nome) {
-        this.Nome = nome;
+        this.nome = nome;
     }
 
     public int getTipologia() {
-        return Tipologia;
+        return tipologia;
     }
 
     public void setTipologia(int tipologia) {
-        this.Tipologia = tipologia;
+        this.tipologia = tipologia;
     }
 
     public String getEmail() {
-        return Email;
+        return email;
     }
 
     public void setEmail(String email) {
-        this.Email = email;
+        this.email = email;
+    }
+
+    @NonNull
+    @Override
+    @SuppressLint("DefaultLocale")
+    public String toString() {
+        return String.format(
+                "User {" +
+                        "\tNome: <%s>\n" +
+                        "\tCognome: <%s>\n" +
+                        "\tEta': <%d>\n" +
+                        "\tEmail: <%s>\n" +
+                        "\tTipologia: <%d>\n}",
+                getNome(), getCognome(), getEta(), getEmail(), getTipologia());
     }
 }
