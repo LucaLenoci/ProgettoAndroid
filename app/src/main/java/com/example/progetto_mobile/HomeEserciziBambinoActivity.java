@@ -13,14 +13,17 @@ import android.widget.RelativeLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class HomeEserciziBambinoActivity extends AppCompatActivity {
-
+    private static final String TAG = "HomeEserciziBambinoActivity";
     private ImageView movableObject;
     private float centerX, centerY;
     private List<Button> buttons;  // List to hold all the buttons
@@ -78,6 +81,9 @@ public class HomeEserciziBambinoActivity extends AppCompatActivity {
 
         // Check the status of each exercise and disable/green the button if completed
         checkExerciseStatus();
+
+        // Load the current avatar for the child and set it as the image for the movable object
+        loadCurrentAvatar(bambinoId);
     }
 
     private void moveObject(float x, float y) {
@@ -185,14 +191,8 @@ public class HomeEserciziBambinoActivity extends AppCompatActivity {
 
     private void navigateToView(int buttonNumber, String selectedDate, String bambinoId) {
         Intent intent;
-        buttons = new ArrayList<>();
-        buttons.add(findViewById(R.id.button1));  // Add your buttons by their IDs
-        buttons.add(findViewById(R.id.button2));
-        buttons.add(findViewById(R.id.button3));
-        buttons.add(findViewById(R.id.button4));
 
-
-        if(buttons.get(buttonNumber-1).isEnabled()){
+        if (buttons.get(buttonNumber - 1).isEnabled()) {
             Log.d("ButtonState", "Button " + buttonNumber + " is enabled. Proceeding with action.");
             switch (buttonNumber) {
                 case 1:
@@ -221,9 +221,46 @@ public class HomeEserciziBambinoActivity extends AppCompatActivity {
             finish();
         }
 
-
-
         // Use a handler to reset the flag after a small delay
         new Handler(Looper.getMainLooper()).postDelayed(() -> isNavigating = false, 500);
     }
+
+    private void loadCurrentAvatar(String bambinoId) {
+        db.collection("bambini")
+                .document(bambinoId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        String avatarFilename = documentSnapshot.getString("avatarCorrente");
+                        if (avatarFilename != null) {
+                            // Construct the full path to the avatar inside the "avatars" folder
+                            db.collection("avatars").document(avatarFilename).get()
+                                    .addOnCompleteListener(task -> {
+                                        if (task.isSuccessful()) {
+                                            DocumentSnapshot document = task.getResult();
+                                            if (document.exists()) {
+                                                String imagePath = document.getString("imageUrl");
+
+                                                if (imagePath != null && !imagePath.isEmpty()) {
+                                                    StorageReference imageRef = FirebaseStorage.getInstance().getReferenceFromUrl(imagePath);
+                                                    imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                                                        Log.d(TAG, "Image URL retrieved successfully for " + avatarFilename);
+                                                        Glide.with(HomeEserciziBambinoActivity.this).load(uri).into(movableObject);
+                                                    }).addOnFailureListener(exception -> {
+                                                        Log.e(TAG, "Failed to get download URL for " + avatarFilename, exception);
+                                                    });
+                                                } else {
+                                                    Log.e(TAG, "Image path is null or empty for " + avatarFilename);
+                                                }
+                                            }
+                                        }
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Log.e("LoadAvatar", "Failed to load avatar image", e);
+                                    });
+                        }
+                    }
+                });
+    }
+
 }

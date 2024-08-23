@@ -7,7 +7,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import com.bumptech.glide.Glide;
-
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
@@ -18,17 +17,18 @@ public class AvatarActivity extends AppCompatActivity {
     private static final String TAG = "AvatarActivity";
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-    private ImageView avatar1, avatar2, avatar3, avatar4;
+    private ImageView avatar1, avatar2, avatar3, avatar4, coinsimageavatar1, coinsimageavatar2, coinsimageavatar3, coinsimageavatar4;
     private TextView textAvatar1, textAvatar2, textAvatar3, textAvatar4;
     private Button buttonAvatar1, buttonAvatar2, buttonAvatar3, buttonAvatar4;
-    String bambinoId;
+    private String bambinoId;
+    private String avatarCorrente;
+    private int bambinoCoins = 0;  // Store the bambino's current coin balance
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.compra_seleziona_avatar);
         bambinoId = getIntent().getStringExtra("bambinoId");
-
 
         // Initialize views
         avatar1 = findViewById(R.id.avatar1);
@@ -46,17 +46,69 @@ public class AvatarActivity extends AppCompatActivity {
         buttonAvatar3 = findViewById(R.id.buttonavatar3);
         buttonAvatar4 = findViewById(R.id.buttonavatar4);
 
-        // Load data from Firebase
-        loadAvatarData("1", avatar1, textAvatar1, buttonAvatar1);
-        loadAvatarData("2", avatar2, textAvatar2, buttonAvatar2);
-        loadAvatarData("3", avatar3, textAvatar3, buttonAvatar3);
-        loadAvatarData("4", avatar4, textAvatar4, buttonAvatar4);
-        fetchBambinoCoins(bambinoId);
+        coinsimageavatar1 = findViewById(R.id.coinavatar1);
+        coinsimageavatar2 = findViewById(R.id.coinavatar2);
+        coinsimageavatar3 = findViewById(R.id.coinavatar3);
+        coinsimageavatar4 = findViewById(R.id.coinavatar4);
+
+        // Fetch and display bambino's current coin balance, then load avatar data
+        fetchBambinoCoinsAndLoadAvatars();
     }
 
-    private void loadAvatarData(String avatarKey, ImageView imageView, TextView textView, Button button) {
+    private void fetchBambinoCoinsAndLoadAvatars() {
+        db.collection("bambini").document(bambinoId).get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            Long coins = document.getLong("coins");
+                            TextView coinsTextView = findViewById(R.id.moneteBambino);
+                            if (coins != null) {
+                                bambinoCoins = coins.intValue();
+                                coinsTextView.setText(String.valueOf(bambinoCoins));
+                                coinsTextView.setTextSize(24.0F);
+                            } else {
+                                Log.e(TAG, "Coins field is null for " + bambinoId);
+                                coinsTextView.setText("0");
+                            }
+                        } else {
+                            Log.d(TAG, "No such document for " + bambinoId);
+                            TextView coinsTextView = findViewById(R.id.moneteBambino);
+                            coinsTextView.setText("0");
+                        }
+                        // After fetching coins, load the avatars
+                        fetchAvatarCorrenteAndLoadData();
+                    } else {
+                        Log.e(TAG, "Firestore get failed for " + bambinoId, task.getException());
+                        TextView coinsTextView = findViewById(R.id.moneteBambino);
+                        coinsTextView.setText("0");
+                    }
+                });
+    }
 
+    private void fetchAvatarCorrenteAndLoadData() {
+        db.collection("bambini").document(bambinoId).get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            avatarCorrente = document.getString("avatarCorrente");
 
+                            // Load avatar data and check if it's the selected one
+                            loadAvatarData("1", avatar1, textAvatar1, buttonAvatar1, coinsimageavatar1);
+                            loadAvatarData("2", avatar2, textAvatar2, buttonAvatar2, coinsimageavatar2);
+                            loadAvatarData("3", avatar3, textAvatar3, buttonAvatar3, coinsimageavatar3);
+                            loadAvatarData("4", avatar4, textAvatar4, buttonAvatar4, coinsimageavatar4);
+                        } else {
+                            Log.e(TAG, "No such document for " + bambinoId);
+                        }
+                    } else {
+                        Log.e(TAG, "Firestore get failed for " + bambinoId, task.getException());
+                    }
+                });
+    }
+
+    private void loadAvatarData(String avatarKey, ImageView imageView, TextView textView, Button button, ImageView coinimageView) {
         db.collection("avatars").document(avatarKey).get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
@@ -91,11 +143,24 @@ public class AvatarActivity extends AppCompatActivity {
                                 Log.e(TAG, "Name is null for " + avatarKey);
                             }
 
-                            if (coinsCost != null) {
-                                button.setText(String.valueOf(coinsCost));
+                            if (avatarCorrente != null && avatarCorrente.equals(avatarKey)) {
+                                button.setText("Selected");
+                                button.setClickable(false);  // Disable button if the avatar is already selected
+                                coinimageView.setVisibility(TextView.INVISIBLE);
                             } else {
-                                button.setText("0");
-                                Log.e(TAG, "Coins cost is null for " + avatarKey);
+                                coinimageView.setVisibility(TextView.VISIBLE);
+                                if (coinsCost != null) {
+                                    button.setText(String.valueOf(coinsCost));
+                                    button.setClickable(coinsCost <= bambinoCoins);  // Enable only if coinsCost <= bambinoCoins
+                                    if(button.isClickable()){
+                                        button.setOnClickListener(v -> selectAvatar(avatarKey));  // Set click listener to select avatar
+
+                                    }
+                                } else {
+                                    button.setText("0");
+                                    button.setEnabled(false);
+                                    Log.e(TAG, "Coins cost is null for " + avatarKey);
+                                }
                             }
                         } else {
                             Log.d(TAG, "No such document for " + avatarKey);
@@ -106,39 +171,14 @@ public class AvatarActivity extends AppCompatActivity {
                 });
     }
 
-    private void fetchBambinoCoins(String bambinoId) {
-        // Reference to the Firestore collection and document
-        db.collection("bambini").document(bambinoId).get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot document = task.getResult();
-                        if (document.exists()) {
-                            Long coins = document.getLong("coins");
-                            if (coins != null) {
-                                // Update TextView with the number of coins
-                                TextView coinsTextView = findViewById(R.id.moneteBambino);
-                                coinsTextView.setText(String.valueOf(coins));
-                                coinsTextView.setTextSize(24.0F);
-                            } else {
-                                // Handle the case where coins field is null
-                                Log.e(TAG, "Coins field is null for " + bambinoId);
-                                TextView coinsTextView = findViewById(R.id.moneteBambino);
-                                coinsTextView.setText("0");
-                            }
-                        } else {
-                            // Handle the case where the document does not exist
-                            Log.d(TAG, "No such document for " + bambinoId);
-                            TextView coinsTextView = findViewById(R.id.moneteBambino);
-                            coinsTextView.setText("0");
-                        }
-                    } else {
-                        // Handle the case where the task fails
-                        Log.e(TAG, "Firestore get failed for " + bambinoId, task.getException());
-                        TextView coinsTextView = findViewById(R.id.moneteBambino);
-                        coinsTextView.setText("0");
-                    }
-                });
+    private void selectAvatar(String avatarKey) {
+        db.collection("bambini").document(bambinoId)
+                .update("avatarCorrente", avatarKey)
+                .addOnSuccessListener(aVoid -> {
+                    Log.d(TAG, "Avatar successfully updated to " + avatarKey);
+                    // Refresh the UI to reflect the change
+                    fetchAvatarCorrenteAndLoadData();
+                })
+                .addOnFailureListener(e -> Log.e(TAG, "Error updating avatar", e));
     }
-
-
 }

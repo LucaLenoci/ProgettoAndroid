@@ -5,15 +5,20 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.CalendarView;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -22,15 +27,19 @@ import java.util.Map;
 
 public class HomeBambinoActivity extends AppCompatActivity {
 
+    private static final String TAG = "HomeBambinoActivity";
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
     private String selectedDate;
     private TextView tvNome, tvCoins, tvEta;
     private ProgressBar progressBar;
+    private ImageView ProfilePic;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_bambino);
-
+        ProfilePic = findViewById(R.id.ProfilePic);
+        loadCurrentAvatar("1");
         tvNome = findViewById(R.id.Nome);
         tvCoins = findViewById(R.id.Coins);
         progressBar = findViewById(R.id.progressBar);
@@ -136,6 +145,44 @@ public class HomeBambinoActivity extends AppCompatActivity {
                     // Handle the error
                     Log.e("FirestoreError", "Error fetching document", e);
                     Toast.makeText(HomeBambinoActivity.this, "Errore di lettura documento", Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    private void loadCurrentAvatar(String bambinoId) {
+        db.collection("bambini")
+                .document(bambinoId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        String avatarFilename = documentSnapshot.getString("avatarCorrente");
+                        if (avatarFilename != null) {
+                            // Construct the full path to the avatar inside the "avatars" folder
+                            db.collection("avatars").document(avatarFilename).get()
+                                    .addOnCompleteListener(task -> {
+                                        if (task.isSuccessful()) {
+                                            DocumentSnapshot document = task.getResult();
+                                            if (document.exists()) {
+                                                String imagePath = document.getString("imageUrl");
+
+                                                if (imagePath != null && !imagePath.isEmpty()) {
+                                                    StorageReference imageRef = FirebaseStorage.getInstance().getReferenceFromUrl(imagePath);
+                                                    imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                                                        Log.d(TAG, "Image URL retrieved successfully for " + avatarFilename);
+                                                        Glide.with(HomeBambinoActivity.this).load(uri).into(ProfilePic);
+                                                    }).addOnFailureListener(exception -> {
+                                                        Log.e(TAG, "Failed to get download URL for " + avatarFilename, exception);
+                                                    });
+                                                } else {
+                                                    Log.e(TAG, "Image path is null or empty for " + avatarFilename);
+                                                }
+                                            }
+                                        }
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Log.e("LoadAvatar", "Failed to load avatar image", e);
+                                    });
+                        }
+                    }
                 });
     }
 

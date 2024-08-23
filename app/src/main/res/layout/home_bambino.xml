@@ -23,7 +23,6 @@
         android:layout_width="132dp"
         android:layout_height="117dp"
         android:layout_marginTop="32dp"
-        android:src="@drawable/boy"
         app:layout_constraintStart_toEndOf="@+id/imageButton"
         app:layout_constraintTop_toTopOf="parent" />
 

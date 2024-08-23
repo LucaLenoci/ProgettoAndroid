@@ -146,7 +146,7 @@
         app:layout_constraintVertical_bias="0.958" />
 
     <ImageView
-        android:id="@+id/imageView19"
+        android:id="@+id/coinavatar1"
         android:layout_width="26dp"
         android:layout_height="26dp"
         app:layout_constraintBottom_toBottomOf="@+id/buttonavatar1"
@@ -158,7 +158,7 @@
         app:srcCompat="@drawable/coin" />
 
     <ImageView
-        android:id="@+id/imageView9"
+        android:id="@+id/coinavatar2"
         android:layout_width="26dp"
         android:layout_height="26dp"
         app:layout_constraintBottom_toBottomOf="@+id/buttonavatar2"
@@ -232,7 +232,7 @@
         app:layout_constraintStart_toStartOf="@+id/imageView5" />
 
     <ImageView
-        android:id="@+id/imageView13"
+        android:id="@+id/coinavatar3"
         android:layout_width="26dp"
         android:layout_height="26dp"
         app:layout_constraintBottom_toBottomOf="@+id/buttonavatar3"
@@ -244,7 +244,7 @@
         app:srcCompat="@drawable/coin" />
 
     <ImageView
-        android:id="@+id/imageView14"
+        android:id="@+id/coinavatar4"
         android:layout_width="26dp"
         android:layout_height="26dp"
         app:layout_constraintBottom_toBottomOf="@+id/buttonavatar4"
