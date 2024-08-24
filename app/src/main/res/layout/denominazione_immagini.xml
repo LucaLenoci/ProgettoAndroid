@@ -133,7 +133,7 @@
         android:backgroundTint="?attr/colorPrimary"
         android:text="3"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.687"
+        app:layout_constraintHorizontal_bias="0.573"
         app:layout_constraintStart_toEndOf="@+id/suggerimento2"
         app:layout_constraintTop_toTopOf="@+id/suggerimento2" />
 

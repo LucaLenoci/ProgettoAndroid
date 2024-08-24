@@ -149,7 +149,7 @@ public class DenominazioneImmaginiActivity extends AppCompatActivity implements 
     }
 
     private void loadExerciseData(EsercizioTipo1 exercise) {
-        String imageFileName = exercise.getRisposta_corretta() + ".jpg";
+        String imageFileName = exercise.getRisposta_corretta() + ".png";
         StorageReference imageRef = imagesRef.child(imageFileName);
 
         imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
