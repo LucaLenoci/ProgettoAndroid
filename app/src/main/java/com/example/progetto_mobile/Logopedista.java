@@ -44,7 +44,7 @@ public class Logopedista extends User implements Serializable {
     @SuppressLint("DefaultLocale")
     public String toString() {
         return String.format(
-                "Logopedista {" +
+                "Logopedista {\n" +
                         "\tNome: <%s>\n" +
                         "\tCognome: <%s>\n" +
                         "\tEta': <%d>\n" +

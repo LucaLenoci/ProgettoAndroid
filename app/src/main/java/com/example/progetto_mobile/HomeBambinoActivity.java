@@ -16,7 +16,6 @@ import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -30,7 +29,7 @@ public class HomeBambinoActivity extends AppCompatActivity {
     private static final String TAG = "HomeBambinoActivity";
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     private String selectedDate;
-    private TextView tvNome, tvCoins, tvEta;
+    private TextView tvNome, tvCoins;
     private ProgressBar progressBar;
     private ImageView ProfilePic;
 
@@ -59,14 +58,16 @@ public class HomeBambinoActivity extends AppCompatActivity {
         getChildFromFirestore();
 
         Intent intent = getIntent();
-        User user = (User) intent.getSerializableExtra("user");
-        if (user != null) {
-            String nome = "Nome: " + user.getNome();
-            String eta = "Età: " + user.getEta();
-            tvNome.setText(nome);
-            tvEta.setText(eta);
+        String bambinoPath = intent.getStringExtra("bambino");
 
-        }
+//        -- ADATTARE QUESTA LOGICA PER PRENDERE I DATI DA FIRESTORE --
+//        getBambinoFromPath(bambinoPath)
+//                .addOnSuccessListener(bambino -> {
+//                    if (bambino != null) {
+//                        Log.d("HomeBambinoActivity", "User: " + bambino);
+//                        -- SETTA I DATI --
+//                    }
+//                });
 
         // Set up the button click listener
         esercizioButton.setOnClickListener(v -> {

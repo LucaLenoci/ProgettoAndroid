@@ -13,9 +13,14 @@ public class User implements Serializable {
     private int eta;
     private String email;
     private int tipologia;
+//    private String infoRef;
 
     public User() {
         // Default constructor required for Firestore
+    }
+
+    public User(String nome) {
+        this.nome = nome;
     }
 
     public User(String nome, String cognome, int eta, String email, int tipologia) {
@@ -72,7 +77,7 @@ public class User implements Serializable {
     @SuppressLint("DefaultLocale")
     public String toString() {
         return String.format(
-                "User {" +
+                "User {\n" +
                         "\tNome: <%s>\n" +
                         "\tCognome: <%s>\n" +
                         "\tEta': <%d>\n" +

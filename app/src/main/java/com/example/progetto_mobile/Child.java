@@ -1,46 +1,71 @@
 package com.example.progetto_mobile;
 
+import android.annotation.SuppressLint;
+
+import androidx.annotation.NonNull;
+
 import java.io.Serializable;
 import java.util.List;
 
-public class Child implements Serializable {
-    private String nome;
+public class Child extends User implements Serializable {
+    private String avatarCorrente;
     private int progresso;
-    int coins;
+    private int coins;
     private List<EsercizioTipo1> eserciziTipo1;
     private List<EsercizioTipo2> eserciziTipo2;
     private List<EsercizioTipo3> eserciziTipo3;
 
     public Child() {}
 
-    public Child(String nome, int progresso, List<EsercizioTipo1> eserciziTipo1,
-                 List<EsercizioTipo2> eserciziTipo2, List<EsercizioTipo3> eserciziTipo3) {
-        this.nome = nome;
+    public Child(String nome, String cognome, int eta, String email, int tipologia,
+                 String avatarCorrente, int progresso, int coins) {
+        super(nome, cognome, eta, email, tipologia);
+        this.avatarCorrente = avatarCorrente;
         this.progresso = progresso;
+        this.coins = coins;
+    }
+
+    public Child(String nome, String cognome, int eta, String email, int tipologia,
+                 String avatarCorrente, int progresso, int coins, List<EsercizioTipo1> eserciziTipo1,
+                 List<EsercizioTipo2> eserciziTipo2, List<EsercizioTipo3> eserciziTipo3) {
+        super(nome, cognome, eta, email, tipologia);
+        this.avatarCorrente = avatarCorrente;
+        this.progresso = progresso;
+        this.coins = coins;
         this.eserciziTipo1 = eserciziTipo1;
         this.eserciziTipo2 = eserciziTipo2;
         this.eserciziTipo3 = eserciziTipo3;
     }
 
-    public Child(String name, int i) {
-        this.nome = name;
+    public Child(String nome, int i) {
+        super(nome);
         this.coins = i;
+    }
+
+    public String getAvatarCorrente() {
+        return avatarCorrente;
+    }
+
+    public void setAvatarCorrente(String avatarCorrente) {
+        this.avatarCorrente = avatarCorrente;
     }
 
     public int getCoins() {
         return coins;
     }
 
-
+    public void setCoins(int coins) {
+        this.coins = coins;
+    }
 
     // Getters and setters
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
+//    public String getNome() {
+//        return nome;
+//    }
+//
+//    public void setNome(String nome) {
+//        this.nome = nome;
+//    }
 
     public int getProgresso() {
         return progresso;
@@ -77,4 +102,23 @@ public class Child implements Serializable {
     public List<List<?>> getAllEsercizi() {
         return List.of(eserciziTipo1, eserciziTipo2, eserciziTipo3);
     }
+
+    @NonNull
+    @Override
+    @SuppressLint("DefaultLocale")
+    public String toString() {
+        return String.format(
+                "Bambino {\n" +
+                        "\tNome: <%s>\n" +
+                        "\tCognome: <%s>\n" +
+                        "\tEta': <%d>\n" +
+                        "\tEmail: <%s>\n" +
+                        "\tTipologia: <%d>\n" +
+                        "\tAvatar Corrente: <%s>\n" +
+                        "\tProgresso: <%d>\n" +
+                        "\tCoins: <%d>\n}",
+                getNome(), getCognome(), getEta(), getEmail(), getTipologia(),
+                getAvatarCorrente(), getProgresso(), getCoins());
+    }
+
 }

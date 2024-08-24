@@ -21,6 +21,7 @@ import androidx.core.view.WindowInsetsCompat;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -47,28 +48,67 @@ public class HomeGenitoreActivity extends AppCompatActivity {
         linearLayoutFigli = findViewById(R.id.linearLayoutFigli);
 
         Intent intent = getIntent();
-        User user = (User) intent.getSerializableExtra("user");
-        if (user != null) {
-            String text = "Benvenuto/a, " + user.getNome() + " " + user.getCognome();
-            tvBenvenuto.setText(text);
-            getFigliFromFirestore(user.getEmail());
-        }
+        String genitorePath = intent.getStringExtra("genitore");
+
+        getGenitoreFromPath(genitorePath)
+                .addOnSuccessListener(genitore -> {
+                    if (genitore != null) {
+                        Log.d("HomeGenitoreActivity", "User: " + genitore);
+                        String text = "Benvenuto/a, " + genitore.getNome() + " " + genitore.getCognome();
+                        tvBenvenuto.setText(text);
+                        getFigliFromFirestore(genitore.getEmail());
+                    }
+                });
 
         btnGestisciTemi.setOnClickListener(v ->
                 startActivity(new Intent(HomeGenitoreActivity.this, GestisciTemiActivity.class)));
     }
 
+
+    private Task<Genitore> getGenitoreFromPath(String genitorePath) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference docRef = db.document(genitorePath);
+
+        return docRef.get().continueWith(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+                    List<DocumentReference> bambiniRef = (List<DocumentReference>) document.get("bambiniRef");
+                    List<String> bambiniRefStrings = new ArrayList<>();
+                    if (bambiniRef != null) {
+                        for (DocumentReference bambinoRef : bambiniRef) {
+                            bambiniRefStrings.add(bambinoRef.getPath());
+                        }
+                    }
+                    return new Genitore(
+                            document.getString("nome"),
+                            document.getString("cognome"),
+                            document.getLong("eta").intValue(),
+                            document.getString("email"),
+                            document.getLong("tipologia").intValue(),
+                            bambiniRefStrings);
+                } else {
+                    Log.d("HomeGenitoreActivity", "No such document");
+                    return null;
+                }
+            } else {
+                Log.d("HomeGenitoreActivity", "get failed with ", task.getException());
+                return null;
+            }
+        });
+    }
+
     @SuppressWarnings("unchecked")
     private void getFigliFromFirestore(String email) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("users")
+        db.collection("genitori")
                 .whereEqualTo("email", email)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     if (!queryDocumentSnapshots.isEmpty()) {
                         QueryDocumentSnapshot documentSnapshot = (QueryDocumentSnapshot) queryDocumentSnapshots.getDocuments().get(0);
 
-                        List<DocumentReference> figliRefs = (List<DocumentReference>) documentSnapshot.get("figli");
+                        List<DocumentReference> figliRefs = (List<DocumentReference>) documentSnapshot.get("bambiniRef");
 
                         if (figliRefs == null || figliRefs.isEmpty()) {
                             showEmptyChildrenMessage();
@@ -78,7 +118,9 @@ public class HomeGenitoreActivity extends AppCompatActivity {
                                 figlioRef.get().addOnSuccessListener(figlioSnapshot -> {
                                     if (figlioSnapshot.exists()) {
                                         String nome = figlioSnapshot.getString("nome");
+                                        String cognome = figlioSnapshot.getString("cognome");
                                         int progresso = figlioSnapshot.getLong("progresso").intValue();
+                                        int coins = figlioSnapshot.getLong("coins").intValue();
 
                                         List<DocumentReference> eserciziTipo1Refs = (List<DocumentReference>) figlioSnapshot.get("eserciziTipo1");
                                         List<DocumentReference> eserciziTipo2Refs = (List<DocumentReference>) figlioSnapshot.get("eserciziTipo2");
@@ -91,7 +133,18 @@ public class HomeGenitoreActivity extends AppCompatActivity {
                                         Log.d("HomeGenitoreActivity", "Esercizi tipo 3: " + eserciziTipo3Refs.size());
 
                                         getEserciziDetails(eserciziTipo1Refs, eserciziTipo2Refs, eserciziTipo3Refs, (eserciziTipo1, eserciziTipo2, eserciziTipo3) -> {
-                                            Child child = new Child(nome, progresso, eserciziTipo1, eserciziTipo2, eserciziTipo3);
+                                            Child child = new Child(
+                                                    nome,
+                                                    cognome,
+                                                    0,
+                                                    null,
+                                                    0,
+                                                    null,
+                                                    progresso,
+                                                    coins,
+                                                    eserciziTipo1,
+                                                    eserciziTipo2,
+                                                    eserciziTipo3);
                                             addChildDashboard(child);
                                         });
                                     }

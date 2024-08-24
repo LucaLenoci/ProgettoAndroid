@@ -31,7 +31,7 @@ public class Genitore extends User implements Serializable {
     @SuppressLint("DefaultLocale")
     public String toString() {
         return String.format(
-                "Logopedista {" +
+                "Genitore {\n" +
                         "\tNome: <%s>\n" +
                         "\tCognome: <%s>\n" +
                         "\tEta': <%d>\n" +
