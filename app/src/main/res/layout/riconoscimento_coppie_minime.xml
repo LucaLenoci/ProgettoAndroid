@@ -42,7 +42,6 @@
             android:layout_width="150dp"
             android:layout_height="150dp"
             android:layout_margin="8dp"
-            android:background="?attr/colorSurface"
             android:elevation="4dp"
             android:padding="8dp"
             android:scaleType="centerCrop"
@@ -54,10 +53,9 @@
             android:layout_width="150dp"
             android:layout_height="150dp"
             android:layout_margin="8dp"
-            android:background="?attr/colorSurface"
             android:elevation="4dp"
             android:padding="8dp"
-            android:scaleType="centerCrop"
+            android:scaleType="fitCenter"
             android:clipToOutline="true"
             android:outlineProvider="background" />
     </LinearLayout>

@@ -143,9 +143,9 @@ public class RiconoscimentoCoppieMinimeActivity extends AppCompatActivity implem
 
     private void loadExerciseData(EsercizioTipo2 exercise) {
         // Assuming Exercise class has a method to get the image file name
-        String imageFileName = exercise.getRisposta_corretta() + ".jpg";  // Modify according to your Exercise class structure
+        String imageFileName = exercise.getRisposta_corretta() + ".png";  // Modify according to your Exercise class structure
         StorageReference imageRef = imagesRef.child(imageFileName);
-        String imageFileName_2 = exercise.getRisposta_sbagliata() + ".jpg";  // Modify according to your Exercise class structure
+        String imageFileName_2 = exercise.getRisposta_sbagliata() + ".png";  // Modify according to your Exercise class structure
         StorageReference imageRef_2 = imagesRef.child(imageFileName_2);
 
 
