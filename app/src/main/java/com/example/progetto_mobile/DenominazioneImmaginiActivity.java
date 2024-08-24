@@ -9,6 +9,7 @@ import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -102,7 +103,7 @@ public class DenominazioneImmaginiActivity extends AppCompatActivity implements 
 
         tts = new TextToSpeech(this, this);
 
-        Button btnButton = findViewById(R.id.btn_button);
+        ImageButton btnButton = findViewById(R.id.btn_button);
         tvText = findViewById(R.id.tv_text);
 
         btnButton.setOnClickListener(v -> askSpeechInput());
@@ -176,7 +177,7 @@ public class DenominazioneImmaginiActivity extends AppCompatActivity implements 
                     if (successSound != null) {
                         successSound.start();
                         updateCoinsInFirebase();
-                        Button btnButton = findViewById(R.id.btn_button);
+                        ImageButton btnButton = findViewById(R.id.btn_button);
                         btnButton.setEnabled(false);
                     }
                 } else {
