@@ -31,6 +31,9 @@
             android:name=".CorreggiEserciziActivity"
             android:exported="false" />
         <activity
+        android:name=".BambinoClassificaActivity"
+        android:exported="false" />
+        <activity
             android:name=".RegisterActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustPan" />

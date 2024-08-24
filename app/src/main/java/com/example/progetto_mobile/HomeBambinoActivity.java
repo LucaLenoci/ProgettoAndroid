@@ -76,6 +76,12 @@ public class HomeBambinoActivity extends AppCompatActivity {
             intentEsercizi.putExtra("bambinoId", "1");
             startActivity(intentEsercizi);
         });
+
+        ProfilePic.setOnClickListener(v -> {
+            Intent intentAvatar = new Intent(HomeBambinoActivity.this, AvatarActivity.class);
+            intentAvatar.putExtra("bambinoId", "1");  // Pass the bambino ID to AvatarActivity
+            startActivity(intentAvatar);
+        });
     }
 
     private void getChildFromFirestore() {

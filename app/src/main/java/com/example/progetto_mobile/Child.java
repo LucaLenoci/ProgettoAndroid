@@ -6,6 +6,7 @@ import java.util.List;
 public class Child implements Serializable {
     private String nome;
     private int progresso;
+    int coins;
     private List<EsercizioTipo1> eserciziTipo1;
     private List<EsercizioTipo2> eserciziTipo2;
     private List<EsercizioTipo3> eserciziTipo3;
@@ -20,6 +21,17 @@ public class Child implements Serializable {
         this.eserciziTipo2 = eserciziTipo2;
         this.eserciziTipo3 = eserciziTipo3;
     }
+
+    public Child(String name, int i) {
+        this.nome = name;
+        this.coins = i;
+    }
+
+    public int getCoins() {
+        return coins;
+    }
+
+
 
     // Getters and setters
     public String getNome() {
