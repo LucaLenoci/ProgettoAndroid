@@ -220,10 +220,12 @@ public class HomeGenitoreActivity extends AppCompatActivity {
 
         ImageView imageViewChild = childDashboard.findViewById(R.id.imageViewChild);
         TextView textViewChildName = childDashboard.findViewById(R.id.textViewChildName);
+        TextView textViewChildCoins = childDashboard.findViewById(R.id.textViewChildCoins);
         ProgressBar progressBarChild = childDashboard.findViewById(R.id.progressBarChild);
         LinearLayout linearLayoutExercises = childDashboard.findViewById(R.id.linearLayoutExercises);
 
         textViewChildName.setText(child.getNome());
+        textViewChildCoins.setText(String.format("%s: %d", "Coins", child.getCoins()));
         progressBarChild.setProgress(child.getProgresso());
 
         if (child.getAllEsercizi() != null) {
@@ -246,18 +248,23 @@ public class HomeGenitoreActivity extends AppCompatActivity {
             List<?> esercizi = allEsercizi.get(i);
             if (esercizi != null && !esercizi.isEmpty()) {
                 for (Object esercizio : esercizi) {
-                    boolean esercizioCorretto = false;
-                    if (esercizio instanceof EsercizioTipo1) {
-                        esercizioCorretto = ((EsercizioTipo1) esercizio).isEsercizio_corretto();
-                    } else if (esercizio instanceof EsercizioTipo2) {
-                        esercizioCorretto = ((EsercizioTipo2) esercizio).isEsercizio_corretto();
-                    } else if (esercizio instanceof EsercizioTipo3) {
-                        esercizioCorretto = ((EsercizioTipo3) esercizio).isEsercizio_corretto();
-                    }
+                    boolean esercizioCorretto = isEsercizioCorretto(esercizio);
                     addExerciseView(container, tipi[i], esercizioCorretto);
                 }
             }
         }
+    }
+
+    private static boolean isEsercizioCorretto(Object esercizio) {
+        boolean esercizioCorretto = false;
+        if (esercizio instanceof EsercizioTipo1) {
+            esercizioCorretto = ((EsercizioTipo1) esercizio).isEsercizio_corretto();
+        } else if (esercizio instanceof EsercizioTipo2) {
+            esercizioCorretto = ((EsercizioTipo2) esercizio).isEsercizio_corretto();
+        } else if (esercizio instanceof EsercizioTipo3) {
+            esercizioCorretto = ((EsercizioTipo3) esercizio).isEsercizio_corretto();
+        }
+        return esercizioCorretto;
     }
 
     private void addExerciseView(LinearLayout container, String tipo, boolean esercizioCorretto) {

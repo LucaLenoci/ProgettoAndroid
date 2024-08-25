@@ -64,7 +64,7 @@ public class DataAccess extends AppCompatActivity {
                     Log.d(TAG, document.getId() + " => " + document.getData());
 
                     int tipologia = document.getLong("tipologia").intValue();
-                        updateUI(tipologia, infoRef.getPath());
+                    updateUI(tipologia, infoRef.getPath());
                 }
             } else {
                 Log.w(TAG, "Errore nel recupero dei documenti.", task.getException());
