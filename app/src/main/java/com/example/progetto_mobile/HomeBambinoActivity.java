@@ -10,6 +10,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
@@ -60,29 +61,116 @@ public class HomeBambinoActivity extends AppCompatActivity {
         Intent intent = getIntent();
         String bambinoPath = intent.getStringExtra("bambino");
 
-//        -- ADATTARE QUESTA LOGICA PER PRENDERE I DATI DA FIRESTORE --
-//        getBambinoFromPath(bambinoPath)
-//                .addOnSuccessListener(bambino -> {
-//                    if (bambino != null) {
-//                        Log.d("HomeBambinoActivity", "User: " + bambino);
-//                        -- SETTA I DATI --
-//                    }
-//                });
-
         // Set up the button click listener
-        esercizioButton.setOnClickListener(v -> {
-            // Intent to open EserciziBambinoActivity
-            Intent intentEsercizi = new Intent(HomeBambinoActivity.this, HomeEserciziBambinoActivity.class);
-            intentEsercizi.putExtra("selectedDate", selectedDate);
-            intentEsercizi.putExtra("bambinoId", "1");
-            startActivity(intentEsercizi);
-        });
+        esercizioButton.setOnClickListener(v -> checkAndProceedToExercises());
 
         ProfilePic.setOnClickListener(v -> {
             Intent intentAvatar = new Intent(HomeBambinoActivity.this, AvatarActivity.class);
             intentAvatar.putExtra("bambinoId", "1");  // Pass the bambino ID to AvatarActivity
             startActivity(intentAvatar);
         });
+    }
+
+    private void checkAndProceedToExercises() {
+        checkIfExerciseExists(selectedDate, new FirestoreCallback() {
+            @Override
+            public void onCallback(boolean hasExercises) {
+                if (hasExercises) {
+                    Intent intentEsercizi = new Intent(HomeBambinoActivity.this, HomeEserciziBambinoActivity.class);
+                    intentEsercizi.putExtra("selectedDate", selectedDate);
+                    intentEsercizi.putExtra("bambinoId", "1");
+                    startActivity(intentEsercizi);
+                } else {
+                    showNoExercisesPopup();
+                }
+            }
+        });
+    }
+
+    private void checkIfExerciseExists(String date, FirestoreCallback callback) {
+        // Reference to the specific document based on the date
+        db.collection("esercizi")
+                .document("1")
+                .collection("tipo1")
+                .document(date)
+                .get()
+                .addOnCompleteListener(task -> {
+                    boolean exists = task.isSuccessful() && task.getResult().exists();
+
+                    if (callback != null) {
+                        // Invoke the callback with the result
+                        db.collection("esercizi")
+                                .document("1")
+                                .collection("tipo2")
+                                .document(date)
+                                .get()
+                                .addOnCompleteListener(task_2 -> {
+                                    boolean exists_2 = task_2.isSuccessful() && task_2.getResult().exists();
+
+                                    if (callback != null) {
+                                        // Invoke the callback with the result
+                                        db.collection("esercizi")
+                                                .document("1")
+                                                .collection("tipo3")
+                                                .document(date)
+                                                .get()
+                                                .addOnCompleteListener(task_3 -> {
+                                                    boolean exists_3 = task_3.isSuccessful() && task_3.getResult().exists();
+
+                                                    if (callback != null) {
+                                                        // Invoke the callback with the result
+                                                        callback.onCallback(exists);
+                                                    }
+
+                                                    if (!exists_3) {
+                                                        Log.d(TAG, "No exercise found for the date: " + date);
+                                                    }
+                                                })
+                                                .addOnFailureListener(e -> {
+                                                    Log.e(TAG, "Error checking exercise for date: " + date, e);
+
+                                                    if (callback != null) {
+                                                        // Notify the callback about the failure
+                                                        callback.onCallback(false);
+                                                    }
+                                                });
+                                    }
+
+                                    if (!exists_2) {
+                                        Log.d(TAG, "No exercise found for the date: " + date);
+                                    }
+                                })
+                                .addOnFailureListener(e -> {
+                                    Log.e(TAG, "Error checking exercise for date: " + date, e);
+
+                                    if (callback != null) {
+                                        // Notify the callback about the failure
+                                        callback.onCallback(false);
+                                    }
+                                });
+                    }
+
+                    if (!exists) {
+                        Log.d(TAG, "No exercise found for the date: " + date);
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Error checking exercise for date: " + date, e);
+
+                    if (callback != null) {
+                        // Notify the callback about the failure
+                        callback.onCallback(false);
+                    }
+                });
+    }
+
+
+    private void showNoExercisesPopup() {
+        new AlertDialog.Builder(this)
+                .setTitle("Nessun esercizio")
+                .setMessage("Non ci sono esercizi per la data selezionata.")
+                .setPositiveButton(android.R.string.ok, null)
+                .show();
     }
 
     private void getChildFromFirestore() {
@@ -99,27 +187,14 @@ public class HomeBambinoActivity extends AppCompatActivity {
                         Map<String, Object> data = documentSnapshot.getData();
 
                         if (data != null) {
-                            // Data retrieved successfully, handle the data
-                            // For example, print the data to log
                             Log.d("FirestoreData", "Document data: " + data.toString());
 
-                            // Access specific fields if needed
-                            Object infoRefObject = data.get("infoRef");
                             Long progressoLong = (Long) data.get("progresso");
                             String nomeString = (String) data.get("nome");
                             Long coinsLong = (Long) data.get("coins");
 
-
-                            // Example handling of fields
-                            if (infoRefObject != null) {
-                                Log.d("FirestoreData", "InfoRef: " + infoRefObject.toString());
-                            } else {
-                                Log.d("FirestoreData", "InfoRef not found");
-                            }
-
                             if (progressoLong != null) {
                                 int progresso = progressoLong.intValue();
-                                // Update UI with the progress value
                                 progressBar.setProgress(progresso);
                             } else {
                                 Log.d("FirestoreData", "Progresso not found");
@@ -127,14 +202,12 @@ public class HomeBambinoActivity extends AppCompatActivity {
 
                             if (coinsLong != null) {
                                 String coins = coinsLong.toString();
-                                // Update UI with the progress value
                                 tvCoins.append(coins);
                             } else {
                                 Log.d("FirestoreData", "Coins not found");
                             }
 
                             if (nomeString != null) {
-                                // Update UI with the progress value
                                 tvNome.append(nomeString);
                             } else {
                                 Log.d("FirestoreData", "Nome not found");
@@ -143,13 +216,11 @@ public class HomeBambinoActivity extends AppCompatActivity {
                             Log.d("FirestoreData", "No data found in the document");
                         }
                     } else {
-                        // Document does not exist
                         Log.d("FirestoreData", "No such document");
                         Toast.makeText(HomeBambinoActivity.this, "Documento non trovato", Toast.LENGTH_SHORT).show();
                     }
                 })
                 .addOnFailureListener(e -> {
-                    // Handle the error
                     Log.e("FirestoreError", "Error fetching document", e);
                     Toast.makeText(HomeBambinoActivity.this, "Errore di lettura documento", Toast.LENGTH_SHORT).show();
                 });
@@ -163,7 +234,6 @@ public class HomeBambinoActivity extends AppCompatActivity {
                     if (documentSnapshot.exists()) {
                         String avatarFilename = documentSnapshot.getString("avatarCorrente");
                         if (avatarFilename != null) {
-                            // Construct the full path to the avatar inside the "avatars" folder
                             db.collection("avatars").document(avatarFilename).get()
                                     .addOnCompleteListener(task -> {
                                         if (task.isSuccessful()) {
@@ -193,4 +263,7 @@ public class HomeBambinoActivity extends AppCompatActivity {
                 });
     }
 
+    private interface FirestoreCallback {
+        void onCallback(boolean hasExercises);
+    }
 }
