@@ -13,7 +13,6 @@ public class User implements Serializable {
     private int eta;
     private String email;
     private int tipologia;
-//    private String infoRef;
 
     public User() {
         // Default constructor required for Firestore
