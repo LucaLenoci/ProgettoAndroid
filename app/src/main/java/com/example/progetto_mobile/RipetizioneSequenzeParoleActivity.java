@@ -20,8 +20,6 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,7 +45,6 @@ public class RipetizioneSequenzeParoleActivity extends AppCompatActivity impleme
     private MediaPlayer successSound;
     String selectedDate;
     String bambinoId;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -164,9 +161,11 @@ public class RipetizioneSequenzeParoleActivity extends AppCompatActivity impleme
                         successSound.start();
                         updateCoinsInFirebase();
                         ImageButton btnButton = findViewById(R.id.btn_button_2);
+                        incrementTentativiInFirebase();
                         btnButton.setEnabled(false);
                     }
                 } else {
+                    incrementTentativiInFirebase();
                     Toast.makeText(this, "Try again!", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -223,4 +222,39 @@ public class RipetizioneSequenzeParoleActivity extends AppCompatActivity impleme
                     }
                 });
     }
+
+    private void incrementTentativiInFirebase() {
+        db.collection("esercizi")
+                .document(bambinoId)
+                .collection("tipo3")
+                .document(selectedDate)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            Long currentTentativi = document.getLong("tentativi");
+
+                            if (currentTentativi == null) {
+                                currentTentativi = 0L;
+                            }
+
+                            db.collection("esercizi")
+                                    .document(bambinoId)
+                                    .collection("tipo3")
+                                    .document(selectedDate)
+                                    .update("tentativi", currentTentativi + 1)
+                                    .addOnSuccessListener(aVoid -> {
+                                        Log.d("Firestore", "Tentativi incremented successfully.");
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Log.e("Firestore", "Error incrementing tentativi", e);
+                                    });
+                        }
+                    } else {
+                        Log.d("Firestore", "Failed to fetch document: ", task.getException());
+                    }
+                });
+    }
+
 }

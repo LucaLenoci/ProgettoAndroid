@@ -178,14 +178,52 @@ public class DenominazioneImmaginiActivity extends AppCompatActivity implements 
                         successSound.start();
                         updateCoinsInFirebase();
                         ImageButton btnButton = findViewById(R.id.btn_button);
+                        incrementTentativiInFirebase();
                         btnButton.setEnabled(false);
                     }
                 } else {
                     Toast.makeText(this, "Try again!", Toast.LENGTH_SHORT).show();
+                    incrementTentativiInFirebase();
                 }
             }
         }
     }
+
+
+    private void incrementTentativiInFirebase() {
+        db.collection("esercizi")
+                .document(bambinoId)
+                .collection("tipo1")
+                .document(selectedDate)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            Long currentTentativi = document.getLong("tentativi");
+
+                            if (currentTentativi == null) {
+                                currentTentativi = 0L;
+                            }
+
+                            db.collection("esercizi")
+                                    .document(bambinoId)
+                                    .collection("tipo1")
+                                    .document(selectedDate)
+                                    .update("tentativi", currentTentativi + 1)
+                                    .addOnSuccessListener(aVoid -> {
+                                        Log.d("Firestore", "Tentativi incremented successfully.");
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Log.e("Firestore", "Error incrementing tentativi", e);
+                                    });
+                        }
+                    } else {
+                        Log.d("Firestore", "Failed to fetch document: ", task.getException());
+                    }
+                });
+    }
+
 
     private void askSpeechInput() {
         if (!SpeechRecognizer.isRecognitionAvailable(this)) {
