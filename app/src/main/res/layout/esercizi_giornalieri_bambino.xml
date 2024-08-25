@@ -1,43 +1,49 @@
-<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/colorPrimaryContainer">
 
-    <!-- Top-left button -->
+    <!-- LinearLayout per i pulsanti in alto -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="0dp"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal">
 
-    <!-- Top-right button -->
+        <!-- Button 1 -->
+        <Button
+            android:id="@+id/button1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:text="Esercizio 1" />
 
-    <!-- Bottom-left button -->
+        <!-- Button 2 -->
+        <Button
+            android:id="@+id/button3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:text="Esercizio 2" />
 
-    <Button
-        android:id="@+id/button1"
-        android:layout_width="100dp"
-        android:layout_height="50dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="160dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:text="Esercizio 1" />
-
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="100dp"
-        android:layout_height="50dp"
-        android:layout_marginStart="295dp"
-        android:layout_marginTop="160dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:text="Esercizio 3" />
-
-    <Button
-        android:id="@+id/button3"
-        android:layout_width="100dp"
-        android:layout_height="50dp"
-        android:layout_marginLeft="155dp"
-        android:layout_marginTop="160dp"
-        android:text="Esercizio 2" />
+        <!-- Button 3 -->
+        <Button
+            android:id="@+id/button2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:text="Esercizio 3" />
+    </LinearLayout>
 
     <!-- Bottom-right button -->
 
@@ -47,19 +53,20 @@
         android:id="@+id/button4"
         android:layout_width="100dp"
         android:layout_height="50dp"
-        android:layout_above="@id/joystick"
+        android:layout_above="@+id/joystick"
+        android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginEnd="160dp"
-        android:layout_marginBottom="249dp"
+        android:layout_marginStart="155dp"
+        android:layout_marginEnd="155dp"
+        android:layout_marginBottom="15dp"
         android:text="Esci" />
 
     <com.example.progetto_mobile.JoystickView
         android:id="@+id/joystick"
         android:layout_width="285dp"
         android:layout_height="221dp"
-        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
         android:layout_marginBottom="16dp" />
 
     <!-- Movable object positioned relative to the joystick -->
@@ -67,14 +74,11 @@
         android:id="@+id/movable_object"
         android:layout_width="40dp"
         android:layout_height="46dp"
-        android:layout_above="@+id/joystick"
+        android:layout_above="@+id/button4"
         android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginStart="181dp"
-        android:layout_marginTop="332dp"
-        android:layout_marginEnd="190dp"
-        android:layout_marginBottom="116dp"
-        />
+        android:layout_marginStart="184dp"
+        android:layout_marginEnd="184dp"
+        android:layout_marginBottom="36dp"/>
 
 </RelativeLayout>
