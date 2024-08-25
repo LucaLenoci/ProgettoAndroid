@@ -10,59 +10,78 @@
         android:id="@+id/konfettiView_2"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="center" />
+        android:layout_gravity="center"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="0dp" />
 
+    <ImageView
+        android:id="@+id/imageView6"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.8"
+        app:srcCompat="@drawable/round_rect" />
 
     <TextView
         android:id="@+id/textView5"
-        android:layout_width="199dp"
-        android:layout_height="85dp"
+        android:layout_width="278dp"
+        android:layout_height="103dp"
+        android:fontFamily="@font/adlam_display"
         android:scaleX="1"
         android:scaleY="1"
-        android:text="Ripeti le 3 parole nella sequenza in cui le senti"
+        android:text="RIPETI LE 3 PAROLE NELL'ORDINE IN CUI LE ASCOLTI"
         android:textAlignment="center"
         android:textSize="24sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView6"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.141" />
 
-    <Button
+    <ImageButton
         android:id="@+id/speak_button_2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Ascolta Parola"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:background="@drawable/circular_button_background"
+        android:backgroundTint="?attr/colorPrimary"
+        android:contentDescription="Ascolta Parola"
+        android:padding="12dp"
+        android:src="@drawable/speaker"
+        android:textColor="?attr/colorOnPrimary"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView6"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.667" />
+        app:layout_constraintTop_toBottomOf="@+id/textView5" />
 
-    <Button
+    <ImageButton
         android:id="@+id/btn_button_2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="PARLA"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/circular_button_background"
+        android:backgroundTint="?attr/colorPrimary"
+        android:contentDescription="Parla"
+        android:paddingStart="10dp"
+        android:scaleType="center"
+        android:src="@drawable/microphone"
+        android:textColor="?attr/colorOnPrimary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_text_2"
-        app:layout_constraintVertical_bias="0.215" />
+        app:layout_constraintTop_toBottomOf="@+id/imageView6" />
 
     <TextView
         android:id="@+id/tv_text_2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="104dp"
-        android:text="PAROLA PARLATA"
+        android:layout_marginBottom="50dp"
         android:textSize="24sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView6"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView9"
-        app:layout_constraintVertical_bias="0.34" />
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -73,7 +73,7 @@
         android:layout_marginTop="16dp"
         android:background="@drawable/circular_button_background"
         android:backgroundTint="?attr/colorPrimary"
-        android:contentDescription="Ascolta Parola"
+        android:contentDescription="Parla"
         android:paddingStart="11dp"
         android:scaleType="center"
         android:src="@drawable/microphone"
@@ -87,13 +87,12 @@
         android:id="@+id/tv_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
         android:textSize="24sp"
-        app:layout_constraintBottom_toBottomOf="@+id/konfettiView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView8"
-        app:layout_constraintVertical_bias="0.19999999" />
+        app:layout_constraintTop_toBottomOf="@+id/suggerimento2" />
 
     <Button
         android:id="@+id/suggerimento1"
