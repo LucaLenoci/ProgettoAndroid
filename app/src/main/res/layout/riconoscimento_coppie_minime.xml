@@ -19,11 +19,7 @@
         app:layout_constraintHeight_percent="0.8"
         app:srcCompat="@drawable/round_rect" />
 
-    <!-- KonfettiView for confetti effect -->
-    <nl.dionsegijn.konfetti.xml.KonfettiView
-        android:id="@+id/konfettiView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+
 
     <!-- LinearLayout to hold the two images in the center -->
     <LinearLayout
@@ -131,6 +127,12 @@
             app:tint="?attr/colorOnPrimary" /> <!-- Freccia verso destra -->
 
     </LinearLayout>
+
+    <!-- KonfettiView for confetti effect -->
+    <nl.dionsegijn.konfetti.xml.KonfettiView
+        android:id="@+id/konfettiView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
     <TextView
         android:id="@+id/textView11"

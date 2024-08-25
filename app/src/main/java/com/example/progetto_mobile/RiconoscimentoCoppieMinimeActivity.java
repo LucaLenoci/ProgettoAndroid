@@ -197,9 +197,9 @@ public class RiconoscimentoCoppieMinimeActivity extends AppCompatActivity implem
                 if (successSound != null) {
                     successSound.start();
                     updateCoinsInFirebase();
-                    Button btnButton = findViewById(R.id.button1);
+                    ImageButton btnButton = findViewById(R.id.button1);
                     btnButton.setEnabled(false);
-                    Button btnButton_2 = findViewById(R.id.button2);
+                    ImageButton btnButton_2 = findViewById(R.id.button2);
                     btnButton_2.setEnabled(false);
                 }
             } else {

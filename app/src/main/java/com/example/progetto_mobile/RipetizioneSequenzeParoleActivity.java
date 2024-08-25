@@ -9,6 +9,7 @@ import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -63,12 +64,12 @@ public class RipetizioneSequenzeParoleActivity extends AppCompatActivity impleme
 
         fetchExerciseData();
 
-        Button btnButton = findViewById(R.id.btn_button_2);
+        ImageButton btnButton = findViewById(R.id.btn_button_2);
         tvText = findViewById(R.id.tv_text_2);
 
         btnButton.setOnClickListener(v -> askSpeechInput());
 
-        Button speakButton = findViewById(R.id.speak_button_2);
+        ImageButton speakButton = findViewById(R.id.speak_button_2);
         speakButton.setOnClickListener(v -> {
             String textToSpeak = currentExercise.getRisposta_corretta();
 
@@ -162,7 +163,7 @@ public class RipetizioneSequenzeParoleActivity extends AppCompatActivity impleme
                     if (successSound != null) {
                         successSound.start();
                         updateCoinsInFirebase();
-                        Button btnButton = findViewById(R.id.btn_button_2);
+                        ImageButton btnButton = findViewById(R.id.btn_button_2);
                         btnButton.setEnabled(false);
                     }
                 } else {
