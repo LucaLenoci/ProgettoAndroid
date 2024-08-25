@@ -28,7 +28,7 @@
     <!-- LinearLayout to hold the two images in the center -->
     <LinearLayout
         android:id="@+id/linearLayout"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@drawable/rounded_background"
         android:gravity="center"
@@ -37,7 +37,8 @@
         app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_percent="0.9"> <!-- Usa il 80% della larghezza del genitore -->
 
         <ImageView
             android:id="@+id/image1"
