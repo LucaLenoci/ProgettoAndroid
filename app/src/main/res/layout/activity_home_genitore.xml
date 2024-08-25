@@ -35,8 +35,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:orientation="vertical"
-            app:layout_constraintHeight="match_constraint" />
+            android:orientation="vertical" />
     </ScrollView>
 
     <Button

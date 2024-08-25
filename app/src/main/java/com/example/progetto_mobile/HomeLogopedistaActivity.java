@@ -23,6 +23,11 @@ public class HomeLogopedistaActivity extends AppCompatActivity {
             return insets;
         });
 
+//        Button btnVediClassificaBambini = findViewById(R.id.buttonClassificaBambini);
+//        btnVediClassificaBambini.setOnClickListener(v -> {
+//            startActivity(new Intent(HomeLogopedistaActivity.this, ClassificaBambiniActivity.class);
+//        });
+
         Button btnRegistraGenitore = findViewById(R.id.buttonRegistraGenitore);
         btnRegistraGenitore.setOnClickListener(v -> {
             Intent intent = new Intent(HomeLogopedistaActivity.this, RegisterActivity.class);
