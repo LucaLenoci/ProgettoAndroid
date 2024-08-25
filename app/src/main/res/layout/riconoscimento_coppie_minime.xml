@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:background="?attr/colorPrimaryContainer"
     tools:context=".RiconoscimentoCoppieMinimeActivity">
 
@@ -11,8 +11,7 @@
     <ImageView
         android:id="@+id/imageView6"
         android:layout_width="match_parent"
-        android:layout_height="800dp"
-        app:layout_constraintBottom_toBottomOf="@+id/textView10"
+        android:layout_height="670dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -28,11 +27,11 @@
         android:id="@+id/linearLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="@drawable/rounded_background"
         android:gravity="center"
         android:orientation="horizontal"
         android:padding="16dp"
-        android:background="@drawable/rounded_background"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -42,22 +41,22 @@
             android:layout_width="150dp"
             android:layout_height="150dp"
             android:layout_margin="8dp"
-            android:elevation="4dp"
-            android:padding="8dp"
-            android:scaleType="fitCenter"
             android:clipToOutline="true"
-            android:outlineProvider="background" />
+            android:elevation="4dp"
+            android:outlineProvider="background"
+            android:padding="8dp"
+            android:scaleType="fitCenter" />
 
         <ImageView
             android:id="@+id/image2"
             android:layout_width="150dp"
             android:layout_height="150dp"
             android:layout_margin="8dp"
-            android:elevation="4dp"
-            android:padding="8dp"
-            android:scaleType="fitCenter"
             android:clipToOutline="true"
-            android:outlineProvider="background" />
+            android:elevation="4dp"
+            android:outlineProvider="background"
+            android:padding="8dp"
+            android:scaleType="fitCenter" />
     </LinearLayout>
 
     <!-- Button to listen to the word -->
@@ -65,14 +64,13 @@
         android:id="@+id/speak_button"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="32dp"
         android:background="@drawable/circular_button_background"
         android:backgroundTint="?attr/colorPrimary"
         android:contentDescription="Ascolta Parola"
         android:padding="12dp"
         android:src="@drawable/speaker"
         android:textColor="?attr/colorOnPrimary"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/linearLayout" />
@@ -86,6 +84,7 @@
         android:fontFamily="sans-serif-smallcaps"
         android:text="Ascolta"
         android:textSize="20dp"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView6"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/speak_button" />
@@ -94,12 +93,14 @@
         android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
         android:gravity="center"
         android:orientation="horizontal"
         android:padding="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView6">
 
         <ImageButton
             android:id="@+id/button1"
