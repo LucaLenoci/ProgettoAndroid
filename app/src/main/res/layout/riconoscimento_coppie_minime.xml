@@ -7,16 +7,19 @@
     android:background="?attr/colorPrimaryContainer"
     tools:context=".RiconoscimentoCoppieMinimeActivity">
 
-    <!-- KonfettiView for confetti effect -->
+
     <ImageView
         android:id="@+id/imageView6"
         android:layout_width="match_parent"
-        android:layout_height="670dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_height="0dp"
+        android:scaleType="centerCrop"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.8"
         app:srcCompat="@drawable/round_rect" />
 
+    <!-- KonfettiView for confetti effect -->
     <nl.dionsegijn.konfetti.xml.KonfettiView
         android:id="@+id/konfettiView"
         android:layout_width="match_parent"
