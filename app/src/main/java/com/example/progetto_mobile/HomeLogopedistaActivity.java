@@ -3,6 +3,7 @@ package com.example.progetto_mobile;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,10 +24,16 @@ public class HomeLogopedistaActivity extends AppCompatActivity {
             return insets;
         });
 
-//        Button btnVediClassificaBambini = findViewById(R.id.buttonClassificaBambini);
-//        btnVediClassificaBambini.setOnClickListener(v -> {
-//            startActivity(new Intent(HomeLogopedistaActivity.this, ClassificaBambiniActivity.class);
-//        });
+        String logopedistaPath = getIntent().getStringExtra("logopedista");
+
+        Button btnVediClassificaBambini = findViewById(R.id.buttonClassificaBambini);
+        btnVediClassificaBambini.setOnClickListener(v -> {
+            if (logopedistaPath == null)
+                Toast.makeText(this, "Errore: logopedista non trovato", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(HomeLogopedistaActivity.this, ClassificaBambiniActivity.class);
+            intent.putExtra("logopedista", logopedistaPath);
+            startActivity(intent);
+        });
 
         Button btnRegistraGenitore = findViewById(R.id.buttonRegistraGenitore);
         btnRegistraGenitore.setOnClickListener(v -> {

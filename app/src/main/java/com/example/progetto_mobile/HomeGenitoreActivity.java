@@ -23,14 +23,13 @@ import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class HomeGenitoreActivity extends AppCompatActivity {
 
-    private LinearLayout linearLayoutFigli;
+    private LinearLayout linearLayoutBambini;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +44,7 @@ public class HomeGenitoreActivity extends AppCompatActivity {
 
         TextView tvBenvenuto = findViewById(R.id.textViewBenvenutoGenitore);
         Button btnGestisciTemi = findViewById(R.id.buttonGestisciTemi);
-        linearLayoutFigli = findViewById(R.id.linearLayoutFigli);
+        linearLayoutBambini = findViewById(R.id.linearLayoutBambini);
 
         Intent intent = getIntent();
         String genitorePath = intent.getStringExtra("genitore");
@@ -56,7 +55,7 @@ public class HomeGenitoreActivity extends AppCompatActivity {
                         Log.d("HomeGenitoreActivity", "User: " + genitore);
                         String text = "Benvenuto/a, " + genitore.getNome() + " " + genitore.getCognome();
                         tvBenvenuto.setText(text);
-                        getFigliFromFirestore(genitore.getEmail());
+                        getBambiniFromFirestore(genitorePath);
                     }
                 });
 
@@ -99,35 +98,31 @@ public class HomeGenitoreActivity extends AppCompatActivity {
     }
 
     @SuppressWarnings("unchecked")
-    private void getFigliFromFirestore(String email) {
+    private void getBambiniFromFirestore(String genitorePath) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("genitori")
-                .whereEqualTo("email", email)
+        db.document(genitorePath)
                 .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    if (!queryDocumentSnapshots.isEmpty()) {
-                        QueryDocumentSnapshot documentSnapshot = (QueryDocumentSnapshot) queryDocumentSnapshots.getDocuments().get(0);
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        List<DocumentReference> bambiniRefs = (List<DocumentReference>) documentSnapshot.get("bambiniRef");
 
-                        List<DocumentReference> figliRefs = (List<DocumentReference>) documentSnapshot.get("bambiniRef");
-
-                        if (figliRefs == null || figliRefs.isEmpty()) {
+                        if (bambiniRefs == null || bambiniRefs.isEmpty()) {
                             showEmptyChildrenMessage();
                         } else {
-                            Log.d("HomeGenitoreActivity", "Numero di figli: " + figliRefs.size());
-                            for (DocumentReference figlioRef : figliRefs) {
-                                figlioRef.get().addOnSuccessListener(figlioSnapshot -> {
-                                    if (figlioSnapshot.exists()) {
-                                        String nome = figlioSnapshot.getString("nome");
-                                        String cognome = figlioSnapshot.getString("cognome");
-                                        int progresso = figlioSnapshot.getLong("progresso").intValue();
-                                        int coins = figlioSnapshot.getLong("coins").intValue();
+                            Log.d("HomeGenitoreActivity", "Numero di bambini: " + bambiniRefs.size());
+                            for (DocumentReference bambinoRef : bambiniRefs) {
+                                bambinoRef.get().addOnSuccessListener(bambinoSnapshot -> {
+                                    if (bambinoSnapshot.exists()) {
+                                        String nome = bambinoSnapshot.getString("nome");
+                                        int progresso = bambinoSnapshot.getLong("progresso").intValue();
+                                        int coins = bambinoSnapshot.getLong("coins").intValue();
 
-                                        List<DocumentReference> eserciziTipo1Refs = (List<DocumentReference>) figlioSnapshot.get("eserciziTipo1");
-                                        List<DocumentReference> eserciziTipo2Refs = (List<DocumentReference>) figlioSnapshot.get("eserciziTipo2");
-                                        List<DocumentReference> eserciziTipo3Refs = (List<DocumentReference>) figlioSnapshot.get("eserciziTipo3");
+                                        List<DocumentReference> eserciziTipo1Refs = (List<DocumentReference>) bambinoSnapshot.get("eserciziTipo1");
+                                        List<DocumentReference> eserciziTipo2Refs = (List<DocumentReference>) bambinoSnapshot.get("eserciziTipo2");
+                                        List<DocumentReference> eserciziTipo3Refs = (List<DocumentReference>) bambinoSnapshot.get("eserciziTipo3");
 
-                                        Log.d("HomeGenitoreActivity", "Nome figlio: " + nome);
-                                        Log.d("HomeGenitoreActivity", "Progresso figlio: " + progresso);
+                                        Log.d("HomeGenitoreActivity", "Nome bambino: " + nome);
+                                        Log.d("HomeGenitoreActivity", "Progresso bambino: " + progresso);
                                         Log.d("HomeGenitoreActivity", "Esercizi tipo 1: " + eserciziTipo1Refs.size());
                                         Log.d("HomeGenitoreActivity", "Esercizi tipo 2: " + eserciziTipo2Refs.size());
                                         Log.d("HomeGenitoreActivity", "Esercizi tipo 3: " + eserciziTipo3Refs.size());
@@ -135,11 +130,6 @@ public class HomeGenitoreActivity extends AppCompatActivity {
                                         getEserciziDetails(eserciziTipo1Refs, eserciziTipo2Refs, eserciziTipo3Refs, (eserciziTipo1, eserciziTipo2, eserciziTipo3) -> {
                                             Child child = new Child(
                                                     nome,
-                                                    cognome,
-                                                    0,
-                                                    null,
-                                                    0,
-                                                    null,
                                                     progresso,
                                                     coins,
                                                     eserciziTipo1,
@@ -208,15 +198,15 @@ public class HomeGenitoreActivity extends AppCompatActivity {
     }
 
     private void showEmptyChildrenMessage() {
-        TextView tvNessunFiglio = new TextView(this);
-        tvNessunFiglio.setText("Non ci sono figli registrati.");
-        tvNessunFiglio.setTextSize(18);
-        linearLayoutFigli.addView(tvNessunFiglio);
+        TextView tvNessunBambino = new TextView(this);
+        tvNessunBambino.setText("Non ci sono bambini registrati.");
+        tvNessunBambino.setTextSize(18);
+        linearLayoutBambini.addView(tvNessunBambino);
     }
 
     private void addChildDashboard(Child child) {
         LayoutInflater inflater = LayoutInflater.from(this);
-        View childDashboard = inflater.inflate(R.layout.layout_child_dashboard, linearLayoutFigli, false);
+        View childDashboard = inflater.inflate(R.layout.layout_child_dashboard, linearLayoutBambini, false);
 
         ImageView imageViewChild = childDashboard.findViewById(R.id.imageViewChild);
         TextView textViewChildName = childDashboard.findViewById(R.id.textViewChildName);
@@ -239,7 +229,7 @@ public class HomeGenitoreActivity extends AppCompatActivity {
             intent.putExtra("child", child);
             startActivity(intent);
         });
-        linearLayoutFigli.addView(childDashboard);
+        linearLayoutBambini.addView(childDashboard);
     }
 
     private void addExerciseInfo(LinearLayout container, List<List<?>> allEsercizi) {

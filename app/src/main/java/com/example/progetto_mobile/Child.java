@@ -17,6 +17,26 @@ public class Child extends User implements Serializable {
 
     public Child() {}
 
+    public Child(String nome, int coins) {
+        super(nome);
+        this.coins = coins;
+    }
+
+    public Child(String nome, String cognome, int coins) {
+        super(nome, cognome);
+        this.coins = coins;
+    }
+
+    public Child(String nome, int progresso, int coins, List<EsercizioTipo1> eserciziTipo1,
+                 List<EsercizioTipo2> eserciziTipo2, List<EsercizioTipo3> eserciziTipo3) {
+        super(nome);
+        this.progresso = progresso;
+        this.coins = coins;
+        this.eserciziTipo1 = eserciziTipo1;
+        this.eserciziTipo2 = eserciziTipo2;
+        this.eserciziTipo3 = eserciziTipo3;
+    }
+
     public Child(String nome, String cognome, int eta, String email, int tipologia,
                  String avatarCorrente, int progresso, int coins) {
         super(nome, cognome, eta, email, tipologia);
@@ -37,11 +57,6 @@ public class Child extends User implements Serializable {
         this.eserciziTipo3 = eserciziTipo3;
     }
 
-    public Child(String nome, int i) {
-        super(nome);
-        this.coins = i;
-    }
-
     public String getAvatarCorrente() {
         return avatarCorrente;
     }
@@ -57,15 +72,6 @@ public class Child extends User implements Serializable {
     public void setCoins(int coins) {
         this.coins = coins;
     }
-
-    // Getters and setters
-//    public String getNome() {
-//        return nome;
-//    }
-//
-//    public void setNome(String nome) {
-//        this.nome = nome;
-//    }
 
     public int getProgresso() {
         return progresso;

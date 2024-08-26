@@ -22,6 +22,11 @@ public class User implements Serializable {
         this.nome = nome;
     }
 
+    public User(String nome, String cognome) {
+        this.nome = nome;
+        this.cognome = cognome;
+    }
+
     public User(String nome, String cognome, int eta, String email, int tipologia) {
         this.nome = nome;
         this.cognome = cognome;

@@ -16,6 +16,9 @@
         android:theme="@style/Theme.Progetto_Mobile"
         tools:targetApi="31">
         <activity
+            android:name=".ClassificaBambiniActivity"
+            android:exported="false" />
+        <activity
             android:name=".HomeLogopedistaActivity"
             android:exported="false" />
         <activity
@@ -31,8 +34,8 @@
             android:name=".CorreggiEserciziActivity"
             android:exported="false" />
         <activity
-        android:name=".BambinoClassificaActivity"
-        android:exported="false" />
+            android:name=".BambinoClassificaActivity"
+            android:exported="false" />
         <activity
             android:name=".RegisterActivity"
             android:exported="false"

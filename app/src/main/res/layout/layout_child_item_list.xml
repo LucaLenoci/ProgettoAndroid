@@ -4,8 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="10dp"
-    android:background="@drawable/border_grey">
+    android:layout_margin="10dp">
+
+    <TextView
+        android:id="@+id/textViewPosition"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:text="Pos."
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/imageViewChild"
@@ -14,7 +22,7 @@
         android:layout_margin="5dp"
         android:importantForAccessibility="no"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/textViewPosition"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/avatar_1" />
 
@@ -25,13 +33,14 @@
         android:layout_margin="5dp"
         android:textSize="18sp"
         android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/textViewChildCoins"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintHorizontal_chainStyle="spread_inside"
         app:layout_constraintStart_toEndOf="@+id/imageViewChild"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintWidth="wrap_content_constrained"
-        tools:text="Nome Bambino" />
+        tools:text="Nome e Cognome Bambino" />
 
     <TextView
         android:id="@+id/textViewChildCoins"
@@ -41,38 +50,11 @@
         android:text="Coins"
         android:textSize="18sp"
         android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/textViewChildName"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintWidth="wrap_content_constrained" />
-
-    <ProgressBar
-        android:id="@+id/progressBarChild"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/imageViewChild"
-        app:layout_constraintTop_toBottomOf="@id/textViewChildName" />
-
-    <HorizontalScrollView
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight="wrap_content_constrained"
-        app:layout_constraintStart_toEndOf="@+id/imageViewChild"
-        app:layout_constraintTop_toBottomOf="@+id/progressBarChild">
-
-        <LinearLayout
-            android:id="@+id/linearLayoutExercises"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            app:layout_constraintHeight="match_constraint" />
-    </HorizontalScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
