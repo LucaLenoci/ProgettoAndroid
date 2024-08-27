@@ -13,6 +13,11 @@ public class Genitore extends User implements Serializable {
 
     public Genitore() {}
 
+    public Genitore(String nome, String cognome, List<String> bambiniRef) {
+        super(nome, cognome);
+        this.bambiniRef = bambiniRef;
+    }
+
     public Genitore(String nome, String cognome, int eta, String email, int tipologia, List<String> bambiniRef) {
         super(nome, cognome, eta, email, tipologia);
         this.bambiniRef = bambiniRef;
