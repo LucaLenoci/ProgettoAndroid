@@ -60,6 +60,7 @@ public class HomeBambinoActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         String bambinoPath = intent.getStringExtra("bambino");
+        Log.d(TAG, "Bambino path: " + bambinoPath);
 
         // Set up the button click listener
         esercizioButton.setOnClickListener(v -> checkAndProceedToExercises());

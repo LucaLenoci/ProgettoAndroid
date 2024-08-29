@@ -30,8 +30,8 @@ public class HomeLogopedistaActivity extends AppCompatActivity {
 
     private static final String TAG = "HomeLogopedistaActivity";
     private LinearLayout linearLayoutGenitori;
-    List<String> genitoriPaths;
-    List<Genitore> genitoriList;
+    private List<String> genitoriPaths;
+    private List<Genitore> genitoriList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

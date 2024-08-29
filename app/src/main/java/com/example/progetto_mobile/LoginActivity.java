@@ -40,7 +40,7 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         View accediButton = findViewById(R.id.buttonAccedi);
-        EditText emailField = findViewById(R.id.editTextTextUsername);
+        EditText emailField = findViewById(R.id.editTextTextEmail);
         EditText passwordField = findViewById(R.id.editTextTextPassword);
 
         accediButton.setOnClickListener(v -> {
@@ -57,14 +57,12 @@ public class LoginActivity extends AppCompatActivity {
         // -- BOTTONI PER SIMULARE IL LOGIN --
 
         View bambinoButton = findViewById(R.id.buttonLoginBambino);
-        bambinoButton.setOnClickListener(v -> {
-            startActivity(new Intent(LoginActivity.this, HomeBambinoActivity.class));
-        });
+        bambinoButton.setOnClickListener(v ->
+                startActivity(new Intent(LoginActivity.this, HomeBambinoActivity.class)));
 
         View genitoreButton = findViewById(R.id.buttonLoginGenitore);
-        genitoreButton.setOnClickListener(v -> {
-            startActivity(new Intent(LoginActivity.this, HomeGenitoreActivity.class));
-        });
+        genitoreButton.setOnClickListener(v ->
+                startActivity(new Intent(LoginActivity.this, HomeGenitoreActivity.class)));
 
 //        View logopedistaButton = findViewById(R.id.buttonLoginLogopedista);
 //        logopedistaButton.setOnClickListener(v -> {

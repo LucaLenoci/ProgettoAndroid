@@ -25,7 +25,7 @@ public class DashboardGenitoreActivity extends AppCompatActivity {
         });
 
         Genitore genitore = (Genitore) getIntent().getSerializableExtra("genitore");
-        Log.d(TAG, "onCreate: " + genitore);
+        Log.d(TAG, "Genitore preso: " + genitore);
         if (genitore != null) {
             String genitorePath = genitore.getGenitoreRef();
             BambiniListFragment bambiniListFragment = BambiniListFragment.newInstance(genitorePath);

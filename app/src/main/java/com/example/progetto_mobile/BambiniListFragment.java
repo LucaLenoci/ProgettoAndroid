@@ -48,7 +48,6 @@ public class BambiniListFragment extends Fragment {
      * @param genitorePath il path del genitore da cui prendere i bambini
      * @return A new instance of fragment BambiniListFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static BambiniListFragment newInstance(String genitorePath) {
         BambiniListFragment fragment = new BambiniListFragment();
         Bundle args = new Bundle();

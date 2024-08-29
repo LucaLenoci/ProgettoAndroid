@@ -13,6 +13,7 @@ public class User implements Serializable {
     private int eta;
     private String email;
     private int tipologia;
+    private String docRef;
 
     public User() {
         // Default constructor required for Firestore
@@ -74,6 +75,15 @@ public class User implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getDocRef() {
+        return docRef;
+    }
+
+    public User setDocRef(String docRef) {
+        this.docRef = docRef;
+        return this;
     }
 
     @NonNull

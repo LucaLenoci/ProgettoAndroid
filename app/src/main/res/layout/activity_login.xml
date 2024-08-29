@@ -56,14 +56,14 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/editTextTextUsername"
+        android:id="@+id/editTextTextEmail"
         android:layout_width="222dp"
         android:layout_height="49dp"
         android:layout_margin="50dp"
         android:ems="10"
-        android:hint="Username"
+        android:hint="Email"
         android:imeOptions="actionNext"
-        android:inputType="text"
+        android:inputType="textEmailAddress"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
@@ -81,7 +81,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTextUsername" />
+        app:layout_constraintTop_toBottomOf="@+id/editTextTextEmail" />
 
     <Button
         android:id="@+id/buttonAccedi"

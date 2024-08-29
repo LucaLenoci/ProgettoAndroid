@@ -11,14 +11,10 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class DataAccess extends AppCompatActivity {
 
     private static final String TAG = "FirestoreExample";
     private FirebaseFirestore db;
-    private User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +80,7 @@ public class DataAccess extends AppCompatActivity {
 
             case 1:
                 key = "genitore";
-                intent = new Intent(DataAccess.this, HomeGenitoreActivity.class);
+                intent = new Intent(DataAccess.this, ScegliAccountActivity.class);
                 break;
 
             case 2:
