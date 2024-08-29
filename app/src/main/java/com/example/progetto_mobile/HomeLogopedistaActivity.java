@@ -30,7 +30,8 @@ public class HomeLogopedistaActivity extends AppCompatActivity {
 
     private static final String TAG = "HomeLogopedistaActivity";
     private LinearLayout linearLayoutGenitori;
-    List<Genitore> parentList;
+    List<String> genitoriPaths;
+    List<Genitore> genitoriList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +45,8 @@ public class HomeLogopedistaActivity extends AppCompatActivity {
         });
 
         linearLayoutGenitori = findViewById(R.id.linearLayoutGenitori);
-        parentList = new ArrayList<>();
+        genitoriPaths = new ArrayList<>();
+        genitoriList = new ArrayList<>();
 
         String logopedistaPath = getIntent().getStringExtra("logopedista");
         getGenitoriFromLogopedistaPath(logopedistaPath);
@@ -79,11 +81,14 @@ public class HomeLogopedistaActivity extends AppCompatActivity {
                     } else {
                         List<Task<DocumentSnapshot>> tasks = new ArrayList<>();
                         for (DocumentReference genitoreRef : genitoriRefs) {
+                            Log.d(TAG, "Genitore ref: " + genitoreRef.getPath());
+                            genitoriPaths.add(genitoreRef.getPath());
                             tasks.add(genitoreRef.get());
                         }
 
                         Tasks.whenAllComplete(tasks)
                                 .addOnSuccessListener(task -> {
+                                    int genitoreCounter = 0;
                                     for (Task<DocumentSnapshot> genitoreTask : tasks) {
                                         if (genitoreTask.isSuccessful()) {
                                             DocumentSnapshot genitoreSnapshot = genitoreTask.getResult();
@@ -98,12 +103,13 @@ public class HomeLogopedistaActivity extends AppCompatActivity {
                                                         .map(DocumentReference::getPath)
                                                         .collect(Collectors.toList());
 
-                                                Genitore genitore = new Genitore(nome, cognome, bambiniRefStrings);
-                                                parentList.add(genitore);
+                                                Genitore genitore = new Genitore(nome, cognome, bambiniRefStrings, genitoriPaths.get(genitoreCounter));
+                                                genitoriList.add(genitore);
                                             }
                                         } else {
                                             Log.d(TAG, "Errore nel recupero dei dati di un genitore", genitoreTask.getException());
                                         }
+                                        genitoreCounter++;
                                     }
                                     displaySortedParents();
                                 });
@@ -113,24 +119,31 @@ public class HomeLogopedistaActivity extends AppCompatActivity {
     }
 
     private void displaySortedParents() {
-        if (!parentList.isEmpty()) {
-            Log.d(TAG, "Lista genitori: " + parentList);
-            parentList.sort((parent1, parent2) -> CharSequence.compare(parent1.getCognome(), parent2.getCognome()));
-            Log.d(TAG, "Lista genitori ordinata: " + parentList);
-            for (Genitore parent : parentList)
-                addParentItemList(parent);
+        if (!genitoriList.isEmpty()) {
+            Log.d(TAG, "Lista genitori: " + genitoriList);
+            genitoriList.sort((parent1, parent2) -> CharSequence.compare(parent1.getCognome(), parent2.getCognome()));
+            Log.d(TAG, "Lista genitori ordinata: " + genitoriList);
+            for (Genitore genitore : genitoriList)
+                addParentItemList(genitore);
         } else showEmptyParentsMessage();
     }
 
-    private void addParentItemList(Genitore parent) {
+    private void addParentItemList(Genitore genitore) {
         LayoutInflater inflater = LayoutInflater.from(this);
         View parentItem = inflater.inflate(R.layout.layout_parent_item_list, linearLayoutGenitori, false);
 
         TextView textViewParentName = parentItem.findViewById(R.id.textViewParentName);
         TextView textViewParentChildCount = parentItem.findViewById(R.id.textViewParentChildCount);
 
-        textViewParentName.setText(String.format("%s %s", parent.getNome(), parent.getCognome()));
-        textViewParentChildCount.setText(String.format("%s:\n%d", "Bambini", parent.getBambiniRef().size()));
+        textViewParentName.setText(String.format("%s %s", genitore.getNome(), genitore.getCognome()));
+        textViewParentChildCount.setText(String.format("%s:\n%d", "Bambini", genitore.getBambiniRef().size()));
+
+        parentItem.setOnClickListener(v -> {
+            Log.d(TAG, "Genitore cliccato: " + genitore);
+            Intent intent = new Intent(HomeLogopedistaActivity.this, DashboardGenitoreActivity.class);
+            intent.putExtra("genitore", genitore);
+            startActivity(intent);
+        });
 
         linearLayoutGenitori.addView(parentItem);
     }

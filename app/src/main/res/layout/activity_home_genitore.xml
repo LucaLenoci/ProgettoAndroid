@@ -18,24 +18,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ScrollView
-        android:id="@+id/scrollView3"
+    <!-- TODO: trasformarlo in fragmentContainerView -->
+    <FrameLayout
+        android:id="@+id/fragmentContainerBambini"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="10dp"
         app:layout_constraintBottom_toTopOf="@+id/buttonGestisciTemi"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight="match_constraint"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewBenvenutoGenitore">
-
-        <LinearLayout
-            android:id="@+id/linearLayoutBambini"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:orientation="vertical" />
-    </ScrollView>
+        app:layout_constraintTop_toBottomOf="@+id/textViewBenvenutoGenitore" />
 
     <Button
         android:id="@+id/buttonGestisciTemi"

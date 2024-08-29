@@ -10,12 +10,14 @@ import java.util.List;
 public class Genitore extends User implements Serializable {
 
     private List<String> bambiniRef;
+    private String genitoreRef;
 
     public Genitore() {}
 
-    public Genitore(String nome, String cognome, List<String> bambiniRef) {
+    public Genitore(String nome, String cognome, List<String> bambiniRef, String genitoreRef) {
         super(nome, cognome);
         this.bambiniRef = bambiniRef;
+        this.genitoreRef = genitoreRef;
     }
 
     public Genitore(String nome, String cognome, int eta, String email, int tipologia, List<String> bambiniRef) {
@@ -29,6 +31,14 @@ public class Genitore extends User implements Serializable {
 
     public void setBambiniRef(List<String> bambiniRef) {
         this.bambiniRef = bambiniRef;
+    }
+
+    public String getGenitoreRef() {
+        return genitoreRef;
+    }
+
+    public void setGenitoreRef(String genitoreRef) {
+        this.genitoreRef = genitoreRef;
     }
 
     @NonNull
