@@ -2,14 +2,17 @@ package com.example.progetto_mobile;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -17,6 +20,10 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.EmailAuthProvider;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -70,11 +77,57 @@ public class ScegliAccountActivity extends AppCompatActivity {
                     });
         }
 
-        linearLayoutAccountGenitore.setOnClickListener(v -> {
-            Intent intent = new Intent(ScegliAccountActivity.this, HomeGenitoreActivity.class);
-            intent.putExtra("genitore", genitorePath);
-            startActivity(intent);
-        });
+        linearLayoutAccountGenitore.setOnClickListener(v ->
+                showReauthenticationDialog(genitorePath));
+    }
+
+    private void showReauthenticationDialog(String genitorePath) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Reinserisci la tua password per accedere");
+
+        // Crea un campo per inserire la password
+        final EditText input = new EditText(this);
+        input.setHint("Password");
+        input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        builder.setView(input);
+
+        builder.setPositiveButton("Conferma", (dialog, which) -> {
+            String password = input.getText().toString();
+            if (!password.isEmpty()) {
+                reauthenticateUser(password, genitorePath);
+            } else Toast.makeText(ScegliAccountActivity.this, "Password necessaria", Toast.LENGTH_SHORT).show();
+
+        }).setNegativeButton("Annulla", (dialog, which) -> dialog.cancel());
+
+        builder.show();
+    }
+
+    private void reauthenticateUser(String password, String genitorePath) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            Log.d(TAG, "Utente non riconosciuto");
+            return;
+        }
+
+        String email = user.getEmail();
+        if (email == null) {
+            Log.d(TAG, "Email non trovata");
+            return;
+        }
+
+        AuthCredential credential = EmailAuthProvider.getCredential(email, password);
+        user.reauthenticate(credential)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Log.d(TAG, "Re-autenticazione riuscita.");
+                        Intent intent = new Intent(ScegliAccountActivity.this, HomeGenitoreActivity.class);
+                        intent.putExtra("genitore", genitorePath);
+                        startActivity(intent);
+                    } else {
+                        Log.e(TAG, "Errore nella re-autenticazione", task.getException());
+                        Toast.makeText(ScegliAccountActivity.this, "Re-autenticazione fallita", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     private void processBambiniRefs(List<DocumentReference> bambiniRefs) {
