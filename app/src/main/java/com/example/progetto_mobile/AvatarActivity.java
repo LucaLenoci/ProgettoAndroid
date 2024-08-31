@@ -23,6 +23,8 @@ public class AvatarActivity extends AppCompatActivity {
     private String bambinoId;
     private String avatarCorrente;
     private String temaCorrente;
+    String sessoBambino;
+    String personaggi_da_visualizzare;
     private int bambinoCoins = 0;  // Store the bambino's current coin balance
 
     @Override
@@ -95,6 +97,13 @@ public class AvatarActivity extends AppCompatActivity {
                         if (document.exists()) {
                             avatarCorrente = document.getString("avatarCorrente");
                             temaCorrente =  document.getString("tema");
+                            sessoBambino = document.getString("sesso");
+                            personaggi_da_visualizzare = "";
+                            if (sessoBambino.equals("M")){
+                                personaggi_da_visualizzare = "personaggi";
+                            }else{
+                                personaggi_da_visualizzare = "personaggi_femminili";
+                            }
 
                             // Load avatar data and check if it's the selected one
                             loadAvatarData("1", avatar1, textAvatar1, buttonAvatar1, coinsimageavatar1);
@@ -113,7 +122,7 @@ public class AvatarActivity extends AppCompatActivity {
 
 
     private void loadAvatarData(String avatarKey, ImageView imageView, TextView textView, Button button, ImageView coinimageView) {
-        db.collection("avatars").document(temaCorrente).collection("personaggi").document(avatarKey).get()
+        db.collection("avatars").document(temaCorrente).collection(personaggi_da_visualizzare).document(avatarKey).get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         DocumentSnapshot document = task.getResult();

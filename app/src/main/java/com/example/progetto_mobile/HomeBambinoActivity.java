@@ -235,8 +235,15 @@ public class HomeBambinoActivity extends AppCompatActivity {
                     if (documentSnapshot.exists()) {
                         String avatarFilename = documentSnapshot.getString("avatarCorrente");
                         String temaCorrente =  documentSnapshot.getString("tema");
+                        String sessoBambino = documentSnapshot.getString("sesso");
+                        String personaggi_da_visualizzare = "";
+                        if (sessoBambino.equals("M")){
+                            personaggi_da_visualizzare = "personaggi";
+                        }else{
+                            personaggi_da_visualizzare = "personaggi_femminili";
+                        }
                         if (avatarFilename != null) {
-                            db.collection("avatars").document(temaCorrente).collection("personaggi").document(avatarFilename).get()
+                            db.collection("avatars").document(temaCorrente).collection(personaggi_da_visualizzare).document(avatarFilename).get()
                                     .addOnCompleteListener(task -> {
                                         if (task.isSuccessful()) {
                                             DocumentSnapshot document = task.getResult();
