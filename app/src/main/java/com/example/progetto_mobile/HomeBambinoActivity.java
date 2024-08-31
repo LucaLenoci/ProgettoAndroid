@@ -234,8 +234,9 @@ public class HomeBambinoActivity extends AppCompatActivity {
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
                         String avatarFilename = documentSnapshot.getString("avatarCorrente");
+                        String temaCorrente =  documentSnapshot.getString("tema");
                         if (avatarFilename != null) {
-                            db.collection("avatars").document(avatarFilename).get()
+                            db.collection("avatars").document(temaCorrente).collection("personaggi").document(avatarFilename).get()
                                     .addOnCompleteListener(task -> {
                                         if (task.isSuccessful()) {
                                             DocumentSnapshot document = task.getResult();

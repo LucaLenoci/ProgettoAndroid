@@ -22,6 +22,7 @@ public class AvatarActivity extends AppCompatActivity {
     private Button buttonAvatar1, buttonAvatar2, buttonAvatar3, buttonAvatar4;
     private String bambinoId;
     private String avatarCorrente;
+    private String temaCorrente;
     private int bambinoCoins = 0;  // Store the bambino's current coin balance
 
     @Override
@@ -93,6 +94,7 @@ public class AvatarActivity extends AppCompatActivity {
                         DocumentSnapshot document = task.getResult();
                         if (document.exists()) {
                             avatarCorrente = document.getString("avatarCorrente");
+                            temaCorrente =  document.getString("tema");
 
                             // Load avatar data and check if it's the selected one
                             loadAvatarData("1", avatar1, textAvatar1, buttonAvatar1, coinsimageavatar1);
@@ -108,15 +110,17 @@ public class AvatarActivity extends AppCompatActivity {
                 });
     }
 
+
+
     private void loadAvatarData(String avatarKey, ImageView imageView, TextView textView, Button button, ImageView coinimageView) {
-        db.collection("avatars").document(avatarKey).get()
+        db.collection("avatars").document(temaCorrente).collection("personaggi").document(avatarKey).get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         DocumentSnapshot document = task.getResult();
                         if (document.exists()) {
                             String imagePath = document.getString("imageUrl");
                             String name = document.getString("name");
-                            Long coinsCostLong = document.getLong("coinsCost");
+                            Long coinsCostLong = document.getLong("coinCost");
                             Integer coinsCost = (coinsCostLong != null) ? coinsCostLong.intValue() : null;
 
                             Log.d(TAG, "Loading data for " + avatarKey);

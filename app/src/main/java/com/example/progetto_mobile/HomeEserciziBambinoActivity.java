@@ -232,9 +232,9 @@ public class HomeEserciziBambinoActivity extends AppCompatActivity {
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
                         String avatarFilename = documentSnapshot.getString("avatarCorrente");
+                        String temaCorrente =  documentSnapshot.getString("tema");
                         if (avatarFilename != null) {
-                            // Construct the full path to the avatar inside the "avatars" folder
-                            db.collection("avatars").document(avatarFilename).get()
+                            db.collection("avatars").document(temaCorrente).collection("personaggi").document(avatarFilename).get()
                                     .addOnCompleteListener(task -> {
                                         if (task.isSuccessful()) {
                                             DocumentSnapshot document = task.getResult();
