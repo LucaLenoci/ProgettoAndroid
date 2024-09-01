@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#D0B5FB">
 
     <ImageView
         android:id="@+id/imageView5"
@@ -37,9 +38,9 @@
         android:id="@+id/buttonavatar3"
         android:layout_width="135dp"
         android:layout_height="50dp"
+        android:contentDescription="compra/seleziona avatar 3"
         android:textAlignment="viewStart"
         android:textSize="20dp"
-        android:contentDescription="compra/seleziona avatar 3"
         app:layout_constraintBottom_toBottomOf="@+id/imageView4"
         app:layout_constraintEnd_toEndOf="@+id/imageView4"
         app:layout_constraintHorizontal_bias="0.4"
@@ -51,9 +52,9 @@
         android:id="@+id/buttonavatar4"
         android:layout_width="135dp"
         android:layout_height="50dp"
+        android:contentDescription="compra/seleziona avatar 4"
         android:textAlignment="viewStart"
         android:textSize="20dp"
-        android:contentDescription="compra/seleziona avatar 4"
         app:layout_constraintBottom_toBottomOf="@+id/imageView5"
         app:layout_constraintEnd_toEndOf="@+id/imageView5"
         app:layout_constraintHorizontal_bias="0.485"
@@ -71,7 +72,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/imageView2"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.036"
+        app:layout_constraintVertical_bias="0.1"
         app:srcCompat="@drawable/cat_background1" />
 
     <ImageView
@@ -84,7 +85,7 @@
         app:layout_constraintEnd_toStartOf="@+id/imageView3"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.036"
+        app:layout_constraintVertical_bias="0.100000024"
         app:srcCompat="@drawable/cat_background1" />
 
     <ImageView
@@ -127,9 +128,9 @@
         android:id="@+id/buttonavatar1"
         android:layout_width="135dp"
         android:layout_height="50dp"
+        android:contentDescription="compra/seleziona avatar 1"
         android:textAlignment="viewStart"
         android:textSize="20dp"
-        android:contentDescription="compra/seleziona avatar 1"
         app:layout_constraintBottom_toBottomOf="@+id/imageView2"
         app:layout_constraintEnd_toEndOf="@+id/avatar1"
         app:layout_constraintStart_toStartOf="@+id/avatar1"
@@ -139,9 +140,9 @@
         android:id="@+id/buttonavatar2"
         android:layout_width="135dp"
         android:layout_height="50dp"
+        android:contentDescription="compra/seleziona avatar 2"
         android:textAlignment="viewStart"
         android:textSize="20dp"
-        android:contentDescription="compra/seleziona avatar 2"
         app:layout_constraintBottom_toBottomOf="@+id/imageView3"
         app:layout_constraintEnd_toEndOf="@+id/imageView3"
         app:layout_constraintHorizontal_bias="0.514"
