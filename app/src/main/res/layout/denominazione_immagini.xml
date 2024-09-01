@@ -7,7 +7,6 @@
     android:background="?attr/colorPrimaryContainer">
 
 
-
     <ImageView
         android:id="@+id/imageView8"
         android:layout_width="match_parent"
@@ -18,14 +17,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_percent="0.8"
         app:srcCompat="@drawable/round_rect" />
-    <include
-        android:id="@+id/childLayout"
-        layout="@layout/supereroi"
-        android:scaleType="centerCrop"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent="0.8"/>
+
 
 
 
@@ -155,7 +147,6 @@
         android:layout_gravity="center"
         tools:layout_editor_absoluteX="0dp"
         tools:layout_editor_absoluteY="0dp" />
-
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
