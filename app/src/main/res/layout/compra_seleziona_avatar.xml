@@ -39,6 +39,7 @@
         android:layout_height="50dp"
         android:textAlignment="viewStart"
         android:textSize="20dp"
+        android:contentDescription="compra/seleziona avatar 3"
         app:layout_constraintBottom_toBottomOf="@+id/imageView4"
         app:layout_constraintEnd_toEndOf="@+id/imageView4"
         app:layout_constraintHorizontal_bias="0.4"
@@ -52,6 +53,7 @@
         android:layout_height="50dp"
         android:textAlignment="viewStart"
         android:textSize="20dp"
+        android:contentDescription="compra/seleziona avatar 4"
         app:layout_constraintBottom_toBottomOf="@+id/imageView5"
         app:layout_constraintEnd_toEndOf="@+id/imageView5"
         app:layout_constraintHorizontal_bias="0.485"
@@ -87,39 +89,39 @@
 
     <ImageView
         android:id="@+id/avatar1"
-        android:layout_width="100dp"
-        android:layout_height="125dp"
+        android:layout_width="110dp"
+        android:layout_height="130dp"
+        android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="@+id/imageView2"
         app:layout_constraintEnd_toEndOf="@+id/imageView2"
-        app:layout_constraintHorizontal_bias="0.485"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="@+id/imageView2"
         app:layout_constraintTop_toBottomOf="@+id/textavatar1"
-        app:layout_constraintVertical_bias="0.0"
-         />
+        app:layout_constraintVertical_bias="0.0" />
 
     <ImageView
         android:id="@+id/avatar2"
-        android:layout_width="127dp"
-        android:layout_height="161dp"
+        android:layout_width="110dp"
+        android:layout_height="130dp"
+        android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="@+id/imageView3"
         app:layout_constraintEnd_toEndOf="@+id/imageView3"
-        app:layout_constraintHorizontal_bias="0.418"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="@+id/imageView3"
-        app:layout_constraintTop_toTopOf="@+id/imageView3"
-        app:layout_constraintVertical_bias="0.22"
-         />
+        app:layout_constraintTop_toBottomOf="@+id/textavatar2"
+        app:layout_constraintVertical_bias="0.0" />
 
     <ImageView
         android:id="@+id/avatar3"
-        android:layout_width="123dp"
-        android:layout_height="146dp"
+        android:layout_width="110dp"
+        android:layout_height="130dp"
+        android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="@+id/imageView4"
         app:layout_constraintEnd_toEndOf="@+id/imageView4"
-        app:layout_constraintHorizontal_bias="0.51"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="@+id/imageView4"
-        app:layout_constraintTop_toTopOf="@+id/imageView4"
-        app:layout_constraintVertical_bias="0.324"
-         />
+        app:layout_constraintTop_toBottomOf="@+id/textavatar3"
+        app:layout_constraintVertical_bias="0.0" />
 
     <Button
         android:id="@+id/buttonavatar1"
@@ -127,6 +129,7 @@
         android:layout_height="50dp"
         android:textAlignment="viewStart"
         android:textSize="20dp"
+        android:contentDescription="compra/seleziona avatar 1"
         app:layout_constraintBottom_toBottomOf="@+id/imageView2"
         app:layout_constraintEnd_toEndOf="@+id/avatar1"
         app:layout_constraintStart_toStartOf="@+id/avatar1"
@@ -138,6 +141,7 @@
         android:layout_height="50dp"
         android:textAlignment="viewStart"
         android:textSize="20dp"
+        android:contentDescription="compra/seleziona avatar 2"
         app:layout_constraintBottom_toBottomOf="@+id/imageView3"
         app:layout_constraintEnd_toEndOf="@+id/imageView3"
         app:layout_constraintHorizontal_bias="0.514"
@@ -190,7 +194,7 @@
         android:text="Avatar2"
         app:layout_constraintBottom_toBottomOf="@+id/imageView3"
         app:layout_constraintEnd_toEndOf="@+id/avatar2"
-        app:layout_constraintHorizontal_bias="0.685"
+        app:layout_constraintHorizontal_bias="0.51"
         app:layout_constraintStart_toStartOf="@+id/avatar2"
         app:layout_constraintTop_toTopOf="@+id/imageView3"
         app:layout_constraintVertical_bias="0.064" />
@@ -201,35 +205,35 @@
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif-smallcaps"
         android:text="Avatar3"
-        app:layout_constraintBottom_toTopOf="@+id/avatar3"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView4"
         app:layout_constraintEnd_toEndOf="@+id/avatar3"
-        app:layout_constraintHorizontal_bias="0.488"
+        app:layout_constraintHorizontal_bias="0.491"
         app:layout_constraintStart_toStartOf="@+id/avatar3"
         app:layout_constraintTop_toTopOf="@+id/imageView4"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="0.034" />
 
     <ImageView
         android:id="@+id/avatar4"
-        android:layout_width="111dp"
-        android:layout_height="133dp"
+        android:layout_width="110dp"
+        android:layout_height="130dp"
         app:layout_constraintBottom_toBottomOf="@+id/imageView5"
         app:layout_constraintEnd_toEndOf="@+id/imageView5"
-        app:layout_constraintHorizontal_bias="0.525"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="@+id/imageView5"
-        app:layout_constraintTop_toTopOf="@+id/imageView5"
-        app:layout_constraintVertical_bias="0.275"
-         />
+        app:layout_constraintTop_toBottomOf="@+id/textavatar4"
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/textavatar4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
         android:fontFamily="sans-serif-smallcaps"
         android:text="Avatar4"
-        app:layout_constraintBottom_toTopOf="@+id/avatar4"
         app:layout_constraintEnd_toEndOf="@+id/imageView5"
-        app:layout_constraintHorizontal_bias="0.464"
-        app:layout_constraintStart_toStartOf="@+id/imageView5" />
+        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintStart_toStartOf="@+id/imageView5"
+        app:layout_constraintTop_toTopOf="@+id/imageView5" />
 
     <ImageView
         android:id="@+id/coinavatar3"
