@@ -33,13 +33,22 @@ public class HomeBambinoActivity extends AppCompatActivity {
     private TextView tvNome, tvCoins;
     private ProgressBar progressBar;
     private ImageView ProfilePic;
+    private String bambinoIdraw;
+    private String bambinoId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_bambino);
         ProfilePic = findViewById(R.id.ProfilePic);
-        loadCurrentAvatar("1");
+        bambinoIdraw = getIntent().getStringExtra("bambinoId");
+        // Find the last occurrence of '/'
+        int lastSlashIndex = bambinoIdraw.lastIndexOf('/');
+        // Extract the substring after the last '/'
+        bambinoId = bambinoIdraw.substring(lastSlashIndex + 1);
+
+
+        loadCurrentAvatar(bambinoId);
         tvNome = findViewById(R.id.Nome);
         tvCoins = findViewById(R.id.Coins);
         progressBar = findViewById(R.id.progressBar);
@@ -67,7 +76,7 @@ public class HomeBambinoActivity extends AppCompatActivity {
 
         ProfilePic.setOnClickListener(v -> {
             Intent intentAvatar = new Intent(HomeBambinoActivity.this, AvatarActivity.class);
-            intentAvatar.putExtra("bambinoId", "1");  // Pass the bambino ID to AvatarActivity
+            intentAvatar.putExtra("bambinoId", bambinoId);  // Pass the bambino ID to AvatarActivity
             startActivity(intentAvatar);
         });
     }
@@ -79,7 +88,7 @@ public class HomeBambinoActivity extends AppCompatActivity {
                 if (hasExercises) {
                     Intent intentEsercizi = new Intent(HomeBambinoActivity.this, HomeEserciziBambinoActivity.class);
                     intentEsercizi.putExtra("selectedDate", selectedDate);
-                    intentEsercizi.putExtra("bambinoId", "1");
+                    intentEsercizi.putExtra("bambinoId", bambinoId);
                     startActivity(intentEsercizi);
                 } else {
                     showNoExercisesPopup();
@@ -91,7 +100,7 @@ public class HomeBambinoActivity extends AppCompatActivity {
     private void checkIfExerciseExists(String date, FirestoreCallback callback) {
         // Reference to the specific document based on the date
         db.collection("esercizi")
-                .document("1")
+                .document(bambinoId)
                 .collection("tipo1")
                 .document(date)
                 .get()
@@ -101,7 +110,7 @@ public class HomeBambinoActivity extends AppCompatActivity {
                     if (callback != null) {
                         // Invoke the callback with the result
                         db.collection("esercizi")
-                                .document("1")
+                                .document(bambinoId)
                                 .collection("tipo2")
                                 .document(date)
                                 .get()
@@ -111,7 +120,7 @@ public class HomeBambinoActivity extends AppCompatActivity {
                                     if (callback != null) {
                                         // Invoke the callback with the result
                                         db.collection("esercizi")
-                                                .document("1")
+                                                .document(bambinoId)
                                                 .collection("tipo3")
                                                 .document(date)
                                                 .get()
@@ -178,10 +187,9 @@ public class HomeBambinoActivity extends AppCompatActivity {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         // Reference to the specific document with ID "1" in the "bambini" collection
-        DocumentReference docRef = db.collection("bambini").document("1");
 
         // Fetch the document
-        docRef.get()
+        db.collection("bambini").document(bambinoId).get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
                         // Document exists, retrieve data

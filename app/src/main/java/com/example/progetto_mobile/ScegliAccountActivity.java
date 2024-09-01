@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,6 +19,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.AuthCredential;
@@ -27,12 +29,14 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ScegliAccountActivity extends AppCompatActivity {
-
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
     private static final String TAG = "ScegliAccountActivity";
     private LinearLayout linearLayoutAccountGenitore, linearLayoutAccounts;
     private TextView tvNomeGenitore;
@@ -187,11 +191,21 @@ public class ScegliAccountActivity extends AppCompatActivity {
 
         TextView tvNomeBambino = accountItemView.findViewById(R.id.textViewNomeBambino);
 
+        ImageView ProfilePic = accountItemView.findViewById(R.id.imageViewUserPicBambino);
+
+        String bambinoIdraw = bambino.getDocRef();
+        // Find the last occurrence of '/'
+        int lastSlashIndex = bambinoIdraw.lastIndexOf('/');
+        // Extract the substring after the last '/'
+        String bambinoId = bambinoIdraw.substring(lastSlashIndex + 1);
+
+        loadCurrentAvatar(bambinoId, ProfilePic);
+
         tvNomeBambino.setText(bambino.getNome());
 
         accountItemView.setOnClickListener(v -> {
             Intent intent = new Intent(ScegliAccountActivity.this, HomeBambinoActivity.class);
-            intent.putExtra("bambino", bambino.getDocRef());
+            intent.putExtra("bambinoId", bambino.getDocRef());
             startActivity(intent);
         });
 
@@ -204,4 +218,50 @@ public class ScegliAccountActivity extends AppCompatActivity {
         tvNessunAccount.setTextSize(18);
         linearLayoutAccounts.addView(tvNessunAccount);
     }
+
+    private void loadCurrentAvatar(String bambinoId, ImageView ProfilePic) {
+        db.collection("bambini")
+                .document(bambinoId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        String avatarFilename = documentSnapshot.getString("avatarCorrente");
+                        String temaCorrente =  documentSnapshot.getString("tema");
+                        String sessoBambino = documentSnapshot.getString("sesso");
+                        String personaggi_da_visualizzare = "";
+                        if (sessoBambino.equals("M")){
+                            personaggi_da_visualizzare = "personaggi";
+                        }else{
+                            personaggi_da_visualizzare = "personaggi_femminili";
+                        }
+                        if (avatarFilename != null) {
+                            db.collection("avatars").document(temaCorrente).collection(personaggi_da_visualizzare).document(avatarFilename).get()
+                                    .addOnCompleteListener(task -> {
+                                        if (task.isSuccessful()) {
+                                            DocumentSnapshot document = task.getResult();
+                                            if (document.exists()) {
+                                                String imagePath = document.getString("imageUrl");
+
+                                                if (imagePath != null && !imagePath.isEmpty()) {
+                                                    StorageReference imageRef = FirebaseStorage.getInstance().getReferenceFromUrl(imagePath);
+                                                    imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                                                        Log.d(TAG, "Image URL retrieved successfully for " + avatarFilename);
+                                                        Glide.with(ScegliAccountActivity.this).load(uri).into(ProfilePic);
+                                                    }).addOnFailureListener(exception -> {
+                                                        Log.e(TAG, "Failed to get download URL for " + avatarFilename, exception);
+                                                    });
+                                                } else {
+                                                    Log.e(TAG, "Image path is null or empty for " + avatarFilename);
+                                                }
+                                            }
+                                        }
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Log.e("LoadAvatar", "Failed to load avatar image", e);
+                                    });
+                        }
+                    }
+                });
+    }
+
 }
