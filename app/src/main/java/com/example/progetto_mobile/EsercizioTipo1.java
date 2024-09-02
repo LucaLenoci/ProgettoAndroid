@@ -5,6 +5,8 @@ import androidx.annotation.NonNull;
 import java.io.Serializable;
 
 public class EsercizioTipo1 implements Serializable {
+
+    private String placeholder;
     private boolean esercizio_corretto;
     private String risposta;
     private String risposta_corretta;
@@ -14,6 +16,16 @@ public class EsercizioTipo1 implements Serializable {
 
     public EsercizioTipo1() {
         // Default constructor required for serialization or other purposes
+    }
+
+    public EsercizioTipo1(String placeholder, boolean esercizioCorretto, String risposta, String rispostaCorretta, String suggerimento, String suggerimento2, String suggerimento3) {
+        this.placeholder = placeholder;
+        this.esercizio_corretto = esercizioCorretto;
+        this.risposta = risposta;
+        this.risposta_corretta = rispostaCorretta;
+        this.suggerimento = suggerimento;
+        this.suggerimento2 = suggerimento2;
+        this.suggerimento3 = suggerimento3;
     }
 
     public EsercizioTipo1(boolean esercizioCorretto, String risposta, String rispostaCorretta, String suggerimento, String suggerimento2, String suggerimento3) {
@@ -60,6 +72,13 @@ public class EsercizioTipo1 implements Serializable {
         return suggerimento3;
     }
 
+    public String getPlaceholder() {
+        return placeholder;
+    }
+
+    public void setPlaceholder(String placeholder) {
+        this.placeholder = placeholder;
+    }
 
     public void setSuggerimento(String suggerimento) {
         this.suggerimento = suggerimento;

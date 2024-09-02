@@ -32,6 +32,7 @@ public class HomeLogopedistaActivity extends AppCompatActivity {
     private LinearLayout linearLayoutGenitori;
     private List<String> genitoriPaths;
     private List<Genitore> genitoriList;
+    private String logopedistaPath = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,8 +49,10 @@ public class HomeLogopedistaActivity extends AppCompatActivity {
         genitoriPaths = new ArrayList<>();
         genitoriList = new ArrayList<>();
 
-        String logopedistaPath = getIntent().getStringExtra("logopedista");
-        getGenitoriFromLogopedistaPath(logopedistaPath);
+        logopedistaPath = getIntent().getStringExtra("logopedista");
+        if (logopedistaPath != null) {
+            getGenitoriFromLogopedistaPath(logopedistaPath);
+        }
 
         Button btnVediClassificaBambini = findViewById(R.id.buttonClassificaBambini);
         btnVediClassificaBambini.setOnClickListener(v -> {
@@ -142,6 +145,8 @@ public class HomeLogopedistaActivity extends AppCompatActivity {
             Log.d(TAG, "Genitore cliccato: " + genitore);
             Intent intent = new Intent(HomeLogopedistaActivity.this, DashboardGenitoreActivity.class);
             intent.putExtra("genitore", genitore);
+            intent.putExtra("from", "homeLogopedista");
+            intent.putExtra("logopedista", logopedistaPath);
             startActivity(intent);
         });
 

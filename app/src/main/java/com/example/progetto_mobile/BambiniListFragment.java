@@ -20,7 +20,6 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -36,6 +35,7 @@ public class BambiniListFragment extends Fragment {
     private LinearLayout linearLayoutBambini;
     private FirebaseFirestore db;
     private String genitorePath;
+    private boolean isFromHomeLogopedista = false;
 
     public BambiniListFragment() {
         // Required empty public constructor
@@ -72,6 +72,12 @@ public class BambiniListFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_bambini_list, container, false);
 
         linearLayoutBambini = view.findViewById(R.id.linearLayoutBambini);
+
+        String from = getActivity().getIntent().getStringExtra("from");
+        if (from != null && from.equals("homeLogopedista")) {
+            Log.d(TAG, "from: " + from);
+            isFromHomeLogopedista = true;
+        }
 
         if (genitorePath != null) {
             getBambiniFromFirestore(genitorePath);
@@ -113,17 +119,15 @@ public class BambiniListFragment extends Fragment {
             int progresso = bambinoSnapshot.getLong("progresso").intValue();
             int coins = bambinoSnapshot.getLong("coins").intValue();
 
-            List<DocumentReference> eserciziTipo1Refs = (List<DocumentReference>) bambinoSnapshot.get("eserciziTipo1");
-            List<DocumentReference> eserciziTipo2Refs = (List<DocumentReference>) bambinoSnapshot.get("eserciziTipo2");
-            List<DocumentReference> eserciziTipo3Refs = (List<DocumentReference>) bambinoSnapshot.get("eserciziTipo3");
+            DocumentReference esercizioTipo1Ref = bambinoSnapshot.getDocumentReference("esercizioTipo1");
+            DocumentReference esercizioTipo2Ref = bambinoSnapshot.getDocumentReference("esercizioTipo2");
+            DocumentReference esercizioTipo3Ref = bambinoSnapshot.getDocumentReference("esercizioTipo3");
 
             Log.d("HomeGenitoreActivity", "Nome bambino: " + nome);
             Log.d("HomeGenitoreActivity", "Progresso bambino: " + progresso);
-            Log.d("HomeGenitoreActivity", "Esercizi tipo 1: " + eserciziTipo1Refs.size());
-            Log.d("HomeGenitoreActivity", "Esercizi tipo 2: " + eserciziTipo2Refs.size());
-            Log.d("HomeGenitoreActivity", "Esercizi tipo 3: " + eserciziTipo3Refs.size());
 
-            getEserciziDetails(eserciziTipo1Refs, eserciziTipo2Refs, eserciziTipo3Refs, (eserciziTipo1, eserciziTipo2, eserciziTipo3) -> {
+            // Otteniamo i dettagli di ogni esercizio
+            getEserciziDetails(esercizioTipo1Ref, esercizioTipo2Ref, esercizioTipo3Ref, (eserciziTipo1, eserciziTipo2, eserciziTipo3) -> {
                 Child child = new Child(
                         nome,
                         progresso,
@@ -131,51 +135,48 @@ public class BambiniListFragment extends Fragment {
                         eserciziTipo1,
                         eserciziTipo2,
                         eserciziTipo3);
+                child.putDocId(bambinoSnapshot.getId());
+                if (esercizioTipo1Ref != null) child.putEsercizioTipo1Ref(esercizioTipo1Ref.getPath());
+                if (esercizioTipo2Ref != null) child.putEsercizioTipo2Ref(esercizioTipo2Ref.getPath());
+                if (esercizioTipo3Ref != null) child.putEsercizioTipo3Ref(esercizioTipo3Ref.getPath());
                 addChildDashboard(child);
             });
         }
     }
 
-    private void getEserciziDetails(List<DocumentReference> tipo1Refs, List<DocumentReference> tipo2Refs, List<DocumentReference> tipo3Refs, BambiniListFragment.EserciziCallback callback) {
-        List<EsercizioTipo1> eserciziTipo1 = new ArrayList<>();
-        List<EsercizioTipo2> eserciziTipo2 = new ArrayList<>();
-        List<EsercizioTipo3> eserciziTipo3 = new ArrayList<>();
+    private void getEserciziDetails(DocumentReference tipo1Ref, DocumentReference tipo2Ref, DocumentReference tipo3Ref, BambiniListFragment.EserciziCallback callback) {
+        Task<EsercizioTipo1> esercizioTipo1Task = tipo1Ref != null
+                ? tipo1Ref.get().continueWith(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        return task.getResult().toObject(EsercizioTipo1.class);
+                    }
+                    return null;
+                })
+                : Tasks.forResult(null);
 
-        // Utilizziamo Tasks.whenAllComplete per gestire tutte le richieste asincrone
-        List<Task<?>> allTasks = new ArrayList<>();
+        Task<EsercizioTipo2> esercizioTipo2Task = tipo2Ref != null
+                ? tipo2Ref.get().continueWith(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        return task.getResult().toObject(EsercizioTipo2.class);
+                    }
+                    return null;
+                })
+                : Tasks.forResult(null);
 
-        // Aggiungi task per EsercizioTipo1
-        for (DocumentReference ref : tipo1Refs) {
-            allTasks.add(ref.get().addOnSuccessListener(doc -> {
-                if (doc.exists()) {
-                    eserciziTipo1.add(doc.toObject(EsercizioTipo1.class));
-                }
-            }));
-        }
-
-        // Aggiungi task per EsercizioTipo2
-        for (DocumentReference ref : tipo2Refs) {
-            allTasks.add(ref.get().addOnSuccessListener(doc -> {
-                if (doc.exists()) {
-                    eserciziTipo2.add(doc.toObject(EsercizioTipo2.class));
-                }
-            }));
-        }
-
-        // Aggiungi task per EsercizioTipo3
-        for (DocumentReference ref : tipo3Refs) {
-            allTasks.add(ref.get().addOnSuccessListener(doc -> {
-                if (doc.exists()) {
-                    eserciziTipo3.add(doc.toObject(EsercizioTipo3.class));
-                }
-            }));
-        }
+        Task<EsercizioTipo3> esercizioTipo3Task = tipo3Ref != null
+                ? tipo3Ref.get().continueWith(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        return task.getResult().toObject(EsercizioTipo3.class);
+                    }
+                    return null;
+                })
+                : Tasks.forResult(null);
 
         // Attendi il completamento di tutti i task
-        Tasks.whenAllComplete(allTasks)
+        Tasks.whenAllComplete(esercizioTipo1Task, esercizioTipo2Task, esercizioTipo3Task)
                 .addOnSuccessListener(tasks -> {
                     // Tutti i task sono completati, chiama il callback
-                    callback.onComplete(eserciziTipo1, eserciziTipo2, eserciziTipo3);
+                    callback.onComplete(esercizioTipo1Task.getResult(), esercizioTipo2Task.getResult(), esercizioTipo3Task.getResult());
                 })
                 .addOnFailureListener(e -> {
                     // Gestisci eventuali errori
@@ -184,7 +185,7 @@ public class BambiniListFragment extends Fragment {
     }
 
     interface EserciziCallback {
-        void onComplete(List<EsercizioTipo1> tipo1, List<EsercizioTipo2> tipo2, List<EsercizioTipo3> tipo3);
+        void onComplete(EsercizioTipo1 tipo1, EsercizioTipo2 tipo2, EsercizioTipo3 tipo3);
     }
 
     private void addChildDashboard(Child child) {
@@ -210,23 +211,43 @@ public class BambiniListFragment extends Fragment {
         childDashboard.setOnClickListener(v -> {
             Intent intent = new Intent(getContext(), DashboardBambinoActivity.class);
             intent.putExtra("child", child);
+
+            if (isFromHomeLogopedista) {
+                intent.putExtra("from", "homeLogopedista");
+            }
+
             startActivity(intent);
         });
 
         linearLayoutBambini.addView(childDashboard);
     }
 
-    private void addExerciseInfo(LinearLayout container, List<List<?>> allEsercizi) {
+    private void addExerciseInfo(LinearLayout container, List<?> allEsercizi) {
         String[] tipi = {"Denominazione immagine", "Riconoscimento coppie minime", "Ripetizione sequenza di parole"};
         for (int i = 0; i < allEsercizi.size(); i++) {
-            List<?> esercizi = allEsercizi.get(i);
-            if (esercizi != null && !esercizi.isEmpty()) {
-                for (Object esercizio : esercizi) {
+            Object esercizio = allEsercizi.get(i);
+            if (esercizio != null) {
+                if (isPlaceholder(esercizio)) {
+                    // todo: aggiungi view 'non ci sono esercizi'
+                } else {
                     boolean esercizioCorretto = isEsercizioCorretto(esercizio);
                     addExerciseView(container, tipi[i], esercizioCorretto);
                 }
             }
         }
+    }
+
+    private static boolean isPlaceholder(Object esercizio) {
+        String isPlaceholder = "";
+        if (esercizio instanceof EsercizioTipo1) {
+            isPlaceholder = ((EsercizioTipo1) esercizio).getPlaceholder();
+        } else if (esercizio instanceof EsercizioTipo2) {
+            isPlaceholder = ((EsercizioTipo2) esercizio).getPlaceholder();
+        } else if (esercizio instanceof EsercizioTipo3) {
+            isPlaceholder = ((EsercizioTipo3) esercizio).getPlaceholder();
+        }
+        if (isPlaceholder == null) return false;
+        return isPlaceholder.equals("placeholder");
     }
 
     private static boolean isEsercizioCorretto(Object esercizio) {

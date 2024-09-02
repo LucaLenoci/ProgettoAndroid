@@ -28,6 +28,13 @@ public class User implements Serializable {
         this.cognome = cognome;
     }
 
+    public User(String nome, String cognome, int eta, int tipologia) {
+        this.nome = nome;
+        this.cognome = cognome;
+        this.eta = eta;
+        this.tipologia = tipologia;
+    }
+
     public User(String nome, String cognome, int eta, String email, int tipologia) {
         this.nome = nome;
         this.cognome = cognome;
@@ -81,7 +88,7 @@ public class User implements Serializable {
         return docRef;
     }
 
-    public User setDocRef(String docRef) {
+    public User putDocRef(String docRef) {
         this.docRef = docRef;
         return this;
     }

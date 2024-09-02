@@ -93,6 +93,8 @@ public class ScegliAccountActivity extends AppCompatActivity {
         final EditText input = new EditText(this);
         input.setHint("Password");
         input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+//        input.setFilters(new InputFilter[] { new InputFilter.LengthFilter(4) });
+//        input.setInputType(InputType.TYPE_CLASS_NUMBER);
         builder.setView(input);
 
         builder.setPositiveButton("Conferma", (dialog, which) -> {
@@ -161,7 +163,7 @@ public class ScegliAccountActivity extends AppCompatActivity {
                                 String path = bambinoSnapshot.getReference().getPath();
                                 Log.d(TAG, String.format("Nome: %s, Path: %s", nome, path));
 
-                                User user = new User(nome).setDocRef(path);
+                                User user = new User(nome).putDocRef(path);
                                 bambiniList.add(user);
                             }
                         } else {

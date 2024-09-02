@@ -5,12 +5,19 @@ import androidx.annotation.NonNull;
 import java.io.Serializable;
 
 public class EsercizioTipo3 implements Serializable {
+    private String placeholder;
     private boolean esercizio_corretto;
     private String risposta_corretta;
 
 
     public EsercizioTipo3() {
         // Default constructor required for serialization or other purposes
+    }
+
+    public EsercizioTipo3(String placeholder, boolean esercizioCorretto, String rispostaCorretta) {
+        this.placeholder = placeholder;
+        this.esercizio_corretto = esercizioCorretto;
+        this.risposta_corretta = rispostaCorretta;
     }
 
     public EsercizioTipo3(boolean esercizioCorretto, String rispostaCorretta) {
@@ -34,6 +41,14 @@ public class EsercizioTipo3 implements Serializable {
 
     public void setRisposta_corretta(String risposta_corretta) {
         this.risposta_corretta = risposta_corretta;
+    }
+
+    public String getPlaceholder() {
+        return placeholder;
+    }
+
+    public void setPlaceholder(String placeholder) {
+        this.placeholder = placeholder;
     }
 
     @NonNull

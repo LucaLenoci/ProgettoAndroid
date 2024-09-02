@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <EditText
+        android:id="@+id/input1"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:hint="Input 1"
+        android:inputType="text"
+        android:importantForAutofill="no"
+        tools:ignore="HardcodedText" />
+
+    <EditText
+        android:id="@+id/input2"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:hint="Input 2"
+        android:inputType="text"
+        android:importantForAutofill="no"
+        tools:ignore="HardcodedText" />
+
+    <EditText
+        android:id="@+id/input3"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:hint="Input 3"
+        android:inputType="text"
+        android:importantForAutofill="no"
+        tools:ignore="HardcodedText" />
+
+    <EditText
+        android:id="@+id/input4"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:hint="Input 4"
+        android:inputType="text"
+        android:importantForAutofill="no"
+        tools:ignore="HardcodedText" />
+
+    <EditText
+        android:id="@+id/input5"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:hint="Input 5"
+        android:inputType="text"
+        android:importantForAutofill="no"
+        tools:ignore="HardcodedText" />
+
+</LinearLayout>

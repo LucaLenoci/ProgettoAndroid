@@ -6,6 +6,8 @@ import java.io.Serializable;
 import java.util.Locale;
 
 public class EsercizioTipo2 implements Serializable {
+
+    private String placeholder;
     private boolean esercizio_corretto;
     // TODO: su firestore il campo 'risposta' non c'è
     private String risposta;
@@ -18,13 +20,22 @@ public class EsercizioTipo2 implements Serializable {
         // Default constructor required for serialization or other purposes
     }
 
+    public EsercizioTipo2(String placeholder, boolean esercizioCorretto, String risposta, String rispostaCorretta, String rispostaSbagliata, String suggerimento, int immagineCorretta) {
+        this.placeholder = placeholder;
+        this.esercizio_corretto = esercizioCorretto;
+        this.risposta = risposta;
+        this.risposta_corretta = rispostaCorretta;
+        this.risposta_sbagliata = rispostaSbagliata;
+        this.immagine_corretta = immagineCorretta;
+    }
+
+    /* perchè sta String suggerimento come parametro? */
     public EsercizioTipo2(boolean esercizioCorretto, String risposta, String rispostaCorretta, String rispostaSbagliata, String suggerimento, int immagineCorretta) {
         this.esercizio_corretto = esercizioCorretto;
         this.risposta = risposta;
         this.risposta_corretta = rispostaCorretta;
         this.risposta_sbagliata = rispostaSbagliata;
         this.immagine_corretta = immagineCorretta;
-
     }
 
     // Getters and Setters
@@ -56,9 +67,16 @@ public class EsercizioTipo2 implements Serializable {
         return immagine_corretta;
     }
 
-
     public void setRisposta_corretta(String risposta_corretta) {
         this.risposta_corretta = risposta_corretta;
+    }
+
+    public String getPlaceholder() {
+        return placeholder;
+    }
+
+    public void setPlaceholder(String placeholder) {
+        this.placeholder = placeholder;
     }
 
     @NonNull
