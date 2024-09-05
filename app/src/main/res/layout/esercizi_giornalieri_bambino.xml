@@ -15,7 +15,7 @@
         android:layout_alignParentStart="true"
         android:layout_marginStart="180dp"
         android:layout_marginTop="116dp"
-        android:src="@drawable/spine2" />
+        android:src="@drawable/spine" />
 
     <ImageView
         android:id="@+id/spine2"
@@ -25,7 +25,7 @@
         android:layout_alignParentStart="true"
         android:layout_marginStart="70dp"
         android:layout_marginTop="239dp"
-        android:src="@drawable/spine2" />
+        android:src="@drawable/spine" />
 
     <ImageView
         android:id="@+id/spine3"
@@ -35,7 +35,7 @@
         android:layout_alignParentStart="true"
         android:layout_marginStart="291dp"
         android:layout_marginTop="239dp"
-        android:src="@drawable/spine2" />
+        android:src="@drawable/spine" />
 
     <LinearLayout
         android:id="@+id/linearLayout3"
