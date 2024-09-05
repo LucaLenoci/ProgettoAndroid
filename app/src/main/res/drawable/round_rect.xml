@@ -5,9 +5,10 @@
         android:type="radial"
         android:centerX="50%"
         android:centerY="75%"
-        android:startColor="#A07CFF"
-        android:centerColor="#886AD8"
-        android:endColor="#ff6750a4"
+        android:startColor="@color/supereroi1"
+        android:centerColor="@color/supereroi2"
+        android:endColor="@color/supereroi3"
+        android:angle="45"
         android:gradientRadius="80%"/>
     <corners
         android:bottomLeftRadius="80dp"

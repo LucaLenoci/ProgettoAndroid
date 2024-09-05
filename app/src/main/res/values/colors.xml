@@ -4,10 +4,17 @@
     <color name="white">#FFFFFFFF</color>
     <color name="grey">#5A5A5A</color>
     <color name="light_grey">#FFb5b5b5</color>
-    <color name="supereroi1">#FF8400</color>
-    <color name="supereroi2">#FF5900</color>
-    <color name="supereroi3">#FF0000</color>
+    <color name="supereroi1">#0088FF</color>
+    <color name="supereroi2">#0037FF</color>
+    <color name="supereroi3">#1100FF</color>
     <color name="videogiochi1">#A07CFF</color>
     <color name="videogiochi2">#886AD8</color>
     <color name="videogiochi3">#ff6750a4</color>
+    <color name="videogiochibackground">#4A387A</color>
+    <color name="supereroibackground">#0D01B3</color>
+    <!--
+    <color name="supereroi1">#FF8400</color>
+    <color name="supereroi2">#FF5900</color>
+    <color name="supereroi3">#FF0000</color>
+    -->
 </resources>

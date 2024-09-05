@@ -2,6 +2,7 @@ package com.example.progetto_mobile;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -12,6 +13,8 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -44,6 +47,7 @@ public class HomeEserciziBambinoActivity extends AppCompatActivity {
 
         db = FirebaseFirestore.getInstance();
 
+        fetchTema();
         JoystickView joystick = findViewById(R.id.joystick);
         movableObject = findViewById(R.id.movable_object);
 
@@ -268,6 +272,44 @@ public class HomeEserciziBambinoActivity extends AppCompatActivity {
                         }
                     }
                 });
+    }
+
+    private void fetchTema() {
+        db.collection("bambini").document(bambinoId).get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            String temaCorrente =  document.getString("tema");
+                            updateConstraintLayoutBackground(temaCorrente);
+                        } else {
+                            Log.e(TAG, "No such document for " + bambinoId);
+                        }
+                    } else {
+                        Log.e(TAG, "Firestore get failed for " + bambinoId, task.getException());
+                    }
+                });
+    }
+
+    public void updateConstraintLayoutBackground(String theme) {
+        RelativeLayout constraintLayout = findViewById(R.id.relativeLayout);// Your ConstraintLayout
+
+        int backgroundColor = 0;
+
+        // Set background color based on the theme
+        switch (theme) {
+            case "supereroi":
+            case "cartoni_animati":
+                backgroundColor = ContextCompat.getColor(this, R.color.supereroibackground); // Replace with actual color resource
+                break;
+            case "favole":
+            case "videogiochi":
+                backgroundColor = ContextCompat.getColor(this, R.color.videogiochibackground); // Replace with actual color resource
+                break;
+        }
+
+        // Apply the background color to the ConstraintLayout
+        constraintLayout.setBackgroundColor(backgroundColor);
     }
 
 }
