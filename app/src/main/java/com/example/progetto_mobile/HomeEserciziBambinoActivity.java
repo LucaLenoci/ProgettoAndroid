@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -36,6 +37,9 @@ public class HomeEserciziBambinoActivity extends AppCompatActivity {
     private String bambinoId;
     private FirebaseFirestore db;
 
+    private ImageView spine1, spine2, spine3;  // Aggiungi riferimenti alle immagini PNG
+    private float initialX, initialY;  // Posizione iniziale dell'oggetto movibile
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +54,23 @@ public class HomeEserciziBambinoActivity extends AppCompatActivity {
         fetchTema();
         JoystickView joystick = findViewById(R.id.joystick);
         movableObject = findViewById(R.id.movable_object);
+
+        // Usa ViewTreeObserver per ottenere la posizione iniziale una volta che il layout è pronto
+        movableObject.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                initialX = movableObject.getX();
+                initialY = movableObject.getY();
+
+                // Rimuovi l'ascoltatore per evitare di ripetere l'inizializzazione
+                movableObject.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            }
+        });
+
+        // Inizializza le immagini PNG
+        spine1 = findViewById(R.id.spine1);
+        spine2 = findViewById(R.id.spine2);
+        spine3 = findViewById(R.id.spine3);
 
         // Initialize the list of buttons and add your buttons to the list
         buttons = new ArrayList<>();
@@ -118,6 +139,16 @@ public class HomeEserciziBambinoActivity extends AppCompatActivity {
                 break;  // Stop checking other buttons after a collision is detected
             }
         }
+
+        // Contolla collisione con le spine
+        if (isColliding(movableObject, spine1) || isColliding(movableObject, spine2) || isColliding(movableObject, spine3)) {
+            resetMovableObjectPosition();  // Torna alla posizione iniziale se c'è una collisione
+        }
+    }
+
+    private void resetMovableObjectPosition() {
+        movableObject.setX(initialX);
+        movableObject.setY(initialY);
     }
 
     private boolean isColliding(View object1, View object2) {
