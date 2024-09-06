@@ -17,16 +17,17 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class HomeBambinoActivity extends AppCompatActivity {
 
@@ -38,6 +39,8 @@ public class HomeBambinoActivity extends AppCompatActivity {
     private ImageView ProfilePic;
     private String bambinoIdraw;
     private String bambinoId;
+    private int currentStreak=0;
+    private TextView numerostreak;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,12 +52,14 @@ public class HomeBambinoActivity extends AppCompatActivity {
         int lastSlashIndex = bambinoIdraw.lastIndexOf('/');
         // Extract the substring after the last '/'
         bambinoId = bambinoIdraw.substring(lastSlashIndex + 1);
-
+        numerostreak = findViewById(R.id.textView3);
         fetchTema();
+        calculateStreak();
         loadCurrentAvatar(bambinoId);
         tvNome = findViewById(R.id.Nome);
         tvCoins = findViewById(R.id.Coins);
         progressBar = findViewById(R.id.progressBar);
+
         CalendarView calendarView = findViewById(R.id.calendarView);
         Button esercizioButton = findViewById(R.id.button);
 
@@ -354,4 +359,86 @@ public class HomeBambinoActivity extends AppCompatActivity {
         // Apply the background color to the ConstraintLayout
         constraintLayout.setBackgroundColor(backgroundColor);
     }
+
+    private void calculateStreak() {
+        Date currentDate = new Date();
+        calculateDayStreak(currentDate);
+    }
+
+    private void calculateDayStreak(Date date) {
+        String formattedDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(date);
+
+        // Check if exercises exist for all types for the given date
+        checkAllExerciseTypesForDate(formattedDate, new FirestoreCallback() {
+            @Override
+            public void onCallback(boolean allExercisesCompleted) {
+                if (allExercisesCompleted) {
+                    // If all exercises for this day are completed, increase the streak and check the previous day
+                    currentStreak++;
+
+                    // Move to the previous day
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(date);
+                    calendar.add(Calendar.DAY_OF_MONTH, -1);
+
+                    // Recursively check the previous day
+                    calculateDayStreak(calendar.getTime());
+                } else {
+                    // Not all exercises are completed for this day, streak ends
+                    Toast.makeText(HomeBambinoActivity.this, "Current Streak: " + currentStreak + " days", Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "Current Streak: " + currentStreak + " days");
+                    numerostreak.setText(String.valueOf(currentStreak));
+                }
+            }
+        });
+    }
+
+    private void checkAllExerciseTypesForDate(String date, FirestoreCallback callback) {
+        // Define the types of exercises to check
+        String[] exerciseTypes = {"tipo1", "tipo2", "tipo3"};
+        int totalTypes = exerciseTypes.length;
+        final int[] countCorrect = {0}; // Count of exercise types that are correct
+        final int[] countChecked = {0}; // Count of total exercise types checked
+
+        for (String type : exerciseTypes) {
+            db.collection("esercizi")
+                    .document(bambinoId)
+                    .collection(type)
+                    .document(date)
+                    .get()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful() && task.getResult() != null) {
+                            DocumentSnapshot document = task.getResult();
+                            if (document.exists()) {
+                                Boolean isCorrect = document.getBoolean("esercizio_corretto");
+                                if (Boolean.TRUE.equals(isCorrect)) {
+                                    countCorrect[0]++;
+                                }
+                                countChecked[0]++;
+                            } else {
+                                countChecked[0]++;
+                            }
+
+                            // Check if all exercise types have been processed
+                            if (countChecked[0] == totalTypes) {
+                                // All types have been checked, determine if the streak should continue
+                                if (countCorrect[0] == totalTypes) {
+                                    callback.onCallback(true); // All exercises are correct
+                                } else {
+                                    callback.onCallback(false); // Not all exercises are correct
+                                }
+                            }
+                        } else {
+                            Log.e(TAG, "Error fetching document for type: " + type + " on date: " + date, task.getException());
+                            // If there's an error fetching the document, we assume it affects the streak
+                            countChecked[0]++;
+                            if (countChecked[0] == totalTypes) {
+                                callback.onCallback(false); // Assume failure if any document fetch fails
+                            }
+                        }
+                    });
+        }
+    }
+
+
 }
