@@ -240,6 +240,7 @@ public class HomeEserciziBambinoActivity extends AppCompatActivity {
                     intent = new Intent(HomeEserciziBambinoActivity.this, RipetizioneSequenzeParoleActivity.class);
                     break;
                 case 4:
+                    // todo: cambia con ClassificaBambiniActivity
                     intent = new Intent(HomeEserciziBambinoActivity.this, BambinoClassificaActivity.class);
                     break;
                 default:

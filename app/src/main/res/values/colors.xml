@@ -4,6 +4,8 @@
     <color name="white">#FFFFFFFF</color>
     <color name="grey">#5A5A5A</color>
     <color name="light_grey">#FFb5b5b5</color>
+    <color name="radio_button_male">#304FFE</color>
+    <color name="radio_button_female">#FE30F4</color>
     <color name="supereroi1">#0088FF</color>
     <color name="supereroi2">#0037FF</color>
     <color name="supereroi3">#1100FF</color>

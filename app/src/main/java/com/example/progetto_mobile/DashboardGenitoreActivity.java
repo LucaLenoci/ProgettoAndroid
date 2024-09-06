@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -22,7 +23,7 @@ import java.util.Map;
 public class DashboardGenitoreActivity extends AppCompatActivity {
 
     private static final String TAG = "DashboardGenitoreActivity";
-    private String genitorePath = "";
+    private String genitorePath = "", logopedistaPath = "";
     private FirebaseFirestore db;
 
     @Override
@@ -46,7 +47,7 @@ public class DashboardGenitoreActivity extends AppCompatActivity {
             showBambiniList();
         }
 
-        String logopedistaPath = getIntent().getStringExtra("logopedista");
+        logopedistaPath = getIntent().getStringExtra("logopedista");
 
         Button btnRegistraBambino = findViewById(R.id.buttonRegistraBambino);
         if (genitore != null && logopedistaPath != null) {
@@ -70,6 +71,7 @@ public class DashboardGenitoreActivity extends AppCompatActivity {
         EditText etNome = view.findViewById(R.id.editTextNome);
         EditText etCognome = view.findViewById(R.id.editTextCognome);
         EditText etEta = view.findViewById(R.id.editTextEta);
+        RadioGroup radioGroupSesso = view.findViewById(R.id.radioGroupSesso);
 
         builder.setView(view);
 
@@ -77,13 +79,22 @@ public class DashboardGenitoreActivity extends AppCompatActivity {
                     String nome = etNome.getText().toString();
                     String cognome = etCognome.getText().toString();
                     String eta = etEta.getText().toString();
+                    String sesso = "";
+
+                    int selectedId = radioGroupSesso.getCheckedRadioButtonId();
+                    if (selectedId == R.id.radioButtonMaschio) {
+                        sesso = "M";
+                    } else if (selectedId == R.id.radioButtonFemmina) {
+                        sesso = "F";
+                    }
 
                     db = FirebaseFirestore.getInstance();
-                    if (!nome.isEmpty() && !cognome.isEmpty() && !eta.isEmpty()) {
+                    if (!nome.isEmpty() && !cognome.isEmpty() && !eta.isEmpty() && !sesso.isEmpty()) {
                         Map<String, Object> child = new HashMap<>();
                         child.put("nome", nome);
                         child.put("cognome", cognome);
                         child.put("eta", Integer.parseInt(eta));
+                        child.put("sesso", sesso);
                         child.put("tipologia", 0);
                         child.put("avatarCorrente", "");
                         child.put("progresso", 0);
@@ -91,28 +102,20 @@ public class DashboardGenitoreActivity extends AppCompatActivity {
                         child.put("esercizioTipo1", db.document("/esercizi/placeholder/tipo1/16-08-2024")); //placeholder
                         child.put("esercizioTipo2", db.document("/esercizi/placeholder/tipo2/16-08-2024")); //placeholder
                         child.put("esercizioTipo3", db.document("/esercizi/placeholder/tipo3/16-08-2024")); //placeholder
-                        addBambinoToFirestore(child);
+                        ChildHelper.addBambinoToFirestore(child, genitorePath, logopedistaPath)
+                                .addOnSuccessListener(task -> {
+                                    Toast.makeText(DashboardGenitoreActivity.this, "Bambino registrato con successo!", Toast.LENGTH_SHORT).show();
+                                    showBambiniList();
+                                })
+                                .addOnFailureListener(e -> {
+                                    Toast.makeText(DashboardGenitoreActivity.this, "Errore nella registrazione del bambino", Toast.LENGTH_SHORT).show();
+                                    Log.e(TAG, "Errore aggiungendo il bambino: ", e);
+                                });
                     } else {
                         Toast.makeText(DashboardGenitoreActivity.this, "Inserisci tutti i dati", Toast.LENGTH_SHORT).show();
                     }
                 })
                 .setNegativeButton("Annulla", (dialog, which) -> dialog.cancel())
                 .show();
-    }
-
-    // todo: collega il bambino al genitore
-    private void addBambinoToFirestore(Map<String, Object> child) {
-        db.collection("bambini")
-                .add(child)
-                .addOnSuccessListener(documentReference -> {
-                    Toast.makeText(DashboardGenitoreActivity.this, "Bambino registrato con successo!", Toast.LENGTH_SHORT).show();
-                    Log.d(TAG, "Bambino aggiunto con ID: " + documentReference.getId());
-                    // Refresh the list to show the new child
-                    showBambiniList();
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(DashboardGenitoreActivity.this, "Errore nella registrazione del bambino", Toast.LENGTH_SHORT).show();
-                    Log.e(TAG, "Errore aggiungendo il bambino: ", e);
-                });
     }
 }
