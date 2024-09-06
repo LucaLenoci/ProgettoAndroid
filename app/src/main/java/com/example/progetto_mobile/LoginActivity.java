@@ -136,6 +136,7 @@ public class LoginActivity extends AppCompatActivity {
         if (savedEmail != null) {
             emailField.setText(savedEmail);
             passwordField.setText(savedPassword);
+            rememberMeCheckbox.setChecked(true);
             accediButton.performClick();
         }
     }
