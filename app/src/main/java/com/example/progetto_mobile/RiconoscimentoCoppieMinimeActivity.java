@@ -8,6 +8,7 @@ import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -251,6 +252,7 @@ public class RiconoscimentoCoppieMinimeActivity extends AppCompatActivity implem
                             String temaCorrente = document.getString("tema");
                             updateRoundRectColors(temaCorrente);
                             updateConstraintLayoutBackground(temaCorrente);
+                            updateLinearLayoutBackground(temaCorrente);
                         } else {
                             Log.e(TAG, "No such document for " + bambinoId);
                         }
@@ -308,6 +310,27 @@ public class RiconoscimentoCoppieMinimeActivity extends AppCompatActivity implem
 
         // Apply the background color to the ConstraintLayout
         constraintLayout.setBackgroundColor(backgroundColor);
+    }
+
+    public void updateLinearLayoutBackground(String theme) {
+        LinearLayout linearLayout = findViewById(R.id.linearLayout);// Your ConstraintLayout
+
+        int backgroundColor = 0;
+
+        // Set background color based on the theme
+        switch (theme) {
+            case "supereroi":
+            case "cartoni_animati":
+                backgroundColor = ContextCompat.getColor(this, R.color.supereroibackground); // Replace with actual color resource
+                break;
+            case "favole":
+            case "videogiochi":
+                backgroundColor = ContextCompat.getColor(this, R.color.videogiochibackground); // Replace with actual color resource
+                break;
+        }
+
+        // Apply the background color to the ConstraintLayout
+        linearLayout.setBackgroundColor(backgroundColor);
     }
 
 }

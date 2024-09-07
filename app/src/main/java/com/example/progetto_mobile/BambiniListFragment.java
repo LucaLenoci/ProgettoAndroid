@@ -36,6 +36,7 @@ public class BambiniListFragment extends Fragment {
     private FirebaseFirestore db;
     private String genitorePath;
     private boolean isFromHomeLogopedista = false;
+    private ProgressBar progressBar;
 
     public BambiniListFragment() {
         // Required empty public constructor
@@ -72,6 +73,8 @@ public class BambiniListFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_bambini_list, container, false);
 
         linearLayoutBambini = view.findViewById(R.id.linearLayoutBambini);
+        progressBar = view.findViewById(R.id.progressBarListaBambini);
+        progressBar.setVisibility(View.VISIBLE);
 
         String from = getActivity().getIntent().getStringExtra("from");
         if (from != null && from.equals("homeLogopedista")) {
@@ -94,11 +97,13 @@ public class BambiniListFragment extends Fragment {
                         List<DocumentReference> bambiniRefs = (List<DocumentReference>) documentSnapshot.get("bambiniRef");
 
                         if (bambiniRefs == null || bambiniRefs.isEmpty()) {
+                            progressBar.setVisibility(View.GONE);
                             showEmptyChildrenMessage();
                         } else {
                             Log.d(TAG, "Numero di bambini: " + bambiniRefs.size());
                             for (DocumentReference bambinoRef : bambiniRefs) {
                                 bambinoRef.get().addOnSuccessListener(this::processChildData);
+                                progressBar.setVisibility(View.GONE);
                             }
                         }
                     }

@@ -11,8 +11,8 @@
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:hint="Nome"
-        android:inputType="text"
         android:importantForAutofill="no"
+        android:inputType="text|textCapWords"
         tools:ignore="HardcodedText" />
 
     <EditText
@@ -20,8 +20,8 @@
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:hint="Cognome"
-        android:inputType="text"
         android:importantForAutofill="no"
+        android:inputType="text|textCapWords"
         tools:ignore="HardcodedText" />
 
     <EditText
@@ -32,5 +32,58 @@
         android:inputType="number"
         android:importantForAutofill="no"
         tools:ignore="HardcodedText" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/textView13"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:padding="5dp"
+            android:text="Sesso:"
+            android:textSize="18sp" />
+
+        <RadioGroup
+            android:id="@+id/radioGroupSesso"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <RadioButton
+                android:id="@+id/radioButtonMaschio"
+                android:layout_width="@dimen/radio_button_size"
+                android:layout_height="@dimen/radio_button_size"
+                android:layout_marginStart="10dp"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/radio_selector_male"
+                android:button="@android:color/transparent"
+                android:foreground="@drawable/ripple_effect"
+                android:elevation="4dp"
+                android:gravity="center"
+                android:text="M"
+                android:textColor="@drawable/radio_text_color"
+                android:textSize="18sp" />
+
+            <RadioButton
+                android:id="@+id/radioButtonFemmina"
+                android:layout_width="@dimen/radio_button_size"
+                android:layout_height="@dimen/radio_button_size"
+                android:layout_marginStart="10dp"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/radio_selector_female"
+                android:button="@android:color/transparent"
+                android:foreground="@drawable/ripple_effect"
+                android:elevation="4dp"
+                android:gravity="center"
+                android:text="F"
+                android:textColor="@drawable/radio_text_color"
+                android:textSize="18sp" />
+        </RadioGroup>
+    </LinearLayout>
 
 </LinearLayout>

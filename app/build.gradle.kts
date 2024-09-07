@@ -55,6 +55,7 @@ dependencies {
     implementation ("nl.dionsegijn:konfetti-xml:2.0.4")
     annotationProcessor ("com.github.bumptech.glide:compiler:4.15.1")
 
+
     implementation(platform("com.google.firebase:firebase-bom:33.1.2"))
     implementation("com.google.firebase:firebase-analytics")
     // Import the BoM for the Firebase platform
