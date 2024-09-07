@@ -415,7 +415,9 @@ public class DenominazioneImmaginiActivity extends AppCompatActivity implements 
                         DocumentSnapshot document = task.getResult();
                         if (document.exists()) {
                             Long currentCoins = document.getLong("coins");
-                            if (currentCoins != null) {
+                            Long currentProgress= document.getLong("progresso");
+                            if (currentCoins != null || currentProgress != null) {
+                                // Increment the coins by 1
                                 db.collection("bambini").document(bambinoId)
                                         .update("coins", currentCoins + 1)
                                         .addOnSuccessListener(aVoid -> {
@@ -423,6 +425,14 @@ public class DenominazioneImmaginiActivity extends AppCompatActivity implements 
                                         })
                                         .addOnFailureListener(e -> {
                                             Log.e("Firestore", "Error updating coins", e);
+                                        });
+                                db.collection("bambini").document(bambinoId)
+                                        .update("progresso", currentProgress + 1)
+                                        .addOnSuccessListener(aVoid -> {
+                                            Log.d("Firestore", "Progresso updated successfully.");
+                                        })
+                                        .addOnFailureListener(e -> {
+                                            Log.e("Firestore", "Error updating Progresso", e);
                                         });
 
                                 db.collection("esercizi")

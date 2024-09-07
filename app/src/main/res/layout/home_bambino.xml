@@ -29,30 +29,30 @@
 
     <TextView
         android:id="@+id/Nome"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_width="142dp"
+        android:layout_height="58dp"
         android:layout_marginBottom="4dp"
         android:fontFamily="sans-serif-smallcaps"
         android:text="Nome: "
         android:textSize="18dp"
         app:layout_constraintBottom_toTopOf="@+id/Coins"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.375"
         app:layout_constraintStart_toEndOf="@+id/ProfilePic" />
 
     <TextView
         android:id="@+id/Coins"
-        android:layout_width="0dp"
-        android:layout_height="22dp"
+        android:layout_width="142dp"
+        android:layout_height="57dp"
         android:fontFamily="sans-serif-smallcaps"
         android:text="Monete Attuali: "
         android:textSize="18dp"
         app:layout_constraintBottom_toBottomOf="@+id/ProfilePic"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.375"
         app:layout_constraintStart_toEndOf="@+id/ProfilePic"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.707" />
+        app:layout_constraintVertical_bias="1.0" />
 
     <TextView
         android:id="@+id/textView6"

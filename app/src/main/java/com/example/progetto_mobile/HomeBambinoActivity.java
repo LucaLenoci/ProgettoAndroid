@@ -44,6 +44,7 @@ public class HomeBambinoActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        currentStreak=0;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_bambino);
         ProfilePic = findViewById(R.id.ProfilePic);
@@ -54,7 +55,6 @@ public class HomeBambinoActivity extends AppCompatActivity {
         bambinoId = bambinoIdraw.substring(lastSlashIndex + 1);
         numerostreak = findViewById(R.id.textView3);
         fetchTema();
-        calculateStreak();
         loadCurrentAvatar(bambinoId);
         tvNome = findViewById(R.id.Nome);
         tvCoins = findViewById(R.id.Coins);
@@ -87,6 +87,24 @@ public class HomeBambinoActivity extends AppCompatActivity {
             intentAvatar.putExtra("bambinoId", bambinoId);  // Pass the bambino ID to AvatarActivity
             startActivity(intentAvatar);
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        currentStreak=0;
+
+        // Re-fetch child details (name, coins, etc.)
+        getChildFromFirestore();
+
+        // Re-fetch the current avatar in case it was changed
+        loadCurrentAvatar(bambinoId);
+
+        // Re-fetch and apply the current theme
+        fetchTema();
+
+        // Recalculate the current streak
+        calculateStreak();
     }
 
     private void checkAndProceedToExercises() {
@@ -211,13 +229,14 @@ public class HomeBambinoActivity extends AppCompatActivity {
 
                             if (coinsLong != null) {
                                 String coins = coinsLong.toString();
-                                tvCoins.append(coins);
+                                Log.d("FirestoreData", coins);
+                                tvCoins.setText("Monete Attuali: "+coins);
                             } else {
                                 Log.d("FirestoreData", "Coins not found");
                             }
 
                             if (nomeString != null) {
-                                tvNome.append(nomeString);
+                                tvNome.setText("Nome: "+nomeString);
                             } else {
                                 Log.d("FirestoreData", "Nome not found");
                             }
@@ -353,8 +372,10 @@ public class HomeBambinoActivity extends AppCompatActivity {
     }
 
     private void calculateStreak() {
+        currentStreak=0;
         Date currentDate = new Date();
         calculateDayStreak(currentDate);
+        currentStreak=0;
     }
 
     private void calculateDayStreak(Date date) {
