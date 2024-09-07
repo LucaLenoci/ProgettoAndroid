@@ -72,7 +72,7 @@
         android:paddingStart="11dp"
         android:scaleType="center"
         android:src="@drawable/microphone"
-        android:textColor="?attr/colorOnPrimary"
+        android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
