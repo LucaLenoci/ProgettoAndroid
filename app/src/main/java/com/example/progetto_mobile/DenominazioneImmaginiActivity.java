@@ -1,10 +1,18 @@
 package com.example.progetto_mobile;
 
+import static androidx.core.content.PackageManagerCompat.LOG_TAG;
+
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.GradientDrawable;
 import android.media.MediaPlayer;
+import android.media.MediaRecorder;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
@@ -15,6 +23,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.assemblyai.api.resources.files.types.UploadedFile;
+import com.assemblyai.api.resources.transcripts.requests.TranscriptParams;
 import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -23,12 +33,18 @@ import com.google.firebase.storage.StorageReference;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import nl.dionsegijn.konfetti.core.Party;
@@ -38,6 +54,9 @@ import nl.dionsegijn.konfetti.core.emitter.Emitter;
 import nl.dionsegijn.konfetti.core.emitter.EmitterConfig;
 import nl.dionsegijn.konfetti.core.models.Shape;
 import nl.dionsegijn.konfetti.xml.KonfettiView;
+
+import com.assemblyai.api.AssemblyAI;
+import com.assemblyai.api.resources.transcripts.types.*;
 
 public class DenominazioneImmaginiActivity extends AppCompatActivity implements TextToSpeech.OnInitListener {
     private static final int RQ_SPEECH_REC = 102;
@@ -56,6 +75,13 @@ public class DenominazioneImmaginiActivity extends AppCompatActivity implements 
     StorageReference imagesRef = storage.getReferenceFromUrl("gs://progetto-mobile-24.appspot.com/immagini");
     String selectedDate;
     String bambinoId;
+    private boolean isRecording = false;
+    ImageButton btnButton;
+
+
+    MediaRecorder mediaRecorder;
+    String fileName;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,10 +134,32 @@ public class DenominazioneImmaginiActivity extends AppCompatActivity implements 
 
         tts = new TextToSpeech(this, this);
 
-        ImageButton btnButton = findViewById(R.id.btn_button);
+        btnButton = findViewById(R.id.btn_button);
         tvText = findViewById(R.id.tv_text);
 
-        btnButton.setOnClickListener(v -> askSpeechInput());
+        // Check and request permissions
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(this, Manifest.permission.MANAGE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.MANAGE_EXTERNAL_STORAGE}, 1);
+        }
+
+        btnButton.setOnClickListener(v -> Input());
+    }
+
+    private void Input() {
+        if (!isRecording) {
+            // Start recording
+            startRecording();
+
+            isRecording = true;
+        } else {
+            // Stop recording
+            stopRecording();
+
+            isRecording = false;
+        }
     }
 
     @Override
@@ -166,33 +214,132 @@ public class DenominazioneImmaginiActivity extends AppCompatActivity implements 
         });
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == RQ_SPEECH_REC && resultCode == Activity.RESULT_OK) {
-            ArrayList<String> result = data != null ? data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS) : null;
-            if (result != null && !result.isEmpty()) {
-                String recognizedText = result.get(0);
-                tvText.setText(recognizedText);
+    private void startRecording() {
+        fileName = getExternalCacheDir().getAbsolutePath();
+        fileName += "/audiorecordtest.mp3";
+        mediaRecorder = new MediaRecorder();
+        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+        mediaRecorder.setOutputFile(fileName);
+        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
 
-                if (currentExercise != null && recognizedText.equalsIgnoreCase(currentExercise.getRisposta_corretta())) {
-                    Toast.makeText(this, "Correct!", Toast.LENGTH_SHORT).show();
-                    showConfettiEffect();
-                    if (successSound != null) {
-                        successSound.start();
-                        updateCoinsInFirebase();
-                        ImageButton btnButton = findViewById(R.id.btn_button);
-                        incrementTentativiInFirebase();
-                        btnButton.setEnabled(false);
-                    }
-                } else {
-                    Toast.makeText(this, "Try again!", Toast.LENGTH_SHORT).show();
-                    incrementTentativiInFirebase();
-                }
+
+        try {
+            mediaRecorder.prepare();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+
+        mediaRecorder.start();
+    }
+
+
+
+    private void stopRecording() {
+        mediaRecorder.stop();
+        mediaRecorder.release();
+        mediaRecorder = null;
+        transcribeAudioFile();
+    }
+
+
+    private void transcribeAudioFile() {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.submit(() -> {
+            try {
+                AssemblyAI client = AssemblyAI.builder()
+                        .apiKey("62238600cbcd4e79ac03446267d27a16")
+                        .build();
+
+                File file = new File(fileName);
+                byte[] fileBytes = readFileToByteArray(file);
+
+                UploadedFile uploadedFile = client.files().upload(fileBytes);
+                String fileUrl = uploadedFile.getUploadUrl();
+
+                Transcript transcript = client.transcripts().transcribe(fileUrl);
+
+                runOnUiThread(() -> Result(transcript.getText().get()));
+            } catch (Exception e) {
+                Log.e(TAG, "Transcription failed", e);
             }
+        });
+    }
+
+    private byte[] readFileToByteArray(File file) throws IOException {
+        try (FileInputStream fis = new FileInputStream(file)) {
+            byte[] fileBytes = new byte[(int) file.length()];
+            fis.read(fileBytes);
+            return fileBytes;
         }
     }
+
+    protected void Result(String text) {
+        String recognizedText = text.toLowerCase();
+
+        // Remove the last character if the string length is greater than 0
+        if (recognizedText.length() > 0) {
+            recognizedText = recognizedText.substring(0, recognizedText.length() - 1);
+        }
+        tvText.setText(recognizedText);
+
+        if (currentExercise != null && recognizedText.equalsIgnoreCase(currentExercise.getRisposta_corretta())) {
+            Toast.makeText(this, "Correct!", Toast.LENGTH_SHORT).show();
+            showConfettiEffect();
+            if (successSound != null) {
+                successSound.start();
+                updateCoinsInFirebase();
+                uploadAudioToFirebase();
+                ImageButton btnButton = findViewById(R.id.btn_button);
+                incrementTentativiInFirebase();
+                btnButton.setEnabled(false);
+            }
+        } else {
+            Toast.makeText(this, "Try again!", Toast.LENGTH_SHORT).show();
+            incrementTentativiInFirebase();
+        }
+
+    }
+
+    private void uploadAudioToFirebase() {
+        StorageReference audioRef = storage.getReference().child("audio/" + bambinoId + "/tipo1/" + selectedDate);
+        Uri fileUri = Uri.fromFile(new File(fileName));
+
+        // Upload the file to Firebase Storage
+        audioRef.putFile(fileUri)
+                .addOnSuccessListener(taskSnapshot -> {
+                    // Get the download URL of the uploaded audio
+                    audioRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                        String audioDownloadUrl = uri.toString();
+                        Log.d("Firebase Storage", "Audio file uploaded successfully: " + audioDownloadUrl);
+                        // Now save the reference to Firestore
+                        saveAudioReferenceToFirestore(audioDownloadUrl);
+                    }).addOnFailureListener(exception -> {
+                        Log.e("Firebase Storage", "Failed to get audio download URL", exception);
+                    });
+                })
+                .addOnFailureListener(exception -> {
+                    Log.e("Firebase Storage", "Audio upload failed", exception);
+                });
+    }
+
+    private void saveAudioReferenceToFirestore(String audioUrl) {
+        // Update the Firestore document for the exercise with the audio URL
+        db.collection("esercizi")
+                .document(bambinoId)
+                .collection("tipo1")
+                .document(selectedDate)
+                .update("audio_url", audioUrl)
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("Firestore", "Audio URL saved to Firestore successfully.");
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("Firestore", "Error saving audio URL to Firestore", e);
+                });
+    }
+
 
 
     private void incrementTentativiInFirebase() {
@@ -229,18 +376,6 @@ public class DenominazioneImmaginiActivity extends AppCompatActivity implements 
                 });
     }
 
-
-    private void askSpeechInput() {
-        if (!SpeechRecognizer.isRecognitionAvailable(this)) {
-            Toast.makeText(this, "Speech recognition is not available", Toast.LENGTH_SHORT).show();
-        } else {
-            Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
-            intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Say something!");
-            startActivityForResult(intent, RQ_SPEECH_REC);
-        }
-    }
 
     private void displayImage(String imageUrl) {
         ImageView imageView = findViewById(R.id.imageView);
