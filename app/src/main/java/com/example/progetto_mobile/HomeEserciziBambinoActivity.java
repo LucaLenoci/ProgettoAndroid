@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -93,7 +92,7 @@ public class HomeEserciziBambinoActivity extends AppCompatActivity {
             });
         }
 
-        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) movableObject.getLayoutParams();
+        ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) movableObject.getLayoutParams();
         centerX = params.leftMargin;
         centerY = params.topMargin;
 
@@ -120,7 +119,7 @@ public class HomeEserciziBambinoActivity extends AppCompatActivity {
         float newY = movableObject.getY() + deltaY;
 
         // Get the parent layout dimensions
-        RelativeLayout parentLayout = (RelativeLayout) movableObject.getParent();
+        ConstraintLayout parentLayout = (ConstraintLayout) movableObject.getParent();
         int parentWidth = parentLayout.getWidth();
         int parentHeight = parentLayout.getHeight();
 
@@ -324,7 +323,7 @@ public class HomeEserciziBambinoActivity extends AppCompatActivity {
     }
 
     public void updateConstraintLayoutBackground(String theme) {
-        RelativeLayout constraintLayout = findViewById(R.id.relativeLayout);// Your ConstraintLayout
+        ConstraintLayout constraintLayout = findViewById(R.id.relativeLayout);// Your ConstraintLayout
 
         int backgroundColor = 0;
 
