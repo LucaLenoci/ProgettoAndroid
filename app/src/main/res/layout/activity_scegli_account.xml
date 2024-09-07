@@ -5,6 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?attr/colorPrimaryContainer"
     tools:context=".ScegliAccountActivity">
 
     <TextView
@@ -12,7 +13,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        android:text="Chi sta accedendo?"
+        android:fontFamily="@font/adlam_display"
+        android:text="Chi sta accedendo"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -25,18 +27,21 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
+        android:background="@drawable/cat_background2"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewLabel">
+        app:layout_constraintTop_toBottomOf="@+id/textViewLabel"
+        app:cardCornerRadius="10dp"
+        app:cardElevation="10dp">
 
         <ImageView
             android:id="@+id/imageViewUserPicGenitore"
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:layout_gravity="center"
-            android:layout_margin="10dp"
+            android:layout_margin="20dp"
             app:srcCompat="@drawable/user_silhouette" />
 
         <TextView
@@ -45,6 +50,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_margin="10dp"
+            android:textColor="#000000"
             android:textSize="18sp"
             android:textStyle="bold"
             tools:text="Nome" />
@@ -55,6 +61,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="10dp"
+        android:contentDescription="Lista bambini"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight="match_constraint"
