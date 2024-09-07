@@ -206,16 +206,8 @@ public class HomeBambinoActivity extends AppCompatActivity {
                         if (data != null) {
                             Log.d("FirestoreData", "Document data: " + data.toString());
 
-                            Long progressoLong = (Long) data.get("progresso");
                             String nomeString = (String) data.get("nome");
                             Long coinsLong = (Long) data.get("coins");
-
-                            if (progressoLong != null) {
-                                int progresso = progressoLong.intValue();
-                                progressBar.setProgress(progresso);
-                            } else {
-                                Log.d("FirestoreData", "Progresso not found");
-                            }
 
                             if (coinsLong != null) {
                                 String coins = coinsLong.toString();
@@ -388,6 +380,10 @@ public class HomeBambinoActivity extends AppCompatActivity {
                     Toast.makeText(HomeBambinoActivity.this, "Current Streak: " + currentStreak + " days", Toast.LENGTH_SHORT).show();
                     Log.d(TAG, "Current Streak: " + currentStreak + " days");
                     numerostreak.setText(String.valueOf(currentStreak));
+                    float progresso = ((float) currentStreak /7);
+                    progresso -= (int)progresso;
+                    progresso*=100;
+                    progressBar.setProgress((int)progresso);
                 }
             }
         });
