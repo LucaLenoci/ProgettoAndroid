@@ -34,6 +34,7 @@
         android:layout_marginBottom="4dp"
         android:fontFamily="sans-serif-smallcaps"
         android:text="Nome: "
+        android:textAlignment="center"
         android:textSize="18dp"
         app:layout_constraintBottom_toTopOf="@+id/Coins"
         app:layout_constraintEnd_toEndOf="parent"
@@ -61,8 +62,9 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:text="Current day streak : "
+        android:textSize="20dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.409"
+        app:layout_constraintHorizontal_bias="0.401"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ProfilePic" />
 
@@ -70,11 +72,10 @@
         android:id="@+id/calendarView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="70dp"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView7"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.491"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/progressBar" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/button"
@@ -105,6 +106,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:text="numero"
+        android:textSize="20dp"
         app:layout_constraintStart_toEndOf="@+id/textView6"
         app:layout_constraintTop_toBottomOf="@+id/ProfilePic" />
 
@@ -116,6 +118,7 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="20dp"
+        android:progressDrawable="@drawable/rounded_progress_bar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
