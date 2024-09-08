@@ -6,13 +6,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -71,6 +69,9 @@ public class DashboardBambinoActivity extends AppCompatActivity {
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
+                if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                    closeExerciseEditFragment();
+                }
                 updateContent(tab.getPosition());
             }
 
@@ -115,6 +116,9 @@ public class DashboardBambinoActivity extends AppCompatActivity {
             Object exercise = getExerciseFromChild(exerciseType);
             if (exercise != null) {
                 displayExercise(exercise, exerciseType);
+                if (isFromHomeLogopedista) {
+                    showEditExerciseButton(exerciseType);
+                }
             } else {
                 fetchAndDisplayExercise(exerciseType, exerciseRef);
             }
@@ -191,109 +195,53 @@ public class DashboardBambinoActivity extends AppCompatActivity {
     private void showAddExerciseButton(String exerciseType) {
         Button addButton = new Button(this);
         addButton.setText("Aggiungi esercizio");
-        addButton.setOnClickListener(v -> showAddExerciseDialog(exerciseType, null));
+        addButton.setOnClickListener(v -> openExerciseEditFragment(exerciseType, false, null));
         contentLayout.addView(addButton);
+    }
+
+    private void showEditExerciseButton(String exerciseType) {
+        Button editButton = new Button(this);
+        editButton.setText("Modifica esercizio");
+        editButton.setOnClickListener(v -> {
+            Object exercise = getExerciseFromChild(exerciseType);
+            openExerciseEditFragment(exerciseType, true, exercise);
+        });
+        contentLayout.addView(editButton);
+    }
+
+    private void openExerciseEditFragment(String exerciseType, boolean isEditing, Object exercise) {
+        ExerciseEditFragment fragment = ExerciseEditFragment.newInstance(exerciseType, isEditing, exercise);
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragmentContainer, fragment)
+                .addToBackStack(null)
+                .commit();
+        contentLayout.removeAllViews();
+    }
+
+    public void closeExerciseEditFragment() {
+        getSupportFragmentManager().popBackStack();
+        displayExercises(getCurrentExerciseType());
+    }
+
+    public void addExercise(String exerciseType, Object exercise) {
+        addExerciseToFirestoreAndAssignItToChild(exerciseType, exercise);
+        closeExerciseEditFragment();
+    }
+
+    public void updateExercise(String exerciseType, Object exercise) {
+        updateExerciseInFirestore(exerciseType, exercise);
+        closeExerciseEditFragment();
+    }
+
+    private String getCurrentExerciseType() {
+        int position = tabLayout.getSelectedTabPosition();
+        return "tipo" + (position + 1);
     }
 
     private void showNoExercisesMessage() {
         TextView messageView = new TextView(this);
         messageView.setText("Nessun esercizio disponibile");
         contentLayout.addView(messageView);
-    }
-
-    private void showAddExerciseDialog(String exerciseType, Object existingExercise) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(existingExercise == null ? "Aggiungi esercizio" : "Modifica esercizio");
-
-        View viewInflated = LayoutInflater.from(this).inflate(R.layout.layout_dialog_add_exercise, null);
-        builder.setView(viewInflated);
-
-        final EditText input1 = viewInflated.findViewById(R.id.input1);
-        final EditText input2 = viewInflated.findViewById(R.id.input2);
-        final EditText input3 = viewInflated.findViewById(R.id.input3);
-        final EditText input4 = viewInflated.findViewById(R.id.input4);
-        final EditText input5 = viewInflated.findViewById(R.id.input5);
-
-        setupInputFields(exerciseType, input1, input2, input3, input4, input5);
-
-        if (existingExercise != null) {
-            fillInputFieldsWithExistingData(exerciseType, existingExercise, input1, input2, input3, input4, input5);
-        }
-
-        builder.setPositiveButton(existingExercise == null ? "Aggiungi" : "Modifica", (dialog, which) -> {
-            Object exercise = createExerciseObject(exerciseType, input1, input2, input3, input4, input5);
-            if (existingExercise == null) {
-                addExerciseToFirestoreAndAssignItToChild(exerciseType, exercise);
-            } else {
-                updateExerciseInFirestore(exerciseType, exercise);
-            }
-        });
-        builder.setNegativeButton("Annulla", (dialog, which) -> dialog.cancel());
-
-        builder.show();
-    }
-
-    private void setupInputFields(String exerciseType, EditText... inputs) {
-        switch (exerciseType) {
-            case "tipo1":
-                inputs[0].setHint("Risposta corretta");
-                inputs[1].setHint("Suggerimento 1");
-                inputs[2].setHint("Suggerimento 2");
-                inputs[3].setHint("Suggerimento 3");
-                inputs[4].setVisibility(View.GONE);
-                break;
-            case "tipo2":
-                inputs[0].setHint("Risposta corretta");
-                inputs[1].setHint("Risposta sbagliata");
-                inputs[2].setHint("Immagine corretta (numero)");
-                inputs[3].setVisibility(View.GONE);
-                inputs[4].setVisibility(View.GONE);
-                break;
-            case "tipo3":
-                inputs[0].setHint("Risposta corretta");
-                inputs[1].setVisibility(View.GONE);
-                inputs[2].setVisibility(View.GONE);
-                inputs[3].setVisibility(View.GONE);
-                inputs[4].setVisibility(View.GONE);
-                break;
-        }
-    }
-
-    private Object createExerciseObject(String exerciseType, EditText... inputs) {
-        switch (exerciseType) {
-            case "tipo1":
-                return new EsercizioTipo1(false, "", inputs[0].getText().toString(),
-                        inputs[1].getText().toString(), inputs[2].getText().toString(), inputs[3].getText().toString());
-            case "tipo2":
-                return new EsercizioTipo2(false, "", inputs[0].getText().toString(),
-                        inputs[1].getText().toString(), "", Integer.parseInt(inputs[2].getText().toString()));
-            case "tipo3":
-                return new EsercizioTipo3(false, inputs[0].getText().toString());
-            default:
-                throw new IllegalArgumentException("Unknown exercise type: " + exerciseType);
-        }
-    }
-
-    private void fillInputFieldsWithExistingData(String exerciseType, Object existingExercise, EditText... inputs) {
-        switch (exerciseType) {
-            case "tipo1":
-                EsercizioTipo1 ex1 = (EsercizioTipo1) existingExercise;
-                inputs[0].setText(ex1.getRisposta_corretta());
-                inputs[1].setText(ex1.getSuggerimento());
-                inputs[2].setText(ex1.getSuggerimento2());
-                inputs[3].setText(ex1.getSuggerimento3());
-                break;
-            case "tipo2":
-                EsercizioTipo2 ex2 = (EsercizioTipo2) existingExercise;
-                inputs[0].setText(ex2.getRisposta_corretta());
-                inputs[1].setText(ex2.getRisposta_sbagliata());
-                inputs[2].setText(String.valueOf(ex2.getImmagine_corretta()));
-                break;
-            case "tipo3":
-                EsercizioTipo3 ex3 = (EsercizioTipo3) existingExercise;
-                inputs[0].setText(ex3.getRisposta_corretta());
-                break;
-        }
     }
 
     private void addExerciseToFirestoreAndAssignItToChild(String exerciseType, Object exercise) {
@@ -383,13 +331,6 @@ public class DashboardBambinoActivity extends AppCompatActivity {
         titleTextView.setText(exerciseType);
         detailsTextView.setText(getExerciseDetails(exercise));
 
-        if (isFromHomeLogopedista) {
-            exerciseView.setOnLongClickListener(v -> {
-                showAddExerciseDialog(exerciseType, exercise);
-                return true;
-            });
-        }
-
         contentLayout.addView(exerciseView);
     }
 
@@ -408,5 +349,14 @@ public class DashboardBambinoActivity extends AppCompatActivity {
                     es.isEsercizio_corretto(), es.getRisposta_corretta());
         }
         return "Tipo di esercizio sconosciuto";
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+            closeExerciseEditFragment();
+        } else {
+            super.onBackPressed();
+        }
     }
 }

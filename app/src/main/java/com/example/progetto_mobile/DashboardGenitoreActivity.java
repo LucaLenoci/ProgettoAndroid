@@ -82,11 +82,8 @@ public class DashboardGenitoreActivity extends AppCompatActivity {
                     String sesso = "";
 
                     int selectedId = radioGroupSesso.getCheckedRadioButtonId();
-                    if (selectedId == R.id.radioButtonMaschio) {
-                        sesso = "M";
-                    } else if (selectedId == R.id.radioButtonFemmina) {
-                        sesso = "F";
-                    }
+                    if (selectedId == R.id.radioButtonMaschio) sesso = "M";
+                    else if (selectedId == R.id.radioButtonFemmina) sesso = "F";
 
                     db = FirebaseFirestore.getInstance();
                     if (!nome.isEmpty() && !cognome.isEmpty() && !eta.isEmpty() && !sesso.isEmpty()) {
