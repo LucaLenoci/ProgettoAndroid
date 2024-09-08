@@ -401,14 +401,15 @@ public class HomeBambinoActivity extends AppCompatActivity {
                     Toast.makeText(HomeBambinoActivity.this, "Current Streak: " + currentStreak + " days", Toast.LENGTH_SHORT).show();
                     Log.d(TAG, "Current Streak: " + currentStreak + " days");
                     numerostreak.setText(String.valueOf(currentStreak));
-                    float progresso = ((float) currentStreak /7);
-                    progresso -= (int)progresso;
-                    progresso*=100;
-                    progressBar.setProgress((int)progresso);
+
+                    // Calcola il progresso della barra
+                    int progress = (int) ((currentStreak / 3.0) * 100); // Calcolo del progresso in base alla streak
+                    progressBar.setProgress(progress);
                 }
             }
         });
     }
+
 
     private void checkAllExerciseTypesForDate(String date, FirestoreCallback callback) {
         // Define the types of exercises to check
