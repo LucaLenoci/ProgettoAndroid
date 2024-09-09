@@ -91,6 +91,7 @@ public class ClassificaBambiniActivity extends AppCompatActivity {
 
     private void displaySortedChildren() {
         if (!childList.isEmpty()) {
+            // todo: comparare in base all'esperienza
             childList.sort((child1, child2) -> Integer.compare(child2.getCoins(), child1.getCoins()));
             for (Child child : childList)
                 addChildItemList(child);

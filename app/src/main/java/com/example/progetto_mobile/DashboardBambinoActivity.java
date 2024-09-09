@@ -253,7 +253,6 @@ public class DashboardBambinoActivity extends AppCompatActivity {
         DocumentReference childDocRef = db.collection("bambini").document(child.getDocId());
 
         db.runTransaction((transaction) -> {
-            removePlaceholderRef(exerciseType);
             transaction.set(exerciseDocRef, exercise);
             transaction.update(childDocRef, "esercizio" + exerciseType.substring(0, 1).toUpperCase() + exerciseType.substring(1), exerciseDocRef);
             return null;
@@ -266,13 +265,6 @@ public class DashboardBambinoActivity extends AppCompatActivity {
             Log.e(TAG, "Error adding exercise", e);
             Toast.makeText(this, "Errore nell'aggiunta dell'esercizio", Toast.LENGTH_SHORT).show();
         });
-    }
-
-    private void removePlaceholderRef(String exerciseType) {
-        DocumentReference childDocRef = db.collection("bambini").document(child.getDocId());
-        childDocRef.update("esercizio" + exerciseType.substring(0, 1).toUpperCase() + exerciseType.substring(1), FieldValue.delete())
-                .addOnSuccessListener(aVoid -> Log.d(TAG, "Placeholder reference removed successfully"))
-                .addOnFailureListener(e -> Log.e(TAG, "Error removing placeholder reference", e));
     }
 
     private void updateLocalChild(String exerciseType, DocumentReference exerciseDocRef, Object exercise) {
@@ -334,6 +326,7 @@ public class DashboardBambinoActivity extends AppCompatActivity {
         contentLayout.addView(exerciseView);
     }
 
+    // todo: rivedi quali campi far vedere
     private String getExerciseDetails(Object exercise) {
         if (exercise instanceof EsercizioTipo1) {
             EsercizioTipo1 es = (EsercizioTipo1) exercise;
