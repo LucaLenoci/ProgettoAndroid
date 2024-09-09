@@ -2,6 +2,8 @@ package com.example.progetto_mobile;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
@@ -11,6 +13,8 @@ import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -144,6 +148,8 @@ public class RipetizioneSequenzeParoleActivity extends AppCompatActivity impleme
 
 
         mediaRecorder.start();
+        findViewById(R.id.btn_button_2).setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FFB31717")));
+
     }
 
 
@@ -152,6 +158,12 @@ public class RipetizioneSequenzeParoleActivity extends AppCompatActivity impleme
         mediaRecorder.stop();
         mediaRecorder.release();
         mediaRecorder = null;
+        findViewById(R.id.loading2).setVisibility(View.VISIBLE);
+        findViewById(R.id.btn_button_2).setClickable(false);
+        TypedValue typedValue = new TypedValue();
+        getTheme().resolveAttribute(android.R.attr.colorPrimary, typedValue, true);
+        int colorPrimary = typedValue.data;
+        findViewById(R.id.btn_button_2).setBackgroundTintList(ColorStateList.valueOf(colorPrimary));
         transcribeAudioFile();
     }
 
@@ -239,7 +251,7 @@ public class RipetizioneSequenzeParoleActivity extends AppCompatActivity impleme
             recognizedText = recognizedText.substring(0, recognizedText.length() - 1);
         }
         recognizedText = recognizedText.replace(",", "");
-
+        findViewById(R.id.loading2).setVisibility(View.INVISIBLE);
         tvText.setText(recognizedText);
 
         if (currentExercise != null && recognizedText.equalsIgnoreCase(currentExercise.getRisposta_corretta())) {

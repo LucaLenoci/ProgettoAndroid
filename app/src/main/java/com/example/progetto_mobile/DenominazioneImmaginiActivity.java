@@ -6,17 +6,23 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Environment;
+import android.os.Looper;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -233,6 +239,7 @@ public class DenominazioneImmaginiActivity extends AppCompatActivity implements 
 
 
         mediaRecorder.start();
+        findViewById(R.id.btn_button).setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FFB31717")));
     }
 
 
@@ -241,6 +248,13 @@ public class DenominazioneImmaginiActivity extends AppCompatActivity implements 
         mediaRecorder.stop();
         mediaRecorder.release();
         mediaRecorder = null;
+        findViewById(R.id.loading).setVisibility(View.VISIBLE);
+        findViewById(R.id.btn_button).setClickable(false);
+        TypedValue typedValue = new TypedValue();
+        getTheme().resolveAttribute(android.R.attr.colorPrimary, typedValue, true);
+        int colorPrimary = typedValue.data;
+
+        findViewById(R.id.btn_button).setBackgroundTintList(ColorStateList.valueOf(colorPrimary));
         transcribeAudioFile();
     }
 
@@ -283,6 +297,8 @@ public class DenominazioneImmaginiActivity extends AppCompatActivity implements 
         if (recognizedText.length() > 0) {
             recognizedText = recognizedText.substring(0, recognizedText.length() - 1);
         }
+
+        findViewById(R.id.loading).setVisibility(View.INVISIBLE);
         tvText.setText(recognizedText);
 
         if (currentExercise != null && recognizedText.equalsIgnoreCase(currentExercise.getRisposta_corretta())) {
@@ -299,6 +315,7 @@ public class DenominazioneImmaginiActivity extends AppCompatActivity implements 
         } else {
             Toast.makeText(this, "Try again!", Toast.LENGTH_SHORT).show();
             incrementTentativiInFirebase();
+            findViewById(R.id.btn_button).setClickable(true);
         }
 
     }
