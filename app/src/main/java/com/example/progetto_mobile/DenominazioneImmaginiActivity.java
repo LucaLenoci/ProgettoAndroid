@@ -304,14 +304,25 @@ public class DenominazioneImmaginiActivity extends AppCompatActivity implements 
         if (currentExercise != null && recognizedText.equalsIgnoreCase(currentExercise.getRisposta_corretta())) {
             Toast.makeText(this, "Correct!", Toast.LENGTH_SHORT).show();
             showConfettiEffect();
+
+            // Blocca tutti i pulsanti
+            findViewById(R.id.btn_button).setEnabled(false);
+            findViewById(R.id.suggerimento1).setEnabled(false);
+            findViewById(R.id.suggerimento2).setEnabled(false);
+            findViewById(R.id.suggerimento3).setEnabled(false);
+
             if (successSound != null) {
                 successSound.start();
+            }
+
+            // Aggiungi un handler per ritornare alla pagina precedente dopo l'animazione
+            new Handler().postDelayed(() -> {
                 updateCoinsInFirebase();
                 uploadAudioToFirebase();
-                ImageButton btnButton = findViewById(R.id.btn_button);
                 incrementTentativiInFirebase();
-                btnButton.setEnabled(false);
-            }
+                finish(); // Torna alla pagina precedente
+            }, 3000); // Aspetta 3 secondi (modifica se necessario per adattare la durata dell'animazione)
+
         } else {
             Toast.makeText(this, "Try again!", Toast.LENGTH_SHORT).show();
             incrementTentativiInFirebase();
