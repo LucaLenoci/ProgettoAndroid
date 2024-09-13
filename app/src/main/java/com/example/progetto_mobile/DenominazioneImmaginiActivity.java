@@ -305,11 +305,7 @@ public class DenominazioneImmaginiActivity extends AppCompatActivity implements 
             Toast.makeText(this, "Correct!", Toast.LENGTH_SHORT).show();
             showConfettiEffect();
 
-            // Blocca tutti i pulsanti
-            findViewById(R.id.btn_button).setEnabled(false);
-            findViewById(R.id.suggerimento1).setEnabled(false);
-            findViewById(R.id.suggerimento2).setEnabled(false);
-            findViewById(R.id.suggerimento3).setEnabled(false);
+            disableButtons();
 
             if (successSound != null) {
                 successSound.start();
@@ -331,6 +327,12 @@ public class DenominazioneImmaginiActivity extends AppCompatActivity implements 
 
     }
 
+    private void disableButtons() {
+        findViewById(R.id.btn_button).setEnabled(false);
+        findViewById(R.id.suggerimento1).setEnabled(false);
+        findViewById(R.id.suggerimento2).setEnabled(false);
+        findViewById(R.id.suggerimento3).setEnabled(false);
+    }
     private void uploadAudioToFirebase() {
         StorageReference audioRef = storage.getReference().child("audio/" + bambinoId + "/tipo1/" + selectedDate);
         Uri fileUri = Uri.fromFile(new File(fileName));

@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.widget.ImageButton;
@@ -155,12 +156,20 @@ public class RiconoscimentoCoppieMinimeActivity extends AppCompatActivity implem
             if (selectedButton == currentExercise.getImmagine_corretta()) {
                 Toast.makeText(this, "Correct!", Toast.LENGTH_SHORT).show();
                 showConfettiEffect();
+
+                disableButtons();
+
                 if (successSound != null) {
                     successSound.start();
+                }
+
+                // Aggiungi un handler per ritornare alla pagina precedente dopo l'animazione
+                new Handler().postDelayed(() -> {
                     updateCoinsInFirebase();
                     incrementTentativiInFirebase();
-                    disableButtons();
-                }
+                    finish(); // Torna alla pagina precedente
+                }, 3000); // Aspetta 3 secondi (modifica se necessario per adattare la durata dell'animazione)
+
             } else {
                 Toast.makeText(this, "Incorrect. Try again!", Toast.LENGTH_SHORT).show();
                 incrementTentativiInFirebase();
@@ -253,6 +262,7 @@ public class RiconoscimentoCoppieMinimeActivity extends AppCompatActivity implem
     }
 
     private void disableButtons() {
+        findViewById(R.id.speak_button).setEnabled(false);
         findViewById(R.id.button1).setEnabled(false);
         findViewById(R.id.button2).setEnabled(false);
     }
