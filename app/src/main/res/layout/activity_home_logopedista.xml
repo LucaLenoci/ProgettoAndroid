@@ -5,23 +5,28 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?attr/colorPrimaryContainer"
     tools:context=".HomeLogopedistaActivity">
 
     <Button
         android:id="@+id/buttonClassificaBambini"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/rounded_button"
         android:text="Classifica Bambini"
+        android:textColor="#FFFFFF"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_percent="0.4" />
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:layout_margin="10dp"
+        android:contentDescription="Lista Genitori"
         app:layout_constraintBottom_toTopOf="@+id/buttonRegistraGenitore"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight="match_constraint"
@@ -39,13 +44,32 @@
 
     <Button
         android:id="@+id/buttonRegistraGenitore"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
+        android:layout_marginBottom="32dp"
+        android:background="@drawable/rounded_button"
         android:text="Registra genitore"
+        android:textColor="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintHorizontal_bias="0.207"
+        app:layout_constraintStart_toEndOf="@+id/btnLogout"
+        app:layout_constraintWidth_percent="0.4" />
+
+    <!-- Bottone di Logout -->
+    <Button
+        android:id="@+id/btnLogout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
+        android:layout_weight="0.4"
+        android:background="@drawable/rounded_button"
+        android:text="Logout"
+        android:textColor="#FFFFFF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.19"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintWidth_percent="0.4" /> <!-- Larghezza 40% del parent -->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

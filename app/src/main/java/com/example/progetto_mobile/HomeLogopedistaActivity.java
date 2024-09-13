@@ -1,6 +1,8 @@
 package com.example.progetto_mobile;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,6 +20,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -33,6 +36,10 @@ public class HomeLogopedistaActivity extends AppCompatActivity {
     private List<String> genitoriPaths;
     private List<Genitore> genitoriList;
     private String logopedistaPath = "";
+
+    private static final String PREFS_NAME = "LoginPrefs";
+    private static final String PREF_EMAIL = "savedemail";
+    private static final String PREF_PASSWORD = "savedpassword";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +75,15 @@ public class HomeLogopedistaActivity extends AppCompatActivity {
             Intent intent = new Intent(HomeLogopedistaActivity.this, RegisterActivity.class);
             intent.putExtra("from", "registraGenitore");
             startActivity(intent);
+        });
+
+        // Recupera il riferimento al pulsante di logout
+        Button buttonLogout = findViewById(R.id.btnLogout);
+
+        // Imposta il listener per il pulsante di logout
+        ((View) buttonLogout).setOnClickListener(v -> {
+            // Chiama il metodo per il logout
+            logout();
         });
     }
 
@@ -158,5 +174,26 @@ public class HomeLogopedistaActivity extends AppCompatActivity {
         tvNessunGenitore.setText("Nessun genitore trovato.");
         tvNessunGenitore.setTextSize(18);
         linearLayoutGenitori.addView(tvNessunGenitore);
+    }
+
+    private void logout() {
+        // Elimina i dati dalle SharedPreferences
+
+        SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(PREF_EMAIL, "");
+        editor.putString(PREF_PASSWORD, "");
+        editor.apply();
+
+        // Esegui il logout da Firebase Auth
+        FirebaseAuth.getInstance().signOut();
+
+        // Reindirizza l'utente alla schermata di login
+        Intent intent = new Intent(HomeLogopedistaActivity.this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish(); // Chiudi l'activity corrente
+
+
     }
 }
