@@ -58,17 +58,16 @@
 
     <ScrollView
         android:id="@+id/scrollViewAccount"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="391dp"
+        android:layout_height="548dp"
         android:layout_margin="10dp"
         android:contentDescription="Lista bambini"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight="match_constraint"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayoutAccountGenitore"
-        app:layout_constraintVertical_bias="0.5">
+        app:layout_constraintVertical_bias="0.6">
 
         <LinearLayout
             android:id="@+id/linearLayoutAccounts"
@@ -77,4 +76,23 @@
             android:layout_gravity="center"
             android:orientation="vertical" />
     </ScrollView>
+
+    <!-- Bottone di Logout -->
+    <Button
+        android:id="@+id/btnLogout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:text="Logout"
+        android:textColor="#FFFFFF"
+        android:background="@drawable/rounded_button"
+        android:layout_weight="0.4"
+        android:padding="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintWidth_percent="0.4" /> <!-- Larghezza 40% del parent -->
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

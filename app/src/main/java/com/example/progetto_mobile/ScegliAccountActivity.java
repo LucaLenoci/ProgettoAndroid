@@ -1,6 +1,8 @@
 package com.example.progetto_mobile;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
@@ -11,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Button;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AlertDialog;
@@ -41,6 +44,10 @@ public class ScegliAccountActivity extends AppCompatActivity {
     private LinearLayout linearLayoutAccountGenitore, linearLayoutAccounts;
     private TextView tvNomeGenitore;
     private List<User> bambiniList;
+
+    private static final String PREFS_NAME = "LoginPrefs";
+    private static final String PREF_EMAIL = "savedemail";
+    private static final String PREF_PASSWORD = "savedpassword";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +90,15 @@ public class ScegliAccountActivity extends AppCompatActivity {
 
         linearLayoutAccountGenitore.setOnClickListener(v ->
                 showReauthenticationDialog(genitorePath));
+
+        // Recupera il riferimento al pulsante di logout
+        Button buttonLogout = findViewById(R.id.btnLogout);
+
+        // Imposta il listener per il pulsante di logout
+        ((View) buttonLogout).setOnClickListener(v -> {
+            // Chiama il metodo per il logout
+            logout();
+        });
     }
 
     private void showReauthenticationDialog(String genitorePath) {
@@ -264,6 +280,27 @@ public class ScegliAccountActivity extends AppCompatActivity {
                         }
                     }
                 });
+    }
+
+    private void logout() {
+        // Elimina i dati dalle SharedPreferences
+
+        SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(PREF_EMAIL, "");
+        editor.putString(PREF_PASSWORD, "");
+        editor.apply();
+
+        // Esegui il logout da Firebase Auth
+        FirebaseAuth.getInstance().signOut();
+
+        // Reindirizza l'utente alla schermata di login
+        Intent intent = new Intent(ScegliAccountActivity.this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish(); // Chiudi l'activity corrente
+
+
     }
 
 }
