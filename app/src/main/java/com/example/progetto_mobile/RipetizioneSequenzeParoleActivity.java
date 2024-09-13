@@ -9,6 +9,7 @@ import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
@@ -257,18 +258,32 @@ public class RipetizioneSequenzeParoleActivity extends AppCompatActivity impleme
         if (currentExercise != null && recognizedText.equalsIgnoreCase(currentExercise.getRisposta_corretta())) {
             Toast.makeText(this, "Correct!", Toast.LENGTH_SHORT).show();
             showConfettiEffect();
+
+            disableButtons();
+
             if (successSound != null) {
                 successSound.start();
+            }
+
+            // Aggiungi un handler per ritornare alla pagina precedente dopo l'animazione
+            new Handler().postDelayed(() -> {
                 updateCoinsInFirebase();
                 uploadAudioToFirebase();
-                ImageButton btnButton = findViewById(R.id.btn_button_2);
                 incrementTentativiInFirebase();
-                btnButton.setEnabled(false);
-            }
+                finish(); // Torna alla pagina precedente
+            }, 3000); // Aspetta 3 secondi (modifica se necessario per adattare la durata dell'animazione)
+
         } else {
             incrementTentativiInFirebase();
             Toast.makeText(this, "Try again!", Toast.LENGTH_SHORT).show();
         }
+    }
+
+
+
+    private void disableButtons() {
+        findViewById(R.id.speak_button_2).setEnabled(false);
+        findViewById(R.id.btn_button_2).setEnabled(false);
     }
 
     private void uploadAudioToFirebase() {
