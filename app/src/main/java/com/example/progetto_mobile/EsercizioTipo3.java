@@ -5,10 +5,11 @@ import androidx.annotation.NonNull;
 import java.io.Serializable;
 
 public class EsercizioTipo3 implements Serializable {
+
     private String placeholder;
     private boolean esercizio_corretto;
     private String risposta_corretta;
-
+    private String audio_url;
 
     public EsercizioTipo3() {
         // Default constructor required for serialization or other purposes
@@ -49,6 +50,14 @@ public class EsercizioTipo3 implements Serializable {
 
     public void setPlaceholder(String placeholder) {
         this.placeholder = placeholder;
+    }
+
+    public String getAudio_url() {
+        return audio_url;
+    }
+
+    public void setAudio_url(String audio_url) {
+        this.audio_url = audio_url;
     }
 
     @NonNull

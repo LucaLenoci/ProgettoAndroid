@@ -13,12 +13,15 @@ public class EsercizioTipo1 implements Serializable {
     private String suggerimento;
     private String suggerimento2;
     private String suggerimento3;
+    private int suggerimentiUsati;
+    private String audio_url;
 
     public EsercizioTipo1() {
         // Default constructor required for serialization or other purposes
     }
 
-    public EsercizioTipo1(String placeholder, boolean esercizioCorretto, String risposta, String rispostaCorretta, String suggerimento, String suggerimento2, String suggerimento3) {
+    public EsercizioTipo1(String placeholder, boolean esercizioCorretto, String risposta, String rispostaCorretta,
+                          String suggerimento, String suggerimento2, String suggerimento3, int suggerimentiUsati) {
         this.placeholder = placeholder;
         this.esercizio_corretto = esercizioCorretto;
         this.risposta = risposta;
@@ -26,15 +29,28 @@ public class EsercizioTipo1 implements Serializable {
         this.suggerimento = suggerimento;
         this.suggerimento2 = suggerimento2;
         this.suggerimento3 = suggerimento3;
+        this.suggerimentiUsati = suggerimentiUsati;
     }
 
-    public EsercizioTipo1(boolean esercizioCorretto, String risposta, String rispostaCorretta, String suggerimento, String suggerimento2, String suggerimento3) {
+    public EsercizioTipo1(boolean esercizioCorretto, String risposta, String rispostaCorretta,
+                          String suggerimento, String suggerimento2, String suggerimento3) {
         this.esercizio_corretto = esercizioCorretto;
         this.risposta = risposta;
         this.risposta_corretta = rispostaCorretta;
         this.suggerimento = suggerimento;
         this.suggerimento2 = suggerimento2;
         this.suggerimento3 = suggerimento3;
+    }
+
+    public EsercizioTipo1(boolean esercizioCorretto, String risposta, String rispostaCorretta,
+                          String suggerimento, String suggerimento2, String suggerimento3, int suggerimentiUsati) {
+        this.esercizio_corretto = esercizioCorretto;
+        this.risposta = risposta;
+        this.risposta_corretta = rispostaCorretta;
+        this.suggerimento = suggerimento;
+        this.suggerimento2 = suggerimento2;
+        this.suggerimento3 = suggerimento3;
+        this.suggerimentiUsati = suggerimentiUsati;
     }
 
     // Getters and Setters
@@ -82,6 +98,22 @@ public class EsercizioTipo1 implements Serializable {
 
     public void setSuggerimento(String suggerimento) {
         this.suggerimento = suggerimento;
+    }
+
+    public int getSuggerimentiUsati() {
+        return suggerimentiUsati;
+    }
+
+    public void setSuggerimentiUsati(int suggerimentiUsati) {
+        this.suggerimentiUsati = suggerimentiUsati;
+    }
+
+    public String getAudio_url() {
+        return audio_url;
+    }
+
+    public void setAudio_url(String audio_url) {
+        this.audio_url = audio_url;
     }
 
     @NonNull

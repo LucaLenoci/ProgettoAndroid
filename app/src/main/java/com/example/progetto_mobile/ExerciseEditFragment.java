@@ -368,8 +368,8 @@ public class ExerciseEditFragment extends Fragment {
                 return new EsercizioTipo1(false, "", selectedCorrectImageName ,inputLayout1.getEditText().getText().toString(),
                         inputLayout2.getEditText().getText().toString(), inputLayout3.getEditText().getText().toString());
             case "tipo2":
-                return new EsercizioTipo2(false, "", selectedCorrectImageName,
-                        selectedWrongImageName, "", new Random().nextInt(2) + 1);
+                return new EsercizioTipo2(false, selectedCorrectImageName,
+                        selectedWrongImageName, new Random().nextInt(2) + 1);
             case "tipo3":
                 return new EsercizioTipo3(false, inputLayout1.getEditText().getText().toString());
             default:

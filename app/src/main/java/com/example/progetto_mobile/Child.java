@@ -9,6 +9,7 @@ import java.util.List;
 
 public class Child extends User implements Serializable {
     private String avatarCorrente;
+    private List<String> ownedAvatars;
     private int progresso;
     private int coins;
     private EsercizioTipo1 eserciziTipo1;
@@ -148,6 +149,14 @@ public class Child extends User implements Serializable {
     public Child putEsercizioTipo3Ref(String esercizioTipo3Ref) {
         this.esercizioTipo3Ref = esercizioTipo3Ref;
         return this;
+    }
+
+    public List<String> getOwnedAvatars() {
+        return ownedAvatars;
+    }
+
+    public void setOwnedAvatars(List<String> ownedAvatars) {
+        this.ownedAvatars = ownedAvatars;
     }
 
     @NonNull

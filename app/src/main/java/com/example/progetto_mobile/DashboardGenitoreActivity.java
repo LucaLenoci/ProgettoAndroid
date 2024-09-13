@@ -17,7 +17,9 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class DashboardGenitoreActivity extends AppCompatActivity {
@@ -87,6 +89,8 @@ public class DashboardGenitoreActivity extends AppCompatActivity {
 
                     db = FirebaseFirestore.getInstance();
                     if (!nome.isEmpty() && !cognome.isEmpty() && !eta.isEmpty() && !sesso.isEmpty()) {
+                        List<String> ownedAvatars = new ArrayList<>();
+                        ownedAvatars.add("");
                         Map<String, Object> child = new HashMap<>();
                         child.put("nome", nome);
                         child.put("cognome", cognome);
@@ -94,6 +98,7 @@ public class DashboardGenitoreActivity extends AppCompatActivity {
                         child.put("sesso", sesso);
                         child.put("tipologia", 0);
                         child.put("avatarCorrente", "");
+                        child.put("ownedAvatars", ownedAvatars);
                         child.put("progresso", 0);
                         child.put("coins", 0);
                         child.put("esercizioTipo1", db.document("/esercizi/placeholder/tipo1/16-08-2024")); //placeholder

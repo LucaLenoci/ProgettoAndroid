@@ -18,7 +18,6 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.SimpleDateFormat;
@@ -334,8 +333,8 @@ public class DashboardBambinoActivity extends AppCompatActivity {
                     es.isEsercizio_corretto(), es.getRisposta(), es.getRisposta_corretta(), es.getSuggerimento());
         } else if (exercise instanceof EsercizioTipo2) {
             EsercizioTipo2 es = (EsercizioTipo2) exercise;
-            return String.format("Corretto: %s\nRisposta: %s\nRisposta corretta: %s\nRisposta sbagliata: %s\nImmagine corretta: %d",
-                    es.isEsercizio_corretto(), es.getRisposta(), es.getRisposta_corretta(), es.getRisposta_sbagliata(), es.getImmagine_corretta());
+            return String.format("Corretto: %s\nRisposta corretta: %s\nRisposta sbagliata: %s\nImmagine corretta: %d",
+                    es.isEsercizio_corretto(), es.getRisposta_corretta(), es.getRisposta_sbagliata(), es.getImmagine_corretta());
         } else if (exercise instanceof EsercizioTipo3) {
             EsercizioTipo3 es = (EsercizioTipo3) exercise;
             return String.format("Corretto: %s\nRisposta corretta: %s",

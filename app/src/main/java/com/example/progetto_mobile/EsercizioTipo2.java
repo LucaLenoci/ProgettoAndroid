@@ -9,30 +9,24 @@ public class EsercizioTipo2 implements Serializable {
 
     private String placeholder;
     private boolean esercizio_corretto;
-    // TODO: su firestore il campo 'risposta' non c'è
-    private String risposta;
     private String risposta_corretta;
     private String risposta_sbagliata;
     private int immagine_corretta;
-
 
     public EsercizioTipo2() {
         // Default constructor required for serialization or other purposes
     }
 
-    public EsercizioTipo2(String placeholder, boolean esercizioCorretto, String risposta, String rispostaCorretta, String rispostaSbagliata, String suggerimento, int immagineCorretta) {
+    public EsercizioTipo2(String placeholder, boolean esercizioCorretto, String rispostaCorretta, String rispostaSbagliata, int immagineCorretta) {
         this.placeholder = placeholder;
         this.esercizio_corretto = esercizioCorretto;
-        this.risposta = risposta;
         this.risposta_corretta = rispostaCorretta;
         this.risposta_sbagliata = rispostaSbagliata;
         this.immagine_corretta = immagineCorretta;
     }
 
-    /* perchè sta String suggerimento come parametro? */
-    public EsercizioTipo2(boolean esercizioCorretto, String risposta, String rispostaCorretta, String rispostaSbagliata, String suggerimento, int immagineCorretta) {
+    public EsercizioTipo2(boolean esercizioCorretto, String rispostaCorretta, String rispostaSbagliata, int immagineCorretta) {
         this.esercizio_corretto = esercizioCorretto;
-        this.risposta = risposta;
         this.risposta_corretta = rispostaCorretta;
         this.risposta_sbagliata = rispostaSbagliata;
         this.immagine_corretta = immagineCorretta;
@@ -45,14 +39,6 @@ public class EsercizioTipo2 implements Serializable {
 
     public void setEsercizio_corretto(boolean esercizio_corretto) {
         this.esercizio_corretto = esercizio_corretto;
-    }
-
-    public String getRisposta() {
-        return risposta;
-    }
-
-    public void setRisposta(String risposta) {
-        this.risposta = risposta;
     }
 
     public String getRisposta_corretta() {
@@ -84,10 +70,9 @@ public class EsercizioTipo2 implements Serializable {
     public String toString() {
         return String.format(Locale.ITALY,
                 "Esercizio corretto: %b,\n" +
-                        "Risposta: %s\n" +
                         "Risposta corretta: %s\n" +
                         "Risposta sbagliata: %s\n" +
                         "Immagine corretta: %d",
-                isEsercizio_corretto(), getRisposta(), getRisposta_corretta(), getRisposta_sbagliata(), getImmagine_corretta());
+                isEsercizio_corretto(), getRisposta_corretta(), getRisposta_sbagliata(), getImmagine_corretta());
     }
 }
