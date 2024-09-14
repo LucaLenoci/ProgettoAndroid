@@ -97,9 +97,22 @@ public class HomeBambinoFragment extends Fragment {
         esercizioButton.setOnClickListener(v -> checkAndProceedToExercises());
 
         ProfilePic.setOnClickListener(v -> {
-            Intent intentAvatar = new Intent(requireContext(), AvatarActivity.class);
-            intentAvatar.putExtra("bambinoId", bambinoId);  // Pass the bambino ID to AvatarActivity
-            startActivity(intentAvatar);
+            Fragment fragment;
+            fragment = new AvatarFragment();
+            if (fragment != null) {
+                Bundle bundle = new Bundle();
+                bundle.putString("bambinoId", bambinoId);
+                bundle.putString("selectedDate", selectedDate);
+                fragment.setArguments(bundle);
+
+                if (getParentFragmentManager() != null) {
+                    getParentFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.fragment_container, fragment)
+                            .addToBackStack(null)
+                            .commit();
+                }
+            }
         });
     }
 

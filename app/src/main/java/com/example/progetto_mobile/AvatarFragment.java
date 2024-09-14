@@ -2,10 +2,18 @@ package com.example.progetto_mobile;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+
 import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -15,9 +23,9 @@ import com.google.firebase.storage.StorageReference;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AvatarActivity extends AppCompatActivity {
+public class AvatarFragment extends Fragment {
 
-    private static final String TAG = "AvatarActivity";
+    private static final String TAG = "AvatarFragment";
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     private ImageView avatar1, avatar2, avatar3, avatar4, coinsimageavatar1, coinsimageavatar2, coinsimageavatar3, coinsimageavatar4;
@@ -30,35 +38,38 @@ public class AvatarActivity extends AppCompatActivity {
     String personaggi_da_visualizzare;
     private int bambinoCoins = 0;  // Store the bambino's current coin balance
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.compra_seleziona_avatar);
-        bambinoId = getIntent().getStringExtra("bambinoId");
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.compra_seleziona_avatar, container, false);
+        bambinoId = getArguments().getString("bambinoId");
+
 
         // Initialize views
-        avatar1 = findViewById(R.id.avatar1);
-        avatar2 = findViewById(R.id.avatar2);
-        avatar3 = findViewById(R.id.avatar3);
-        avatar4 = findViewById(R.id.avatar4);
+        avatar1 = view.findViewById(R.id.avatar1);
+        avatar2 = view.findViewById(R.id.avatar2);
+        avatar3 = view.findViewById(R.id.avatar3);
+        avatar4 = view.findViewById(R.id.avatar4);
 
-        textAvatar1 = findViewById(R.id.textavatar1);
-        textAvatar2 = findViewById(R.id.textavatar2);
-        textAvatar3 = findViewById(R.id.textavatar3);
-        textAvatar4 = findViewById(R.id.textavatar4);
+        textAvatar1 = view.findViewById(R.id.textavatar1);
+        textAvatar2 = view.findViewById(R.id.textavatar2);
+        textAvatar3 = view.findViewById(R.id.textavatar3);
+        textAvatar4 = view.findViewById(R.id.textavatar4);
 
-        buttonAvatar1 = findViewById(R.id.buttonavatar1);
-        buttonAvatar2 = findViewById(R.id.buttonavatar2);
-        buttonAvatar3 = findViewById(R.id.buttonavatar3);
-        buttonAvatar4 = findViewById(R.id.buttonavatar4);
+        buttonAvatar1 = view.findViewById(R.id.buttonavatar1);
+        buttonAvatar2 = view.findViewById(R.id.buttonavatar2);
+        buttonAvatar3 = view.findViewById(R.id.buttonavatar3);
+        buttonAvatar4 = view.findViewById(R.id.buttonavatar4);
 
-        coinsimageavatar1 = findViewById(R.id.coinavatar1);
-        coinsimageavatar2 = findViewById(R.id.coinavatar2);
-        coinsimageavatar3 = findViewById(R.id.coinavatar3);
-        coinsimageavatar4 = findViewById(R.id.coinavatar4);
+        coinsimageavatar1 = view.findViewById(R.id.coinavatar1);
+        coinsimageavatar2 = view.findViewById(R.id.coinavatar2);
+        coinsimageavatar3 = view.findViewById(R.id.coinavatar3);
+        coinsimageavatar4 = view.findViewById(R.id.coinavatar4);
 
         // Fetch and display bambino's current coin balance, then load avatar data
         fetchBambinoCoinsAndLoadAvatars();
+
+        return view;
     }
 
     private void fetchBambinoCoinsAndLoadAvatars() {
@@ -68,7 +79,7 @@ public class AvatarActivity extends AppCompatActivity {
                         DocumentSnapshot document = task.getResult();
                         if (document.exists()) {
                             Long coins = document.getLong("coins");
-                            TextView coinsTextView = findViewById(R.id.moneteBambino);
+                            TextView coinsTextView = getView().findViewById(R.id.moneteBambino);
                             if (coins != null) {
                                 bambinoCoins = coins.intValue();
                                 coinsTextView.setText(String.valueOf(bambinoCoins));
@@ -79,14 +90,14 @@ public class AvatarActivity extends AppCompatActivity {
                             }
                         } else {
                             Log.d(TAG, "No such document for " + bambinoId);
-                            TextView coinsTextView = findViewById(R.id.moneteBambino);
+                            TextView coinsTextView = getView().findViewById(R.id.moneteBambino);
                             coinsTextView.setText("0");
                         }
                         // After fetching coins, load the avatars
                         fetchAvatarCorrenteAndLoadData();
                     } else {
                         Log.e(TAG, "Firestore get failed for " + bambinoId, task.getException());
-                        TextView coinsTextView = findViewById(R.id.moneteBambino);
+                        TextView coinsTextView = getView().findViewById(R.id.moneteBambino);
                         coinsTextView.setText("0");
                     }
                 });
@@ -137,7 +148,7 @@ public class AvatarActivity extends AppCompatActivity {
                             // Set the avatar image and name
                             if (imagePath != null && !imagePath.isEmpty()) {
                                 StorageReference imageRef = FirebaseStorage.getInstance().getReferenceFromUrl(imagePath);
-                                imageRef.getDownloadUrl().addOnSuccessListener(uri -> Glide.with(AvatarActivity.this).load(uri).into(imageView));
+                                imageRef.getDownloadUrl().addOnSuccessListener(uri -> Glide.with(getContext()).load(uri).into(imageView));
                             }
 
                             textView.setText(name != null ? name : "Name not available");
