@@ -22,6 +22,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.ArrayList;
 import java.util.List;
 
+// todo: aggiustare il cropping. quando ci sono troppi bambini, vengono tagliati
 public class ClassificaBambiniActivity extends AppCompatActivity {
 
     private static final String TAG = "ClassificaBambiniActivity";
