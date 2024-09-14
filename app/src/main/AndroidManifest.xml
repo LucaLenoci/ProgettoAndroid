@@ -24,23 +24,25 @@
         <activity
             android:name=".ScegliAccountActivity"
             android:exported="false" />
+
         <activity
             android:name=".DashboardGenitoreActivity"
             android:exported="false" />
+
         <activity
             android:name=".ClassificaBambiniActivity"
             android:exported="false" />
+
         <activity
             android:name=".HomeLogopedistaActivity"
             android:exported="false" />
+
         <activity
             android:name=".DashboardBambinoActivity"
             android:exported="false" />
+
         <activity
             android:name=".CorreggiEserciziActivity"
-            android:exported="false" />
-        <activity
-            android:name=".BambinoClassificaActivity"
             android:exported="false" />
 
         <activity
