@@ -141,7 +141,9 @@ public class HomeEserciziBambinoFragment extends Fragment {
         // Check for collisions with each button
         for (Button button : buttons) {
             if (isColliding(movableObject, button)) {
-                button.performClick();  // Trigger button click if colliding
+                if (button.isEnabled()) {
+                    button.performClick();  // Trigger button click if colliding
+                }
                 break;  // Stop checking other buttons after a collision is detected
             }
         }
