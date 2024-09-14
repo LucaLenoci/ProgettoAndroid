@@ -67,12 +67,6 @@ public class LoginFragment extends Fragment {
 
         loadSavedEmail();
 
-        // Example buttons to simulate login for different users
-        View bambinoButton = view.findViewById(R.id.buttonLoginBambino);
-
-
-        View genitoreButton = view.findViewById(R.id.buttonLoginGenitore);
-        genitoreButton.setOnClickListener(v -> startActivity(new Intent(getContext(), GenitoreActivity.class)));
 
         View accediButton = view.findViewById(R.id.buttonResetPassword);
         accediButton.setOnClickListener(v -> {
