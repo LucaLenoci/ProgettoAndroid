@@ -292,7 +292,9 @@ public class BambiniListFragment extends Fragment {
             Bundle args = new Bundle();
 
             if (isFromHomeLogopedista) {
-                args.putString("from", "homeLogopedista");
+                args.putBoolean("from", true);
+            }else{
+                args.putBoolean("from", false);
             }
 
             args.putSerializable("child", child);

@@ -32,6 +32,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.Collections;
 import java.util.HashMap;
@@ -47,6 +48,7 @@ public class RegisterFragment extends Fragment {
     private FirebaseUser fbUser;
     private FirebaseFirestore db;
     private CollectionReference collectionRef;
+    private String logopedistaPath;
 
     @Nullable
     @Override
@@ -85,6 +87,7 @@ public class RegisterFragment extends Fragment {
         else if (from != null && from.equals("registraGenitore")){
             tvLabel.setText("Registra un genitore");
             collectionRef = db.collection("genitori");
+            logopedistaPath = getArguments().getString("logopedistaPath");
             tipologia = 1;
         }
 
@@ -151,6 +154,8 @@ public class RegisterFragment extends Fragment {
                         Log.d(TAG, "DocumentSnapshot/Reference added with ID: " + documentReference.getId());
                         Log.d(TAG, "DocumentReference path: " + documentReference.getPath());
                         Toast.makeText(getContext(), "User registered successfully", Toast.LENGTH_SHORT).show();
+                        if(tipologia==1)
+                            addGenitoreRefToLogopedista(logopedistaPath, documentReference.getPath());
                         addToGeneralUsersCollection(email, documentReference.getId());
                         if (from.equals("registraLogopedista")) {
                             FirebaseAuth.getInstance().signOut();
@@ -208,4 +213,33 @@ public class RegisterFragment extends Fragment {
                     }
                 });
     }
+
+    public static Task<DocumentReference> addGenitoreRefToLogopedista(String logopedistaPath, String genitorePath) {
+        Log.d(TAG, "Inizio funzione: addGenitoreRefToLogopedista");
+        Log.d(TAG, "Logopedista path: " + logopedistaPath);
+        Log.d(TAG, "Genitore path: " + genitorePath);
+
+        return FirebaseFirestore.getInstance()
+                .document(logopedistaPath)
+                .update("genitoriRef", FieldValue.arrayUnion(FirebaseFirestore.getInstance().document(genitorePath)))
+                .continueWith(updateTask -> {
+                    if (updateTask.isSuccessful()) {
+                        Log.d(TAG, "Aggiornamento riuscito: riferimento genitore aggiunto al logopedista.");
+                        Log.d(TAG, "Logopedista path aggiornato: " + logopedistaPath);
+                        Log.d(TAG, "Genitore path aggiunto: " + genitorePath);
+                        return FirebaseFirestore.getInstance().document(genitorePath);
+                    } else {
+                        Log.e(TAG, "Errore nell'aggiornare il logopedista con il nuovo genitore", updateTask.getException());
+                        return null;
+                    }
+                })
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Log.d(TAG, "Task completato con successo.");
+                    } else {
+                        Log.e(TAG, "Errore nel completamento del task.", task.getException());
+                    }
+                });
+    }
+
 }

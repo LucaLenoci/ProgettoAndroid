@@ -104,6 +104,7 @@ public class HomeLogopedistaFragment extends Fragment {
         btnRegistraGenitore.setOnClickListener(v -> {
             Intent intent = new Intent(getContext(), MainActivity.class);
             intent.putExtra("from", "registraGenitore");
+            intent.putExtra("logopedistaPath", logopedistaPath);
             startActivity(intent);
 
         });

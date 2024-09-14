@@ -39,12 +39,13 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = getIntent();
         if (intent != null && intent.hasExtra("from")) {
             String from = intent.getStringExtra("from");
-
+            String logopedistaPath = intent.getStringExtra("logopedistaPath");
             if ("registraGenitore".equals(from)) {
                 // Show RegisterFragment with arguments
                 RegisterFragment registerFragment = new RegisterFragment();
                 Bundle args = new Bundle();
                 args.putString("from", "registraGenitore");
+                args.putString("logopedistaPath", logopedistaPath);
                 registerFragment.setArguments(args);
 
                 getSupportFragmentManager().beginTransaction()

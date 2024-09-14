@@ -40,7 +40,7 @@ public class DashboardBambinoFragment extends Fragment {
         DashboardBambinoFragment fragment = new DashboardBambinoFragment();
         Bundle args = new Bundle();
         args.putSerializable("child", child);
-        args.putBoolean("fromHomeLogopedista", isFromHomeLogopedista);
+        args.putBoolean("from", isFromHomeLogopedista);
         fragment.setArguments(args);
         return fragment;
     }
@@ -60,9 +60,9 @@ public class DashboardBambinoFragment extends Fragment {
         db = FirebaseFirestore.getInstance();
 
         child = (Child) getArguments().getSerializable("child");
-        String from = getArguments().getString("from");
+        Boolean from = getArguments().getBoolean("from");
         Log.d(TAG, "From: " + from);
-        if (from != null && from.equals("homeLogopedista"))
+        if (from != null && from.equals(true))
             isFromHomeLogopedista = true;
 
         if (child != null) {
@@ -80,10 +80,15 @@ public class DashboardBambinoFragment extends Fragment {
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                if (getActivity().getSupportFragmentManager().getBackStackEntryCount() > 0) {
-                    closeExerciseEditFragment();
+                Log.d(TAG, "Tab selected: " + tab.getPosition()); // Debugging log
+                try {
+                    if (requireActivity().getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                        closeExerciseEditFragment();
+                    }
+                    updateContent(tab.getPosition());
+                } catch (Exception e) {
+                    Log.e(TAG, "Error switching tabs", e); // Catch potential exceptions
                 }
-                updateContent(tab.getPosition());
             }
 
             @Override
@@ -94,47 +99,76 @@ public class DashboardBambinoFragment extends Fragment {
         });
 
         if (tabLayout.getTabCount() > 0) {
-            updateContent(0);
+            updateContent(0); // Initial content load
         }
     }
 
     private void updateContent(int position) {
-        contentLayout.removeAllViews();
-        String exerciseType = "tipo" + (position + 1);
-        displayExercises(exerciseType);
+        Log.d(TAG, "Updating content for tab: " + position); // Debugging log
+        try {
+            contentLayout.removeAllViews(); // Reset the view
+            String exerciseType = "tipo" + (position + 1);
+            Log.d(TAG, "Exercise type: " + exerciseType); // Debugging log
+            displayExercises(exerciseType);
+        } catch (Exception e) {
+            Log.e(TAG, "Error updating content", e); // Catch potential exceptions
+        }
     }
 
     private void displayExercises(String exerciseType) {
-        contentLayout.removeAllViews();
+        Log.d(TAG, "Displaying exercises for: " + exerciseType); // Debugging log
+        try {
+            contentLayout.removeAllViews();
+            Log.d(TAG, "Content layout cleared."); // Log after removing views from contentLayout
 
-        if (isPlaceholder(exerciseType)) {
-            if (isFromHomeLogopedista) {
-                showAddExerciseButton(exerciseType);
-            } else {
-                showNoExercisesMessage();
-            }
-            return;
-        }
-
-        String exerciseRef = getExerciseRef(exerciseType);
-        if (exerciseRef == null || exerciseRef.isEmpty()) {
-            if (isFromHomeLogopedista) {
-                showAddExerciseButton(exerciseType);
-            } else {
-                showNoExercisesMessage();
-            }
-        } else {
-            Object exercise = getExerciseFromChild(exerciseType);
-            if (exercise != null) {
-                displayExercise(exercise);
+            // Check if it's a placeholder
+            if (isPlaceholder(exerciseType)) {
+                Log.d(TAG, "Exercise is a placeholder."); // Log if it's a placeholder
                 if (isFromHomeLogopedista) {
-                    showEditExerciseButton(exerciseType);
+                    Log.d(TAG, "Showing add exercise button for Logopedista."); // Log for showing the add button
+                    showAddExerciseButton(exerciseType);
+                } else {
+                    Log.d(TAG, "Showing no exercises message for non-Logopedista."); // Log for showing the "no exercises" message
+                    showNoExercisesMessage();
+                }
+                return;
+            }
+
+            // Get exercise reference
+            String exerciseRef = getExerciseRef(exerciseType);
+            Log.d(TAG, "Exercise reference: " + exerciseRef); // Debugging log for the reference
+            if (exerciseRef == null || exerciseRef.isEmpty()) {
+                Log.d(TAG, "No exercise reference found."); // Log when no reference is found
+                if (isFromHomeLogopedista) {
+                    Log.d(TAG, "Showing add exercise button for Logopedista."); // Log for showing the add button
+                    showAddExerciseButton(exerciseType);
+                } else {
+                    Log.d(TAG, "Showing no exercises message for non-Logopedista."); // Log for showing the "no exercises" message
+                    showNoExercisesMessage();
                 }
             } else {
-                fetchAndDisplayExercise(exerciseType, exerciseRef);
+                Log.d(TAG, "Exercise reference found: " + exerciseRef); // Log when the reference is found
+
+                // Get the exercise from the child object
+                Object exercise = getExerciseFromChild(exerciseType);
+                if (exercise != null) {
+                    Log.d(TAG, "Exercise already exists in child object."); // Log when exercise is already present in the child
+                    displayExercise(exercise);
+                    if (isFromHomeLogopedista) {
+                        Log.d(TAG, "Showing edit exercise button."); // Log for showing the edit button
+                        showEditExerciseButton(exerciseType);
+                    }
+                } else {
+                    Log.d(TAG, "Fetching exercise from Firestore."); // Log before fetching the exercise from Firestore
+                    fetchAndDisplayExercise(exerciseType, exerciseRef);
+                }
             }
+        } catch (Exception e) {
+            Log.e(TAG, "Error displaying exercises", e); // Catch potential exceptions
         }
     }
+
+
 
     private Object getExerciseFromChild(String exerciseType) {
         switch (exerciseType) {
@@ -327,81 +361,108 @@ public class DashboardBambinoFragment extends Fragment {
     }
 
     private void displayExercise(Object exercise) {
+        Log.d(TAG, "Displaying exercise: " + exercise.toString()); // Log the exercise object being displayed
+
+        // Inflate the layout for the exercise
         View exerciseView = LayoutInflater.from(getContext()).inflate(R.layout.layout_item_esercizio, contentLayout, false);
+        Log.d(TAG, "Exercise layout inflated."); // Log after inflating the layout
+
         LinearLayout detailsContainer = exerciseView.findViewById(R.id.esercizioDetailsContainer);
         LinearLayout barraAudio = exerciseView.findViewById(R.id.layoutBarraAudio);
         Button playPauseButton = exerciseView.findViewById(R.id.playPauseButton);
         SeekBar audioSeekBar = exerciseView.findViewById(R.id.audioSeekBar);
 
-        // Aggiungi i dettagli dell'esercizio al container
+        // Add exercise details to the container
         View detailsView = getExerciseDetails(exercise);
         detailsContainer.addView(detailsView);
+        Log.d(TAG, "Exercise details added to the container."); // Log after adding exercise details
 
         String audioUrl = null;
         if (exercise instanceof EsercizioTipo1) {
             EsercizioTipo1 es = (EsercizioTipo1) exercise;
             audioUrl = es.getAudio_url();
+            Log.d(TAG, "Exercise type is EsercizioTipo1, audio URL: " + audioUrl); // Log audio URL for EsercizioTipo1
         } else if (exercise instanceof EsercizioTipo3) {
             EsercizioTipo3 es = (EsercizioTipo3) exercise;
             audioUrl = es.getAudio_url();
+            Log.d(TAG, "Exercise type is EsercizioTipo3, audio URL: " + audioUrl); // Log audio URL for EsercizioTipo3
         }
 
         if (audioUrl != null && !audioUrl.isEmpty()) {
             barraAudio.setVisibility(View.VISIBLE);
+            Log.d(TAG, "Audio URL is valid, initializing MediaPlayer."); // Log when audio is valid and MediaPlayer is initialized
+
             MediaPlayer mediaPlayer = new MediaPlayer();
-            Handler handler = new Handler(); // Handler per aggiornare la SeekBar
+            Handler handler = new Handler(); // Handler for updating the SeekBar
 
             try {
                 mediaPlayer.setDataSource(audioUrl);
-                mediaPlayer.prepareAsync();
+                Log.d(TAG, "MediaPlayer data source set: " + audioUrl); // Log the audio URL being set in MediaPlayer
 
-                // Quando il MediaPlayer è pronto, imposta la durata della SeekBar
+                mediaPlayer.prepareAsync();
+                Log.d(TAG, "MediaPlayer is preparing asynchronously."); // Log when MediaPlayer starts preparing
+
+                // When MediaPlayer is ready, set up the SeekBar and play/pause button
                 mediaPlayer.setOnPreparedListener(mp -> {
+                    Log.d(TAG, "MediaPlayer is prepared, setting up play/pause button and SeekBar."); // Log when MediaPlayer is prepared
                     playPauseButton.setText("Play");
-                    audioSeekBar.setMax(mp.getDuration()); // Imposta la durata massima della SeekBar
+                    audioSeekBar.setMax(mp.getDuration()); // Set the max duration of the SeekBar
+                    Log.d(TAG, "Audio duration set in SeekBar: " + mp.getDuration()); // Log the audio duration
 
                     playPauseButton.setOnClickListener(v -> {
                         if (mediaPlayer.isPlaying()) {
                             mediaPlayer.pause();
                             playPauseButton.setText("Play");
+                            Log.d(TAG, "Audio paused."); // Log when audio is paused
                         } else {
                             mediaPlayer.start();
                             playPauseButton.setText("Pause");
-                            updateSeekBar(mediaPlayer, audioSeekBar, handler); // Aggiorna la SeekBar durante la riproduzione
+                            Log.d(TAG, "Audio playing."); // Log when audio starts playing
+                            updateSeekBar(mediaPlayer, audioSeekBar, handler); // Update SeekBar while playing
                         }
                     });
                 });
 
-                // Rilascia il MediaPlayer alla fine
+                // Release the MediaPlayer when playback is complete
                 mediaPlayer.setOnCompletionListener(mp -> {
+                    Log.d(TAG, "Audio playback completed, resetting MediaPlayer."); // Log when playback is completed
                     playPauseButton.setText("Play");
                     audioSeekBar.setProgress(0);
-                    mediaPlayer.seekTo(0); // Torna all'inizio
+                    mediaPlayer.seekTo(0); // Reset to the start
                 });
 
             } catch (Exception e) {
-                Log.e(TAG, "Errore nella riproduzione dell'audio", e);
-                Toast.makeText(getContext(), "Errore nella riproduzione dell'audio", Toast.LENGTH_SHORT).show();
+                Log.e(TAG, "Error in audio playback", e); // Log any errors during audio playback
+                Toast.makeText(getContext(), "Error in audio playback", Toast.LENGTH_SHORT).show();
             }
 
-            // Listener per l'interazione con la SeekBar
+            // Listener for SeekBar interaction
             audioSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                     if (fromUser) {
-                        mediaPlayer.seekTo(progress); // Permetti all'utente di saltare in avanti o indietro
+                        Log.d(TAG, "SeekBar progress changed by user: " + progress); // Log when user changes SeekBar position
+                        mediaPlayer.seekTo(progress); // Allow user to skip forward/backward
                     }
                 }
 
                 @Override
-                public void onStartTrackingTouch(SeekBar seekBar) {}
+                public void onStartTrackingTouch(SeekBar seekBar) {
+                    Log.d(TAG, "User started tracking SeekBar."); // Log when user starts tracking the SeekBar
+                }
 
                 @Override
-                public void onStopTrackingTouch(SeekBar seekBar) {}
+                public void onStopTrackingTouch(SeekBar seekBar) {
+                    Log.d(TAG, "User stopped tracking SeekBar."); // Log when user stops tracking the SeekBar
+                }
             });
+        } else {
+            Log.d(TAG, "No valid audio URL provided, audio section hidden."); // Log when there is no valid audio URL
+            barraAudio.setVisibility(View.GONE);
         }
 
         contentLayout.addView(exerciseView);
+        Log.d(TAG, "Exercise view added to content layout."); // Log when the exercise view is added to the content layout
     }
 
     private void updateSeekBar(MediaPlayer mediaPlayer, SeekBar audioSeekBar, Handler handler) {
