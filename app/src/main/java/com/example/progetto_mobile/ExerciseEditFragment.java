@@ -35,6 +35,7 @@ import com.google.firebase.storage.StorageReference;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -310,7 +311,6 @@ public class ExerciseEditFragment extends Fragment {
         return null;
     }
 
-
     private void loadImageAndSetButtonDrawable(StorageReference imageName, Button button, int placeholder) {
         // placeholder nel frattempo che Glide scarichi l'immagine
         button.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, placeholder);
@@ -348,7 +348,6 @@ public class ExerciseEditFragment extends Fragment {
         });
     }
 
-
     private void onCancelClick() {
         ((DashboardBambinoActivity) requireActivity()).closeExerciseEditFragment();
     }
@@ -365,13 +364,15 @@ public class ExerciseEditFragment extends Fragment {
     private Object createExerciseObject() {
         switch (exerciseType) {
             case "tipo1":
-                return new EsercizioTipo1(false, "", selectedCorrectImageName ,inputLayout1.getEditText().getText().toString(),
-                        inputLayout2.getEditText().getText().toString(), inputLayout3.getEditText().getText().toString());
+                return new EsercizioTipo1("", false, "", selectedCorrectImageName,
+                        Arrays.asList(false, false, false), inputLayout1.getEditText().getText().toString(), inputLayout2.getEditText().getText().toString(),
+                        inputLayout3.getEditText().getText().toString(), 0, 0, "", "tipo1");
             case "tipo2":
-                return new EsercizioTipo2(false, selectedCorrectImageName,
-                        selectedWrongImageName, new Random().nextInt(2) + 1);
+                return new EsercizioTipo2("", false, selectedCorrectImageName,
+                        selectedWrongImageName, new Random().nextInt(2) + 1, 0, "tipo2");
             case "tipo3":
-                return new EsercizioTipo3(false, inputLayout1.getEditText().getText().toString());
+                return new EsercizioTipo3("", false,
+                        inputLayout1.getEditText().getText().toString(), "", 0, "tipo3");
             default:
                 throw new IllegalArgumentException("Unknown exercise type: " + exerciseType);
         }

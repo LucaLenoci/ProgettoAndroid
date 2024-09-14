@@ -12,9 +12,22 @@ public class EsercizioTipo2 implements Serializable {
     private String risposta_corretta;
     private String risposta_sbagliata;
     private int immagine_corretta;
+    private int tentativi;
+    private String tipo;
 
     public EsercizioTipo2() {
         // Default constructor required for serialization or other purposes
+    }
+
+    public EsercizioTipo2(String placeholder, boolean esercizioCorretto, String rispostaCorretta,
+                          String risposta_sbagliata,  int immagine_corretta, int tentativi, String tipo) {
+        this.placeholder = placeholder;
+        this.esercizio_corretto = esercizioCorretto;
+        this.risposta_corretta = rispostaCorretta;
+        this.risposta_sbagliata = risposta_sbagliata;
+        this.immagine_corretta = immagine_corretta;
+        this.tentativi = tentativi;
+        this.tipo = tipo;
     }
 
     public EsercizioTipo2(String placeholder, boolean esercizioCorretto, String rispostaCorretta, String rispostaSbagliata, int immagineCorretta) {
@@ -63,6 +76,22 @@ public class EsercizioTipo2 implements Serializable {
 
     public void setPlaceholder(String placeholder) {
         this.placeholder = placeholder;
+    }
+
+    public int getTentativi() {
+        return tentativi;
+    }
+
+    public void setTentativi(int tentativi) {
+        this.tentativi = tentativi;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
     }
 
     @NonNull
