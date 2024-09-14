@@ -4,6 +4,9 @@ import android.content.Intent;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.ImageView;
@@ -11,10 +14,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -27,95 +33,105 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
-public class HomeBambinoActivity extends AppCompatActivity {
+public class HomeBambinoFragment extends Fragment {
 
-    private static final String TAG = "HomeBambinoActivity";
+    private static final String TAG = "HomeBambinoFragment";
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     private String selectedDate;
     private TextView tvNome, tvCoins;
     private ProgressBar progressBar;
     private ImageView ProfilePic;
-    private String bambinoIdraw;
     private String bambinoId;
-    private int currentStreak=0;
+    private int currentStreak = 0;
     private TextView numerostreak;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        currentStreak=0;
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.home_bambino);
-        ProfilePic = findViewById(R.id.ProfilePic);
-        bambinoIdraw = getIntent().getStringExtra("bambinoId");
-        // Find the last occurrence of '/'
-        int lastSlashIndex = bambinoIdraw.lastIndexOf('/');
-        // Extract the substring after the last '/'
-        bambinoId = bambinoIdraw.substring(lastSlashIndex + 1);
-        numerostreak = findViewById(R.id.textView3);
-        fetchTema();
-        loadCurrentAvatar(bambinoId);
-        tvNome = findViewById(R.id.Nome);
-        tvCoins = findViewById(R.id.Coins);
-        progressBar = findViewById(R.id.progressBar);
+    public static HomeBambinoFragment newInstance(String bambinoId) {
+        HomeBambinoFragment fragment = new HomeBambinoFragment();
+        Bundle args = new Bundle();
+        args.putString("bambinoId", bambinoId);
+        fragment.setArguments(args);
+        return fragment;
+    }
 
-        CalendarView calendarView = findViewById(R.id.calendarView);
-        Button esercizioButton = findViewById(R.id.button);
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.home_bambino, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        currentStreak = 0;
+
+        ProfilePic = view.findViewById(R.id.ProfilePic);
+        numerostreak = view.findViewById(R.id.textView3);
+
+        if (getArguments() != null) {
+            bambinoId = getArguments().getString("bambinoId");
+        }
+
+        tvNome = view.findViewById(R.id.Nome);
+        tvCoins = view.findViewById(R.id.Coins);
+        progressBar = view.findViewById(R.id.progressBar);
+
+        CalendarView calendarView = view.findViewById(R.id.calendarView);
+        Button esercizioButton = view.findViewById(R.id.button);
 
         // Set default selected date to the current date
         selectedDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
 
         // Listener to capture the selected date
-        calendarView.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
+        calendarView.setOnDateChangeListener((view1, year, month, dayOfMonth) -> {
             // Month is 0-based, so add 1
             int correctedMonth = month + 1;
             selectedDate = String.format(Locale.getDefault(), "%02d-%02d-%04d", dayOfMonth, correctedMonth, year);
         });
 
         getChildFromFirestore();
+        fetchTema();
+        loadCurrentAvatar(bambinoId);
 
-        Intent intent = getIntent();
-        String bambinoPath = intent.getStringExtra("bambino");
-        Log.d(TAG, "Bambino path: " + bambinoPath);
-
-        // Set up the button click listener
         esercizioButton.setOnClickListener(v -> checkAndProceedToExercises());
 
         ProfilePic.setOnClickListener(v -> {
-            Intent intentAvatar = new Intent(HomeBambinoActivity.this, AvatarActivity.class);
+            Intent intentAvatar = new Intent(requireContext(), AvatarActivity.class);
             intentAvatar.putExtra("bambinoId", bambinoId);  // Pass the bambino ID to AvatarActivity
             startActivity(intentAvatar);
         });
     }
 
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
-        currentStreak=0;
+        currentStreak = 0;
 
-        // Re-fetch child details (name, coins, etc.)
         getChildFromFirestore();
-
-        // Re-fetch the current avatar in case it was changed
         loadCurrentAvatar(bambinoId);
-
-        // Re-fetch and apply the current theme
         fetchTema();
-
-        // Recalculate the current streak
         calculateStreak();
     }
 
     private void checkAndProceedToExercises() {
-        checkIfExerciseExists(selectedDate, new FirestoreCallback() {
+        checkIfExerciseExists(selectedDate, new HomeBambinoFragment.FirestoreCallback() {
             @Override
             public void onCallback(boolean hasExercises) {
                 if (hasExercises) {
-                    Intent intentEsercizi = new Intent(HomeBambinoActivity.this, HomeEserciziBambinoActivity.class);
-                    intentEsercizi.putExtra("selectedDate", selectedDate);
-                    intentEsercizi.putExtra("bambinoId", bambinoId);
-                    startActivity(intentEsercizi);
+                    HomeEserciziBambinoFragment fragment = new HomeEserciziBambinoFragment();
+
+// Pass data to the fragment using arguments
+                    Bundle args = new Bundle();
+                    args.putString("selectedDate", selectedDate);
+                    args.putString("bambinoId", bambinoId);
+                    fragment.setArguments(args);
+
+// Start the fragment
+                    FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+                    transaction.replace(R.id.fragment_container, fragment); // Use the ID of your container
+                    transaction.addToBackStack(null); // Optional: add to back stack if you want to be able to navigate back
+                    transaction.commit();
                 } else {
                     showNoExercisesPopup();
                 }
@@ -123,7 +139,7 @@ public class HomeBambinoActivity extends AppCompatActivity {
         });
     }
 
-    private void checkIfExerciseExists(String date, FirestoreCallback callback) {
+    private void checkIfExerciseExists(String date, HomeBambinoFragment.FirestoreCallback callback) {
         // Reference to the specific document based on the date
         db.collection("esercizi")
                 .document(bambinoId)
@@ -202,7 +218,7 @@ public class HomeBambinoActivity extends AppCompatActivity {
 
 
     private void showNoExercisesPopup() {
-        new AlertDialog.Builder(this)
+        new AlertDialog.Builder(requireContext())
                 .setTitle("Nessun esercizio")
                 .setMessage("Non ci sono esercizi per la data selezionata.")
                 .setPositiveButton(android.R.string.ok, null)
@@ -245,12 +261,12 @@ public class HomeBambinoActivity extends AppCompatActivity {
                         }
                     } else {
                         Log.d("FirestoreData", "No such document");
-                        Toast.makeText(HomeBambinoActivity.this, "Documento non trovato", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(requireContext(), "Documento non trovato", Toast.LENGTH_SHORT).show();
                     }
                 })
                 .addOnFailureListener(e -> {
                     Log.e("FirestoreError", "Error fetching document", e);
-                    Toast.makeText(HomeBambinoActivity.this, "Errore di lettura documento", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), "Errore di lettura documento", Toast.LENGTH_SHORT).show();
                 });
     }
 
@@ -281,7 +297,7 @@ public class HomeBambinoActivity extends AppCompatActivity {
                                                     StorageReference imageRef = FirebaseStorage.getInstance().getReferenceFromUrl(imagePath);
                                                     imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
                                                         Log.d(TAG, "Image URL retrieved successfully for " + avatarFilename);
-                                                        Glide.with(HomeBambinoActivity.this).load(uri).into(ProfilePic);
+                                                        Glide.with(requireContext()).load(uri).into(ProfilePic);
                                                     }).addOnFailureListener(exception -> {
                                                         Log.e(TAG, "Failed to get download URL for " + avatarFilename, exception);
                                                     });
@@ -322,7 +338,7 @@ public class HomeBambinoActivity extends AppCompatActivity {
     }
 
     public void updateRoundRectColors(String theme){
-        ImageView imageView = findViewById(R.id.imageView7); // Your ImageView containing round_rect
+        ImageView imageView = requireView().findViewById(R.id.imageView7); // Your ImageView containing round_rect
 
         int startColor = 0;
         int centerColor = 0;
@@ -332,15 +348,15 @@ public class HomeBambinoActivity extends AppCompatActivity {
         switch (theme) {
             case "supereroi":
             case "cartoni_animati":
-                startColor = ContextCompat.getColor(this, R.color.supereroi1);
-                centerColor = ContextCompat.getColor(this, R.color.supereroi2);
-                endColor = ContextCompat.getColor(this, R.color.supereroi3);
+                startColor = ContextCompat.getColor(requireContext(), R.color.supereroi1);
+                centerColor = ContextCompat.getColor(requireContext(), R.color.supereroi2);
+                endColor = ContextCompat.getColor(requireContext(), R.color.supereroi3);
                 break;
             case "favole":
             case "videogiochi":
-                startColor = ContextCompat.getColor(this, R.color.videogiochi1);
-                centerColor = ContextCompat.getColor(this, R.color.videogiochi2);
-                endColor = ContextCompat.getColor(this, R.color.videogiochi3);
+                startColor = ContextCompat.getColor(requireContext(), R.color.videogiochi1);
+                centerColor = ContextCompat.getColor(requireContext(), R.color.videogiochi2);
+                endColor = ContextCompat.getColor(requireContext(), R.color.videogiochi3);
                 break;
         }
 
@@ -351,7 +367,7 @@ public class HomeBambinoActivity extends AppCompatActivity {
     }
 
     public void updateConstraintLayoutBackground(String theme) {
-        ConstraintLayout constraintLayout = findViewById(R.id.main);// Your ConstraintLayout
+        ConstraintLayout constraintLayout = requireView().findViewById(R.id.main);// Your ConstraintLayout
 
         int backgroundColor = 0;
 
@@ -359,11 +375,11 @@ public class HomeBambinoActivity extends AppCompatActivity {
         switch (theme) {
             case "supereroi":
             case "cartoni_animati":
-                backgroundColor = ContextCompat.getColor(this, R.color.supereroibackground); // Replace with actual color resource
+                backgroundColor = ContextCompat.getColor(requireContext(), R.color.supereroibackground); // Replace with actual color resource
                 break;
             case "favole":
             case "videogiochi":
-                backgroundColor = ContextCompat.getColor(this, R.color.videogiochibackground); // Replace with actual color resource
+                backgroundColor = ContextCompat.getColor(requireContext(), R.color.videogiochibackground); // Replace with actual color resource
                 break;
         }
 
@@ -382,7 +398,7 @@ public class HomeBambinoActivity extends AppCompatActivity {
         String formattedDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(date);
 
         // Check if exercises exist for all types for the given date
-        checkAllExerciseTypesForDate(formattedDate, new FirestoreCallback() {
+        checkAllExerciseTypesForDate(formattedDate, new HomeBambinoFragment.FirestoreCallback() {
             @Override
             public void onCallback(boolean allExercisesCompleted) {
                 if (allExercisesCompleted) {
@@ -398,7 +414,7 @@ public class HomeBambinoActivity extends AppCompatActivity {
                     calculateDayStreak(calendar.getTime());
                 } else {
                     // Not all exercises are completed for this day, streak ends
-                    Toast.makeText(HomeBambinoActivity.this, "Current Streak: " + currentStreak + " days", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), "Current Streak: " + currentStreak + " days", Toast.LENGTH_SHORT).show();
                     Log.d(TAG, "Current Streak: " + currentStreak + " days");
                     numerostreak.setText(String.valueOf(currentStreak));
 
@@ -411,7 +427,7 @@ public class HomeBambinoActivity extends AppCompatActivity {
     }
 
 
-    private void checkAllExerciseTypesForDate(String date, FirestoreCallback callback) {
+    private void checkAllExerciseTypesForDate(String date, HomeBambinoFragment.FirestoreCallback callback) {
         // Define the types of exercises to check
         String[] exerciseTypes = {"tipo1", "tipo2", "tipo3"};
         int totalTypes = exerciseTypes.length;
@@ -457,6 +473,4 @@ public class HomeBambinoActivity extends AppCompatActivity {
                     });
         }
     }
-
-
 }

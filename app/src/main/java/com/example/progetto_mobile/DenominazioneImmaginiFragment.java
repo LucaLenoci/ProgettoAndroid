@@ -22,7 +22,9 @@ import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -37,10 +39,14 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -64,49 +70,53 @@ import nl.dionsegijn.konfetti.xml.KonfettiView;
 import com.assemblyai.api.AssemblyAI;
 import com.assemblyai.api.resources.transcripts.types.*;
 
-public class DenominazioneImmaginiActivity extends AppCompatActivity implements TextToSpeech.OnInitListener {
-    private static final int RQ_SPEECH_REC = 102;
-    private static final String TAG = "DenominazioneImmaginiActivity";
+public class DenominazioneImmaginiFragment extends Fragment implements TextToSpeech.OnInitListener {
+    private static final String TAG = "DenominazioneImmaginiFragment";
     private TextView tvText;
     private TextToSpeech tts;
     private FirebaseFirestore db;
     private EsercizioTipo1 currentExercise;
-    private KonfettiView konfettiView;
-    private MediaPlayer successSound;
     private boolean isSuggestion1Used = false;
     private boolean isSuggestion2Used = false;
     private boolean isSuggestion3Used = false;
 
+    private boolean isRecording = false;
+    private MediaRecorder mediaRecorder;
+    private String fileName;
+    private ImageButton btnButton;
     FirebaseStorage storage = FirebaseStorage.getInstance();
     StorageReference imagesRef = storage.getReferenceFromUrl("gs://progetto-mobile-24.appspot.com/immagini");
-    String selectedDate;
-    String bambinoId;
-    private boolean isRecording = false;
-    ImageButton btnButton;
 
 
-    MediaRecorder mediaRecorder;
-    String fileName;
+    private String selectedDate;
+    private String bambinoId;
+    private KonfettiView konfettiView;
+    private MediaPlayer successSound;
 
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        // Inflate the fragment layout
+        return inflater.inflate(R.layout.denominazione_immagini, container, false);
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.denominazione_immagini);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-        selectedDate = getIntent().getStringExtra("selectedDate");
-        bambinoId = getIntent().getStringExtra("bambinoId");
+        selectedDate = getArguments().getString("selectedDate");
+        bambinoId = getArguments().getString("bambinoId");
 
         // Initialize Firestore and other components
         db = FirebaseFirestore.getInstance();
-        konfettiView = findViewById(R.id.konfettiView);
-        successSound = MediaPlayer.create(this, R.raw.success_sound);
+        konfettiView = view.findViewById(R.id.konfettiView);
+        successSound = MediaPlayer.create(getContext(), R.raw.success_sound);
 
         fetchTema();
         fetchExerciseData();
 
         // Button and TTS initialization for suggestion 1
-        Button speakButton = findViewById(R.id.suggerimento1);
+        Button speakButton = view.findViewById(R.id.suggerimento1);
         speakButton.setOnClickListener(v -> {
             String textToSpeak = currentExercise.getSuggerimento();
             if (!isSuggestion1Used) {
@@ -117,7 +127,7 @@ public class DenominazioneImmaginiActivity extends AppCompatActivity implements 
         });
 
         // Button and TTS initialization for suggestion 2
-        Button speakButton_2 = findViewById(R.id.suggerimento2);
+        Button speakButton_2 = view.findViewById(R.id.suggerimento2);
         speakButton_2.setOnClickListener(v -> {
             String textToSpeak = currentExercise.getSuggerimento2();
             if (!isSuggestion2Used) {
@@ -128,7 +138,7 @@ public class DenominazioneImmaginiActivity extends AppCompatActivity implements 
         });
 
         // Button and TTS initialization for suggestion 3
-        Button speakButton_3 = findViewById(R.id.suggerimento3);
+        Button speakButton_3 = view.findViewById(R.id.suggerimento3);
         speakButton_3.setOnClickListener(v -> {
             String textToSpeak = currentExercise.getSuggerimento3();
             if (!isSuggestion3Used) {
@@ -138,22 +148,21 @@ public class DenominazioneImmaginiActivity extends AppCompatActivity implements 
             speakText(textToSpeak);
         });
 
-        tts = new TextToSpeech(this, this);
+        tts = new TextToSpeech(getContext(), this);
 
-        btnButton = findViewById(R.id.btn_button);
-        tvText = findViewById(R.id.tv_text);
+        btnButton = view.findViewById(R.id.btn_button);
+        tvText = view.findViewById(R.id.tv_text);
 
         // Check and request permissions
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED
-                || ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-                || ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-                || ContextCompat.checkSelfPermission(this, Manifest.permission.MANAGE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.MANAGE_EXTERNAL_STORAGE}, 1);
+        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(getContext(), Manifest.permission.MANAGE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.MANAGE_EXTERNAL_STORAGE}, 1);
         }
 
         btnButton.setOnClickListener(v -> Input());
     }
-
     private void Input() {
         if (!isRecording) {
             // Start recording
@@ -222,7 +231,7 @@ public class DenominazioneImmaginiActivity extends AppCompatActivity implements 
 
 
     private void startRecording() {
-        fileName = getExternalCacheDir().getAbsolutePath();
+        fileName = getContext().getExternalCacheDir().getAbsolutePath();
         fileName += "/audiorecordtest.mp3";
         mediaRecorder = new MediaRecorder();
         mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
@@ -239,7 +248,7 @@ public class DenominazioneImmaginiActivity extends AppCompatActivity implements 
 
 
         mediaRecorder.start();
-        findViewById(R.id.btn_button).setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FFB31717")));
+        requireView().findViewById(R.id.btn_button).setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FFB31717")));
     }
 
 
@@ -248,13 +257,13 @@ public class DenominazioneImmaginiActivity extends AppCompatActivity implements 
         mediaRecorder.stop();
         mediaRecorder.release();
         mediaRecorder = null;
-        findViewById(R.id.loading).setVisibility(View.VISIBLE);
-        findViewById(R.id.btn_button).setClickable(false);
+        requireView().findViewById(R.id.loading).setVisibility(View.VISIBLE);
+        requireView().findViewById(R.id.btn_button).setClickable(false);
         TypedValue typedValue = new TypedValue();
-        getTheme().resolveAttribute(android.R.attr.colorPrimary, typedValue, true);
+        getContext().getTheme().resolveAttribute(android.R.attr.colorPrimary, typedValue, true);
         int colorPrimary = typedValue.data;
 
-        findViewById(R.id.btn_button).setBackgroundTintList(ColorStateList.valueOf(colorPrimary));
+        requireView().findViewById(R.id.btn_button).setBackgroundTintList(ColorStateList.valueOf(colorPrimary));
         transcribeAudioFile();
     }
 
@@ -275,8 +284,9 @@ public class DenominazioneImmaginiActivity extends AppCompatActivity implements 
 
                 Transcript transcript = client.transcripts().transcribe(fileUrl);
 
-                runOnUiThread(() -> Result(transcript.getText().get()));
-            } catch (Exception e) {
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(() -> Result(transcript.getText().get()));
+                }            } catch (Exception e) {
                 Log.e(TAG, "Transcription failed", e);
             }
         });
@@ -298,11 +308,11 @@ public class DenominazioneImmaginiActivity extends AppCompatActivity implements 
             recognizedText = recognizedText.substring(0, recognizedText.length() - 1);
         }
 
-        findViewById(R.id.loading).setVisibility(View.INVISIBLE);
+        getView().findViewById(R.id.loading).setVisibility(View.INVISIBLE);
         tvText.setText(recognizedText);
 
         if (currentExercise != null && recognizedText.equalsIgnoreCase(currentExercise.getRisposta_corretta())) {
-            Toast.makeText(this, "Correct!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Correct!", Toast.LENGTH_SHORT).show();
             showConfettiEffect();
 
             disableButtons();
@@ -316,23 +326,26 @@ public class DenominazioneImmaginiActivity extends AppCompatActivity implements 
                 updateCoinsInFirebase();
                 uploadAudioToFirebase();
                 incrementTentativiInFirebase();
-                finish(); // Torna alla pagina precedente
-            }, 3000); // Aspetta 3 secondi (modifica se necessario per adattare la durata dell'animazione)
+                FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+                if (fragmentManager.getBackStackEntryCount() > 0) {
+                    fragmentManager.popBackStack();
+                }            }, 3000); // Aspetta 3 secondi (modifica se necessario per adattare la durata dell'animazione)
 
         } else {
-            Toast.makeText(this, "Try again!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Try again!", Toast.LENGTH_SHORT).show();
             incrementTentativiInFirebase();
-            findViewById(R.id.btn_button).setClickable(true);
+            requireView().findViewById(R.id.btn_button).setClickable(true);
         }
 
     }
 
     private void disableButtons() {
-        findViewById(R.id.btn_button).setEnabled(false);
-        findViewById(R.id.suggerimento1).setEnabled(false);
-        findViewById(R.id.suggerimento2).setEnabled(false);
-        findViewById(R.id.suggerimento3).setEnabled(false);
+        requireView().findViewById(R.id.btn_button).setEnabled(false);
+        requireView().findViewById(R.id.suggerimento1).setEnabled(false);
+        requireView().findViewById(R.id.suggerimento2).setEnabled(false);
+        requireView().findViewById(R.id.suggerimento3).setEnabled(false);
     }
+
     private void uploadAudioToFirebase() {
         StorageReference audioRef = storage.getReference().child("audio/" + bambinoId + "/tipo1/" + selectedDate);
         Uri fileUri = Uri.fromFile(new File(fileName));
@@ -408,7 +421,7 @@ public class DenominazioneImmaginiActivity extends AppCompatActivity implements 
 
 
     private void displayImage(String imageUrl) {
-        ImageView imageView = findViewById(R.id.imageView);
+        ImageView imageView = requireView().findViewById(R.id.imageView);
 
         Glide.with(this)
                 .load(imageUrl)
@@ -429,7 +442,7 @@ public class DenominazioneImmaginiActivity extends AppCompatActivity implements 
     }
 
     @Override
-    protected void onDestroy() {
+    public void onDestroy() {
         if (successSound != null) {
             successSound.release();
             successSound = null;
@@ -556,7 +569,7 @@ public class DenominazioneImmaginiActivity extends AppCompatActivity implements 
     }
 
     public void updateRoundRectColors(String theme){
-        ImageView imageView = findViewById(R.id.imageView8); // Your ImageView containing round_rect
+        ImageView imageView = requireView().findViewById(R.id.imageView8); // Your ImageView containing round_rect
 
         int startColor = 0;
         int centerColor = 0;
@@ -566,15 +579,15 @@ public class DenominazioneImmaginiActivity extends AppCompatActivity implements 
         switch (theme) {
             case "supereroi":
             case "cartoni_animati":
-                startColor = ContextCompat.getColor(this, R.color.supereroi1);
-                centerColor = ContextCompat.getColor(this, R.color.supereroi2);
-                endColor = ContextCompat.getColor(this, R.color.supereroi3);
+                startColor = ContextCompat.getColor(requireContext(), R.color.supereroi1);
+                centerColor = ContextCompat.getColor(requireContext(), R.color.supereroi2);
+                endColor = ContextCompat.getColor(requireContext(), R.color.supereroi3);
                 break;
             case "favole":
             case "videogiochi":
-                startColor = ContextCompat.getColor(this, R.color.videogiochi1);
-                centerColor = ContextCompat.getColor(this, R.color.videogiochi2);
-                endColor = ContextCompat.getColor(this, R.color.videogiochi3);
+                startColor = ContextCompat.getColor(requireContext(), R.color.videogiochi1);
+                centerColor = ContextCompat.getColor(requireContext(), R.color.videogiochi2);
+                endColor = ContextCompat.getColor(requireContext(), R.color.videogiochi3);
                 break;
         }
 
@@ -585,7 +598,7 @@ public class DenominazioneImmaginiActivity extends AppCompatActivity implements 
     }
 
     public void updateConstraintLayoutBackground(String theme) {
-        ConstraintLayout constraintLayout = findViewById(R.id.constraintLayout);// Your ConstraintLayout
+        ConstraintLayout constraintLayout = requireView().findViewById(R.id.constraintLayout);// Your ConstraintLayout
 
         int backgroundColor = 0;
 
@@ -593,11 +606,11 @@ public class DenominazioneImmaginiActivity extends AppCompatActivity implements 
         switch (theme) {
             case "supereroi":
             case "cartoni_animati":
-                backgroundColor = ContextCompat.getColor(this, R.color.supereroibackground); // Replace with actual color resource
+                backgroundColor = ContextCompat.getColor(requireContext(), R.color.supereroibackground); // Replace with actual color resource
                 break;
             case "favole":
             case "videogiochi":
-                backgroundColor = ContextCompat.getColor(this, R.color.videogiochibackground); // Replace with actual color resource
+                backgroundColor = ContextCompat.getColor(requireContext(), R.color.videogiochibackground); // Replace with actual color resource
                 break;
         }
 
@@ -605,3 +618,4 @@ public class DenominazioneImmaginiActivity extends AppCompatActivity implements 
         constraintLayout.setBackgroundColor(backgroundColor);
     }
 }
+

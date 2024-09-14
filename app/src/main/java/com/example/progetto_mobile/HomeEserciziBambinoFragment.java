@@ -7,14 +7,18 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ImageView;
 
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -25,7 +29,7 @@ import com.google.firebase.storage.StorageReference;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HomeEserciziBambinoActivity extends AppCompatActivity {
+public class HomeEserciziBambinoFragment extends Fragment {
     private static final String TAG = "HomeEserciziBambinoActivity";
     private ImageView movableObject;
     private float centerX, centerY;
@@ -39,20 +43,21 @@ public class HomeEserciziBambinoActivity extends AppCompatActivity {
     private ImageView spine1, spine2, spine3;  // Aggiungi riferimenti alle immagini PNG
     private float initialX, initialY;  // Posizione iniziale dell'oggetto movibile
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.esercizi_giornalieri_bambino);
 
-        // Retrieve the date passed from HomeBambinoActivity
-        selectedDate = getIntent().getStringExtra("selectedDate");
-        bambinoId = getIntent().getStringExtra("bambinoId");
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.esercizi_giornalieri_bambino, container, false);
+
+        selectedDate = getArguments().getString("selectedDate");
+        bambinoId = getArguments().getString("bambinoId");
 
         db = FirebaseFirestore.getInstance();
 
         fetchTema();
-        JoystickView joystick = findViewById(R.id.joystick);
-        movableObject = findViewById(R.id.movable_object);
+        JoystickView joystick = view.findViewById(R.id.joystick);
+        movableObject = view.findViewById(R.id.movable_object);
 
         // Usa ViewTreeObserver per ottenere la posizione iniziale una volta che il layout è pronto
         movableObject.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -67,16 +72,16 @@ public class HomeEserciziBambinoActivity extends AppCompatActivity {
         });
 
         // Inizializza le immagini PNG
-        spine1 = findViewById(R.id.spine1);
-        spine2 = findViewById(R.id.spine2);
-        spine3 = findViewById(R.id.spine3);
+        spine1 = view.findViewById(R.id.spine1);
+        spine2 = view.findViewById(R.id.spine2);
+        spine3 = view.findViewById(R.id.spine3);
 
         // Initialize the list of buttons and add your buttons to the list
         buttons = new ArrayList<>();
-        buttons.add(findViewById(R.id.button1));  // Add your buttons by their IDs
-        buttons.add(findViewById(R.id.button2));
-        buttons.add(findViewById(R.id.button3));
-        buttons.add(findViewById(R.id.button4));
+        buttons.add(view.findViewById(R.id.button1));  // Add your buttons by their IDs
+        buttons.add(view.findViewById(R.id.button2));
+        buttons.add(view.findViewById(R.id.button3));
+        buttons.add(view.findViewById(R.id.button4));
 
         // Set onClickListeners for each button to navigate to a different view
         for (int i = 0; i < buttons.size(); i++) {
@@ -108,6 +113,7 @@ public class HomeEserciziBambinoActivity extends AppCompatActivity {
 
         // Load the current avatar for the child and set it as the image for the movable object
         loadCurrentAvatar(bambinoId);
+        return view;  // Return the inflated view
     }
 
     private void moveObject(float x, float y) {
@@ -224,40 +230,40 @@ public class HomeEserciziBambinoActivity extends AppCompatActivity {
     }
 
     private void navigateToView(int buttonNumber, String selectedDate, String bambinoId) {
-        Intent intent;
+        Fragment fragment = null;
 
-        if (buttons.get(buttonNumber - 1).isEnabled()) {
-            Log.d("ButtonState", "Button " + buttonNumber + " is enabled. Proceeding with action.");
-            switch (buttonNumber) {
-                case 1:
-                    intent = new Intent(HomeEserciziBambinoActivity.this, DenominazioneImmaginiActivity.class);
-                    break;
-                case 2:
-                    intent = new Intent(HomeEserciziBambinoActivity.this, RiconoscimentoCoppieMinimeActivity.class);
-                    break;
-                case 3:
-                    intent = new Intent(HomeEserciziBambinoActivity.this, RipetizioneSequenzeParoleActivity.class);
-                    break;
-                case 4:
-                    // todo: cambia con ClassificaBambiniActivity
-                    intent = new Intent(HomeEserciziBambinoActivity.this, BambinoClassificaActivity.class);
-                    break;
-                default:
-                    isNavigating = false; // Reset the flag if no valid button number
-                    return; // No valid button number
-            }
-
-            // Add the selected date as an extra to the intent
-            intent.putExtra("selectedDate", selectedDate);
-            intent.putExtra("bambinoId", bambinoId);
-
-            // Start the activity and finish the current one
-            startActivity(intent);
-            finish();
+        switch (buttonNumber) {
+            case 1:
+                fragment = new DenominazioneImmaginiFragment();
+                break;
+            case 2:
+                fragment = new DenominazioneImmaginiFragment();
+                break;
+            case 3:
+                fragment = new DenominazioneImmaginiFragment();
+                break;
+            case 4:
+                fragment = new DenominazioneImmaginiFragment();
+                break;
         }
 
-        // Use a handler to reset the flag after a small delay
-        new Handler(Looper.getMainLooper()).postDelayed(() -> isNavigating = false, 500);
+        if (fragment != null) {
+            Bundle bundle = new Bundle();
+            bundle.putString("bambinoId", bambinoId);
+            bundle.putString("selectedDate", selectedDate);
+            fragment.setArguments(bundle);
+
+            if (getParentFragmentManager() != null) {
+                getParentFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragment_container, fragment)
+                        .addToBackStack(null)
+                        .commit();
+            }
+        }
+
+        // Delay resetting isNavigating flag to prevent multiple clicks
+        new Handler(Looper.getMainLooper()).postDelayed(() -> isNavigating = false, 2000);
     }
 
     private void loadCurrentAvatar(String bambinoId) {
@@ -287,7 +293,7 @@ public class HomeEserciziBambinoActivity extends AppCompatActivity {
                                                     StorageReference imageRef = FirebaseStorage.getInstance().getReferenceFromUrl(imagePath);
                                                     imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
                                                         Log.d(TAG, "Image URL retrieved successfully for " + avatarFilename);
-                                                        Glide.with(HomeEserciziBambinoActivity.this).load(uri).into(movableObject);
+                                                        Glide.with(getContext()).load(uri).into(movableObject);
                                                     }).addOnFailureListener(exception -> {
                                                         Log.e(TAG, "Failed to get download URL for " + avatarFilename, exception);
                                                     });
@@ -323,7 +329,7 @@ public class HomeEserciziBambinoActivity extends AppCompatActivity {
     }
 
     public void updateConstraintLayoutBackground(String theme) {
-        ConstraintLayout constraintLayout = findViewById(R.id.relativeLayout);// Your ConstraintLayout
+        ConstraintLayout constraintLayout = getView().findViewById(R.id.relativeLayout);// Your ConstraintLayout
 
         int backgroundColor = 0;
 
@@ -331,11 +337,11 @@ public class HomeEserciziBambinoActivity extends AppCompatActivity {
         switch (theme) {
             case "supereroi":
             case "cartoni_animati":
-                backgroundColor = ContextCompat.getColor(this, R.color.supereroibackground); // Replace with actual color resource
+                backgroundColor = ContextCompat.getColor(getContext(), R.color.supereroibackground); // Replace with actual color resource
                 break;
             case "favole":
             case "videogiochi":
-                backgroundColor = ContextCompat.getColor(this, R.color.videogiochibackground); // Replace with actual color resource
+                backgroundColor = ContextCompat.getColor(getContext(), R.color.videogiochibackground); // Replace with actual color resource
                 break;
         }
 

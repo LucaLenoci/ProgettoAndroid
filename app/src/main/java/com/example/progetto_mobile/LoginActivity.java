@@ -64,7 +64,7 @@ public class LoginActivity extends AppCompatActivity {
 
         // Example buttons to simulate login for different users
         View bambinoButton = findViewById(R.id.buttonLoginBambino);
-        bambinoButton.setOnClickListener(v -> startActivity(new Intent(LoginActivity.this, HomeBambinoActivity.class)));
+
 
         View genitoreButton = findViewById(R.id.buttonLoginGenitore);
         genitoreButton.setOnClickListener(v -> startActivity(new Intent(LoginActivity.this, HomeGenitoreActivity.class)));

@@ -75,7 +75,7 @@ public class DataAccess extends AppCompatActivity {
         switch (tipologia) {
             case 0:
                 key = "bambino";
-                intent = new Intent(DataAccess.this, HomeBambinoActivity.class);
+
                 break;
 
             case 1:

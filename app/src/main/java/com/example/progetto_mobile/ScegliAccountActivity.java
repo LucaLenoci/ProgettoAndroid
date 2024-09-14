@@ -222,7 +222,7 @@ public class ScegliAccountActivity extends AppCompatActivity {
         tvNomeBambino.setText(bambino.getNome());
 
         accountItemView.setOnClickListener(v -> {
-            Intent intent = new Intent(ScegliAccountActivity.this, HomeBambinoActivity.class);
+            Intent intent = new Intent(ScegliAccountActivity.this, Bambino.class);
             intent.putExtra("bambinoId", bambino.getDocRef());
             startActivity(intent);
         });

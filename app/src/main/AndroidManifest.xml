@@ -75,6 +75,9 @@
             android:name=".HomeGenitoreActivity"
             android:exported="false" />
         <activity
+            android:name=".Bambino"
+            android:exported="false" />
+        <activity
             android:name=".HomeEserciziBambinoActivity"
             android:exported="false" />
         <activity
