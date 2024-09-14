@@ -46,12 +46,13 @@
         android:layout_width="160dp"
         android:layout_height="77dp"
         android:layout_marginTop="200dp"
+        android:fontFamily="@font/adlam_display"
         android:text="Effettua l'accesso"
         android:textAlignment="center"
-        android:textSize="24sp"
+        android:textSize="30dp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -99,9 +100,10 @@
         android:id="@+id/checkBoxRememberMe"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:text="Ricordami"
-        app:layout_constraintBottom_toTopOf="@+id/buttonResetPassword"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/buttonAccedi" />
 
@@ -109,15 +111,15 @@
         android:id="@+id/buttonResetPassword"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="72dp"
-        android:backgroundTint="?attr/colorSecondary"
+        android:layout_marginTop="24dp"
+        android:backgroundTint="@android:color/transparent"
         android:text="Password dimenticata?"
-        android:textColor="@android:color/white"
+        android:textColor="@color/design_default_color_secondary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/buttonAccedi"
+        app:layout_constraintTop_toBottomOf="@+id/checkBoxRememberMe"
         app:layout_constraintVertical_bias="0.0"
-        app:layout_constraintWidth_percent="0.6" />
+        app:layout_constraintWidth_percent="0.5" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

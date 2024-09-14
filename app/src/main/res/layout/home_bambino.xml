@@ -79,14 +79,15 @@
 
     <Button
         android:id="@+id/button"
-        android:layout_width="277dp"
-        android:layout_height="53dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:background="@drawable/rounded_button"
         android:text="ESERCIZIO DI OGGI"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView7"
-        app:layout_constraintVertical_bias="0.48000002" />
+        app:layout_constraintWidth_percent="0.42" />
 
     <TextView
         android:id="@+id/textView3"
@@ -114,10 +115,14 @@
 
     <Button
         android:id="@+id/button5"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Button"
+        android:layout_marginRight="20dp"
+        android:background="@drawable/rounded_button"
+        android:text="CLASSIFICA"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/imageView7"
+        app:layout_constraintWidth_percent="0.42" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
