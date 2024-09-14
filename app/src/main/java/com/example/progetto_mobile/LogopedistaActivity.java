@@ -1,11 +1,15 @@
 package com.example.progetto_mobile;
 
 import android.os.Bundle;
+import android.util.Log;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 public class LogopedistaActivity extends AppCompatActivity {
+
+    private static final String TAG = "LogopedistaActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,7 +23,7 @@ public class LogopedistaActivity extends AppCompatActivity {
         bundle.putString("logopedista", logopedistaPath);
 
         // Create a new instance of the Fragment and set the arguments
-        HomeLogopedistaFragment homeLogopedistaFragment = new HomeLogopedistaFragment();
+        HomeLogopedistaFragment homeLogopedistaFragment = HomeLogopedistaFragment.newInstance(logopedistaPath);
         homeLogopedistaFragment.setArguments(bundle);
 
         // Load the Fragment
@@ -28,6 +32,8 @@ public class LogopedistaActivity extends AppCompatActivity {
                     .replace(R.id.fragment_container, homeLogopedistaFragment)
                     .commit();
         }
+
+        Log.d(TAG, "onCreate");
     }
 
     // Metodo per gestire la sostituzione dei Fragment

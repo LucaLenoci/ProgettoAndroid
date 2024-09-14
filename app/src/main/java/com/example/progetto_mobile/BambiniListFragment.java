@@ -1,7 +1,6 @@
 package com.example.progetto_mobile;
 
 import android.app.DatePickerDialog;
-import android.content.Intent;
 import android.icu.util.Calendar;
 import android.os.Bundle;
 
@@ -64,6 +63,7 @@ public class BambiniListFragment extends Fragment {
      * @return A new instance of fragment BambiniListFragment.
      */
     public static BambiniListFragment newInstance(String genitorePath) {
+        Log.d(TAG, "newInstance");
         BambiniListFragment fragment = new BambiniListFragment();
         Bundle args = new Bundle();
         args.putString(ARG_GENITORE_PATH, genitorePath);
@@ -78,6 +78,8 @@ public class BambiniListFragment extends Fragment {
             genitorePath = getArguments().getString(ARG_GENITORE_PATH);
         }
         db = FirebaseFirestore.getInstance();
+
+        Log.d(TAG, "onCreate " + String.valueOf(requireActivity().getSupportFragmentManager().getBackStackEntryCount()));
     }
 
     @Override
@@ -85,6 +87,8 @@ public class BambiniListFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_bambini_list, container, false);
+
+        Log.d(TAG, "onCreateView");
 
         linearLayoutBambini = view.findViewById(R.id.linearLayoutBambini);
         btnScegliData = view.findViewById(R.id.btnScegliData);
@@ -288,7 +292,7 @@ public class BambiniListFragment extends Fragment {
 
         childDashboard.setOnClickListener(v -> {
             Fragment fragment;
-            fragment = new DashboardBambinoFragment();
+            fragment = DashboardBambinoFragment.newInstance(child, isFromHomeLogopedista);
             Bundle args = new Bundle();
 
             if (isFromHomeLogopedista) {

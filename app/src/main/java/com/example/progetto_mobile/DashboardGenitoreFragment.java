@@ -10,15 +10,15 @@ import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -44,6 +44,13 @@ public class DashboardGenitoreFragment extends Fragment {
         args.putString("logopedista", logopedistaPath);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        Log.d(TAG, "onCreate");
     }
 
     @Nullable
@@ -82,14 +89,37 @@ public class DashboardGenitoreFragment extends Fragment {
     }
 
     private void showBambiniList() {
-        BambiniListFragment bambiniListFragment = BambiniListFragment.newInstance(genitorePath);
-        getActivity().getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragmentContainerBambini, bambiniListFragment)
-                .commit();
+        Log.d(TAG, "showBambiniList");
+//        Fragment fragment = requireActivity().getSupportFragmentManager().findFragmentByTag("listaBambiniFragment");
+        final FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+        final Fragment content = fragmentManager.findFragmentById(R.id.fragmentContainerBambini);
+        if (content == null || !(content instanceof BambiniListFragment)) {
+            final FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            final BambiniListFragment myFragment = BambiniListFragment.newInstance(genitorePath);
+            fragmentTransaction.replace(R.id.fragmentContainerBambini, myFragment, "MyFragment");
+            fragmentTransaction.commitAllowingStateLoss();
+        Log.d(TAG, "Fragment: " + myFragment);
+        }
+//        if (fragment == null) {
+//            fragment = BambiniListFragment.newInstance(genitorePath);
+//            FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
+//            transaction.add(R.id.fragmentContainerBambini, fragment, "listaBambiniFragment");
+//            transaction.commit();
+//            //pop dello stack
+//            requireActivity().getSupportFragmentManager().popBackStack();
+//        } else {
+//            FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
+//            transaction.replace(R.id.fragmentContainerBambini, fragment, "listaBambiniFragment");
+//            transaction.commit();
+//        }
+//        BambiniListFragment bambiniListFragment = BambiniListFragment.newInstance(genitorePath);
+//        requireActivity().getSupportFragmentManager().beginTransaction()
+//                .replace(R.id.fragmentContainerBambini, bambiniListFragment)
+//                .commit();
     }
 
     private void showRegistraBambinoDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle("Registra Bambino");
 
         View view = getLayoutInflater().inflate(R.layout.layout_dialog_registra_bambino, null);

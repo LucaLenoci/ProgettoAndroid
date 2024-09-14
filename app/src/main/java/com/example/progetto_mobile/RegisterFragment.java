@@ -1,7 +1,5 @@
 package com.example.progetto_mobile;
 
-import static android.content.Intent.getIntent;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,10 +11,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -116,7 +112,7 @@ public class RegisterFragment extends Fragment {
 
     private void registerUser(String nome, String cognome, String eta, String email, String password) {
         auth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
+                .addOnCompleteListener(requireActivity(), new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
