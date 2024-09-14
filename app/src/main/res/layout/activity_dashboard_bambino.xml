@@ -7,17 +7,7 @@
     android:layout_height="match_parent"
     tools:context=".DashboardBambinoFragment">
 
-    <Button
-        android:id="@+id/button6"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
-        android:background="@drawable/rounded_button"
-        android:text="REGISTRA PRENOTAZIONE"
-        app:layout_constraintBottom_toBottomOf="@+id/fragmentContainer"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintWidth_percent="0.4" />
+
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayout"
