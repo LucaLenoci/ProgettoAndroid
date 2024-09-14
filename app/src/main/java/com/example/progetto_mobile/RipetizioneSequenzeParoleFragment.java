@@ -15,7 +15,9 @@ import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -23,9 +25,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.assemblyai.api.AssemblyAI;
 import com.assemblyai.api.resources.files.types.UploadedFile;
@@ -56,45 +61,45 @@ import nl.dionsegijn.konfetti.core.emitter.EmitterConfig;
 import nl.dionsegijn.konfetti.core.models.Shape;
 import nl.dionsegijn.konfetti.xml.KonfettiView;
 
-public class RipetizioneSequenzeParoleActivity extends AppCompatActivity implements TextToSpeech.OnInitListener {
+public class RipetizioneSequenzeParoleFragment extends Fragment implements TextToSpeech.OnInitListener {
+    private static final String TAG = "RipetizioneSequenzeParoleFragment";
     private static final int RQ_SPEECH_REC = 102;
+
     private TextView tvText;
-    private static final String TAG = "RipetizioneSequenzeParoleActivity";
     private TextToSpeech tts;
     private FirebaseFirestore db;
     private EsercizioTipo3 currentExercise;
     private KonfettiView konfettiView;
     private MediaPlayer successSound;
-    String selectedDate;
-    String bambinoId;
+    private String selectedDate;
+    private String bambinoId;
     private boolean isRecording = false;
-    FirebaseStorage storage = FirebaseStorage.getInstance();
+    private MediaRecorder mediaRecorder;
+    private String fileName;
 
-    MediaRecorder mediaRecorder;
-    String fileName;
+    private FirebaseStorage storage = FirebaseStorage.getInstance();
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.ripetizione_sequenze_parole);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.ripetizione_sequenze_parole, container, false);
 
-        selectedDate = getIntent().getStringExtra("selectedDate");
-        bambinoId = getIntent().getStringExtra("bambinoId");
-
+        selectedDate = getArguments().getString("selectedDate");
+        bambinoId = getArguments().getString("bambinoId");
         db = FirebaseFirestore.getInstance();
 
-        konfettiView = findViewById(R.id.konfettiView_2);
-        successSound = MediaPlayer.create(this, R.raw.success_sound); // Ensure you have the correct file in the res/raw folder
+        konfettiView = view.findViewById(R.id.konfettiView_2);
+        successSound = MediaPlayer.create(getContext(), R.raw.success_sound); // Ensure you have the correct file in the res/raw folder
 
         fetchTema();
         fetchExerciseData();
 
-        ImageButton btnButton = findViewById(R.id.btn_button_2);
-        tvText = findViewById(R.id.tv_text_2);
+        ImageButton btnButton = view.findViewById(R.id.btn_button_2);
+        tvText = view.findViewById(R.id.tv_text_2);
 
         btnButton.setOnClickListener(v -> Input());
 
-        ImageButton speakButton = findViewById(R.id.speak_button_2);
+        ImageButton speakButton = view.findViewById(R.id.speak_button_2);
         speakButton.setOnClickListener(v -> {
             String textToSpeak = currentExercise.getRisposta_corretta();
 
@@ -114,7 +119,9 @@ public class RipetizioneSequenzeParoleActivity extends AppCompatActivity impleme
 
             tts.speak(textToSpeak, TextToSpeech.QUEUE_FLUSH, null);
         });
-        tts = new TextToSpeech(this, this);
+        tts = new TextToSpeech(getContext(), this);
+
+        return view;
     }
 
     private void Input() {
@@ -132,7 +139,7 @@ public class RipetizioneSequenzeParoleActivity extends AppCompatActivity impleme
     }
 
     private void startRecording() {
-        fileName = getExternalCacheDir().getAbsolutePath();
+        fileName = getContext().getExternalCacheDir().getAbsolutePath();
         fileName += "/audiorecordtest.mp3";
         mediaRecorder = new MediaRecorder();
         mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
@@ -149,7 +156,7 @@ public class RipetizioneSequenzeParoleActivity extends AppCompatActivity impleme
 
 
         mediaRecorder.start();
-        findViewById(R.id.btn_button_2).setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FFB31717")));
+        getView().findViewById(R.id.btn_button_2).setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FFB31717")));
 
     }
 
@@ -159,12 +166,12 @@ public class RipetizioneSequenzeParoleActivity extends AppCompatActivity impleme
         mediaRecorder.stop();
         mediaRecorder.release();
         mediaRecorder = null;
-        findViewById(R.id.loading2).setVisibility(View.VISIBLE);
-        findViewById(R.id.btn_button_2).setClickable(false);
+        getView().findViewById(R.id.loading2).setVisibility(View.VISIBLE);
+        getView().findViewById(R.id.btn_button_2).setClickable(false);
         TypedValue typedValue = new TypedValue();
-        getTheme().resolveAttribute(android.R.attr.colorPrimary, typedValue, true);
+        getContext().getTheme().resolveAttribute(android.R.attr.colorPrimary, typedValue, true);
         int colorPrimary = typedValue.data;
-        findViewById(R.id.btn_button_2).setBackgroundTintList(ColorStateList.valueOf(colorPrimary));
+        getView().findViewById(R.id.btn_button_2).setBackgroundTintList(ColorStateList.valueOf(colorPrimary));
         transcribeAudioFile();
     }
 
@@ -185,7 +192,7 @@ public class RipetizioneSequenzeParoleActivity extends AppCompatActivity impleme
 
                 Transcript transcript = client.transcripts().transcribe(fileUrl);
 
-                runOnUiThread(() -> Result(transcript.getText().get()));
+                getActivity().runOnUiThread(() -> Result(transcript.getText().get()));
             } catch (Exception e) {
                 Log.e(TAG, "Transcription failed", e);
             }
@@ -232,7 +239,7 @@ public class RipetizioneSequenzeParoleActivity extends AppCompatActivity impleme
     }
 
     @Override
-    protected void onDestroy() {
+    public void onDestroy() {
         if (tts != null) {
             tts.stop();
             tts.shutdown();
@@ -252,11 +259,11 @@ public class RipetizioneSequenzeParoleActivity extends AppCompatActivity impleme
             recognizedText = recognizedText.substring(0, recognizedText.length() - 1);
         }
         recognizedText = recognizedText.replace(",", "");
-        findViewById(R.id.loading2).setVisibility(View.INVISIBLE);
+        getView().findViewById(R.id.loading2).setVisibility(View.INVISIBLE);
         tvText.setText(recognizedText);
 
         if (currentExercise != null && recognizedText.equalsIgnoreCase(currentExercise.getRisposta_corretta())) {
-            Toast.makeText(this, "Correct!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Correct!", Toast.LENGTH_SHORT).show();
             showConfettiEffect();
 
             disableButtons();
@@ -270,20 +277,22 @@ public class RipetizioneSequenzeParoleActivity extends AppCompatActivity impleme
                 updateCoinsInFirebase();
                 uploadAudioToFirebase();
                 incrementTentativiInFirebase();
-                finish(); // Torna alla pagina precedente
-            }, 3000); // Aspetta 3 secondi (modifica se necessario per adattare la durata dell'animazione)
+                FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+                if (fragmentManager.getBackStackEntryCount() > 0) {
+                    fragmentManager.popBackStack();
+                }              }, 3000); // Aspetta 3 secondi (modifica se necessario per adattare la durata dell'animazione)
 
         } else {
             incrementTentativiInFirebase();
-            Toast.makeText(this, "Try again!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Try again!", Toast.LENGTH_SHORT).show();
         }
     }
 
 
 
     private void disableButtons() {
-        findViewById(R.id.speak_button_2).setEnabled(false);
-        findViewById(R.id.btn_button_2).setEnabled(false);
+        getView().findViewById(R.id.speak_button_2).setEnabled(false);
+        getView().findViewById(R.id.btn_button_2).setEnabled(false);
     }
 
     private void uploadAudioToFirebase() {
@@ -436,7 +445,7 @@ public class RipetizioneSequenzeParoleActivity extends AppCompatActivity impleme
     }
 
     public void updateRoundRectColors(String theme){
-        ImageView imageView = findViewById(R.id.imageView6); // Your ImageView containing round_rect
+        ImageView imageView = getView().findViewById(R.id.imageView6); // Your ImageView containing round_rect
 
         int startColor = 0;
         int centerColor = 0;
@@ -446,15 +455,15 @@ public class RipetizioneSequenzeParoleActivity extends AppCompatActivity impleme
         switch (theme) {
             case "supereroi":
             case "cartoni_animati":
-                startColor = ContextCompat.getColor(this, R.color.supereroi1);
-                centerColor = ContextCompat.getColor(this, R.color.supereroi2);
-                endColor = ContextCompat.getColor(this, R.color.supereroi3);
+                startColor = ContextCompat.getColor(getContext(), R.color.supereroi1);
+                centerColor = ContextCompat.getColor(getContext(), R.color.supereroi2);
+                endColor = ContextCompat.getColor(getContext(), R.color.supereroi3);
                 break;
             case "favole":
             case "videogiochi":
-                startColor = ContextCompat.getColor(this, R.color.videogiochi1);
-                centerColor = ContextCompat.getColor(this, R.color.videogiochi2);
-                endColor = ContextCompat.getColor(this, R.color.videogiochi3);
+                startColor = ContextCompat.getColor(getContext(), R.color.videogiochi1);
+                centerColor = ContextCompat.getColor(getContext(), R.color.videogiochi2);
+                endColor = ContextCompat.getColor(getContext(), R.color.videogiochi3);
                 break;
         }
 
@@ -465,7 +474,7 @@ public class RipetizioneSequenzeParoleActivity extends AppCompatActivity impleme
     }
 
     public void updateConstraintLayoutBackground(String theme) {
-        ConstraintLayout constraintLayout = findViewById(R.id.constraintLayout3);// Your ConstraintLayout
+        ConstraintLayout constraintLayout = getView().findViewById(R.id.constraintLayout3);// Your ConstraintLayout
 
         int backgroundColor = 0;
 
@@ -473,11 +482,11 @@ public class RipetizioneSequenzeParoleActivity extends AppCompatActivity impleme
         switch (theme) {
             case "supereroi":
             case "cartoni_animati":
-                backgroundColor = ContextCompat.getColor(this, R.color.supereroibackground); // Replace with actual color resource
+                backgroundColor = ContextCompat.getColor(getContext(), R.color.supereroibackground); // Replace with actual color resource
                 break;
             case "favole":
             case "videogiochi":
-                backgroundColor = ContextCompat.getColor(this, R.color.videogiochibackground); // Replace with actual color resource
+                backgroundColor = ContextCompat.getColor(getContext(), R.color.videogiochibackground); // Replace with actual color resource
                 break;
         }
 

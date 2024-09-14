@@ -237,10 +237,10 @@ public class HomeEserciziBambinoFragment extends Fragment {
                 fragment = new DenominazioneImmaginiFragment();
                 break;
             case 2:
-                fragment = new DenominazioneImmaginiFragment();
+                fragment = new RiconoscimentoCoppieMinimeFragment();
                 break;
             case 3:
-                fragment = new DenominazioneImmaginiFragment();
+                fragment = new RipetizioneSequenzeParoleFragment();
                 break;
             case 4:
                 fragment = new DenominazioneImmaginiFragment();

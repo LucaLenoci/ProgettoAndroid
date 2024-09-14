@@ -7,14 +7,21 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -34,30 +41,29 @@ import nl.dionsegijn.konfetti.core.emitter.EmitterConfig;
 import nl.dionsegijn.konfetti.core.models.Shape;
 import nl.dionsegijn.konfetti.xml.KonfettiView;
 
-public class RiconoscimentoCoppieMinimeActivity extends AppCompatActivity implements TextToSpeech.OnInitListener {
+public class RiconoscimentoCoppieMinimeFragment extends Fragment implements TextToSpeech.OnInitListener {
 
     private TextToSpeech tts;
-    private static final String TAG = "RiconoscimentoCoppieMinimeActivity";
+    private static final String TAG = "RiconoscimentoCoppieMinimeFragment";
     private FirebaseFirestore db;
     private EsercizioTipo2 currentExercise;
     private KonfettiView konfettiView;
     private MediaPlayer successSound;
 
-    FirebaseStorage storage = FirebaseStorage.getInstance();
-    StorageReference imagesRef = storage.getReferenceFromUrl("gs://progetto-mobile-24.appspot.com/immagini");
+    private FirebaseStorage storage = FirebaseStorage.getInstance();
+    private StorageReference imagesRef = storage.getReferenceFromUrl("gs://progetto-mobile-24.appspot.com/immagini");
 
-    String selectedDate;
-    String bambinoId;
+    private String selectedDate;
+    private String bambinoId;
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.riconoscimento_coppie_minime, container, false);
 
-        selectedDate = getIntent().getStringExtra("selectedDate");
-        bambinoId = getIntent().getStringExtra("bambinoId");
-
-        setContentView(R.layout.riconoscimento_coppie_minime);
-        konfettiView = findViewById(R.id.konfettiView);
+        selectedDate = getArguments().getString("selectedDate");
+        bambinoId = getArguments().getString("bambinoId");
+        konfettiView = view.findViewById(R.id.konfettiView);
 
         // Initialize Firestore
         db = FirebaseFirestore.getInstance();
@@ -65,24 +71,26 @@ public class RiconoscimentoCoppieMinimeActivity extends AppCompatActivity implem
         fetchTema();
         fetchExerciseData();
 
-        ImageButton speakButton = findViewById(R.id.speak_button);
+        ImageButton speakButton = view.findViewById(R.id.speak_button);
         speakButton.setOnClickListener(v -> {
             String textToSpeak = currentExercise.getRisposta_corretta();
             tts.speak(textToSpeak, TextToSpeech.QUEUE_FLUSH, null, null);
         });
 
 
-        tts = new TextToSpeech(this, this);
+        tts = new TextToSpeech(getContext(), this);
         float speechRate = 1.0f;
         tts.setSpeechRate(speechRate);
 
-        ImageButton button1 = findViewById(R.id.button1);
-        ImageButton button2 = findViewById(R.id.button2);
+        ImageButton button1 = view.findViewById(R.id.button1);
+        ImageButton button2 = view.findViewById(R.id.button2);
 
         button1.setOnClickListener(v -> checkAnswer(1));
         button2.setOnClickListener(v -> checkAnswer(2));
 
-        successSound = MediaPlayer.create(this, R.raw.success_sound);
+        successSound = MediaPlayer.create(getContext(), R.raw.success_sound);
+
+        return view;
     }
 
     @Override
@@ -93,7 +101,7 @@ public class RiconoscimentoCoppieMinimeActivity extends AppCompatActivity implem
     }
 
     @Override
-    protected void onDestroy() {
+    public void onDestroy() {
         if (tts != null) {
             tts.stop();
             tts.shutdown();
@@ -139,8 +147,8 @@ public class RiconoscimentoCoppieMinimeActivity extends AppCompatActivity implem
     }
 
     private void displayImages(String imageUrl1, String imageUrl2) {
-        ImageView imageView1 = findViewById(R.id.image1);
-        ImageView imageView2 = findViewById(R.id.image2);
+        ImageView imageView1 = getView().findViewById(R.id.image1);
+        ImageView imageView2 = getView().findViewById(R.id.image2);
 
         if (currentExercise.getImmagine_corretta() == 1) {
             Glide.with(this).load(imageUrl1).into(imageView1);
@@ -154,7 +162,7 @@ public class RiconoscimentoCoppieMinimeActivity extends AppCompatActivity implem
     private void checkAnswer(int selectedButton) {
         if (currentExercise != null) {
             if (selectedButton == currentExercise.getImmagine_corretta()) {
-                Toast.makeText(this, "Correct!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Correct!", Toast.LENGTH_SHORT).show();
                 showConfettiEffect();
 
                 disableButtons();
@@ -167,11 +175,13 @@ public class RiconoscimentoCoppieMinimeActivity extends AppCompatActivity implem
                 new Handler().postDelayed(() -> {
                     updateCoinsInFirebase();
                     incrementTentativiInFirebase();
-                    finish(); // Torna alla pagina precedente
-                }, 3000); // Aspetta 3 secondi (modifica se necessario per adattare la durata dell'animazione)
+                    FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+                    if (fragmentManager.getBackStackEntryCount() > 0) {
+                        fragmentManager.popBackStack();
+                    }                  }, 3000); // Aspetta 3 secondi (modifica se necessario per adattare la durata dell'animazione)
 
             } else {
-                Toast.makeText(this, "Incorrect. Try again!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Incorrect. Try again!", Toast.LENGTH_SHORT).show();
                 incrementTentativiInFirebase();
             }
         }
@@ -262,9 +272,9 @@ public class RiconoscimentoCoppieMinimeActivity extends AppCompatActivity implem
     }
 
     private void disableButtons() {
-        findViewById(R.id.speak_button).setEnabled(false);
-        findViewById(R.id.button1).setEnabled(false);
-        findViewById(R.id.button2).setEnabled(false);
+        getView().findViewById(R.id.speak_button).setEnabled(false);
+        getView().findViewById(R.id.button1).setEnabled(false);
+        getView().findViewById(R.id.button2).setEnabled(false);
     }
 
     private void fetchTema() {
@@ -287,7 +297,7 @@ public class RiconoscimentoCoppieMinimeActivity extends AppCompatActivity implem
     }
 
     public void updateRoundRectColors(String theme) {
-        ImageView imageView = findViewById(R.id.imageView6); // Your ImageView containing round_rect
+        ImageView imageView = getView().findViewById(R.id.imageView6); // Your ImageView containing round_rect
 
         int startColor = 0;
         int centerColor = 0;
@@ -297,15 +307,15 @@ public class RiconoscimentoCoppieMinimeActivity extends AppCompatActivity implem
         switch (theme) {
             case "supereroi":
             case "cartoni_animati":
-                startColor = ContextCompat.getColor(this, R.color.supereroi1);
-                centerColor = ContextCompat.getColor(this, R.color.supereroi2);
-                endColor = ContextCompat.getColor(this, R.color.supereroi3);
+                startColor = ContextCompat.getColor(getContext(), R.color.supereroi1);
+                centerColor = ContextCompat.getColor(getContext(), R.color.supereroi2);
+                endColor = ContextCompat.getColor(getContext(), R.color.supereroi3);
                 break;
             case "favole":
             case "videogiochi":
-                startColor = ContextCompat.getColor(this, R.color.videogiochi1);
-                centerColor = ContextCompat.getColor(this, R.color.videogiochi2);
-                endColor = ContextCompat.getColor(this, R.color.videogiochi3);
+                startColor = ContextCompat.getColor(getContext(), R.color.videogiochi1);
+                centerColor = ContextCompat.getColor(getContext(), R.color.videogiochi2);
+                endColor = ContextCompat.getColor(getContext(), R.color.videogiochi3);
                 break;
         }
 
@@ -316,7 +326,7 @@ public class RiconoscimentoCoppieMinimeActivity extends AppCompatActivity implem
     }
 
     public void updateConstraintLayoutBackground(String theme) {
-        ConstraintLayout constraintLayout = findViewById(R.id.constraintLayout2);// Your ConstraintLayout
+        ConstraintLayout constraintLayout = getView().findViewById(R.id.constraintLayout2);// Your ConstraintLayout
 
         int backgroundColor = 0;
 
@@ -324,11 +334,11 @@ public class RiconoscimentoCoppieMinimeActivity extends AppCompatActivity implem
         switch (theme) {
             case "supereroi":
             case "cartoni_animati":
-                backgroundColor = ContextCompat.getColor(this, R.color.supereroibackground); // Replace with actual color resource
+                backgroundColor = ContextCompat.getColor(getContext(), R.color.supereroibackground); // Replace with actual color resource
                 break;
             case "favole":
             case "videogiochi":
-                backgroundColor = ContextCompat.getColor(this, R.color.videogiochibackground); // Replace with actual color resource
+                backgroundColor = ContextCompat.getColor(getContext(), R.color.videogiochibackground); // Replace with actual color resource
                 break;
         }
 
@@ -337,7 +347,7 @@ public class RiconoscimentoCoppieMinimeActivity extends AppCompatActivity implem
     }
 
     public void updateLinearLayoutBackground(String theme) {
-        LinearLayout linearLayout = findViewById(R.id.linearLayout);// Your ConstraintLayout
+        LinearLayout linearLayout = getView().findViewById(R.id.linearLayout);// Your ConstraintLayout
 
         int backgroundColor = 0;
 
@@ -345,11 +355,11 @@ public class RiconoscimentoCoppieMinimeActivity extends AppCompatActivity implem
         switch (theme) {
             case "supereroi":
             case "cartoni_animati":
-                backgroundColor = ContextCompat.getColor(this, R.color.supereroibackground); // Replace with actual color resource
+                backgroundColor = ContextCompat.getColor(getContext(), R.color.supereroibackground); // Replace with actual color resource
                 break;
             case "favole":
             case "videogiochi":
-                backgroundColor = ContextCompat.getColor(this, R.color.videogiochibackground); // Replace with actual color resource
+                backgroundColor = ContextCompat.getColor(getContext(), R.color.videogiochibackground); // Replace with actual color resource
                 break;
         }
 
