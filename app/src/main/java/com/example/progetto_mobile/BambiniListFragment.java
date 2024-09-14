@@ -1,6 +1,8 @@
 package com.example.progetto_mobile;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.icu.util.Calendar;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -9,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -37,6 +40,11 @@ public class BambiniListFragment extends Fragment {
     private String genitorePath;
     private boolean isFromHomeLogopedista = false;
     private ProgressBar progressBar;
+    private Button btnScegliData;
+    private String selectedDate;
+    private int mYear;
+    private int mMonth;
+    private int mDay;
 
     public BambiniListFragment() {
         // Required empty public constructor
@@ -73,8 +81,17 @@ public class BambiniListFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_bambini_list, container, false);
 
         linearLayoutBambini = view.findViewById(R.id.linearLayoutBambini);
+        btnScegliData = view.findViewById(R.id.btnScegliData);
         progressBar = view.findViewById(R.id.progressBarListaBambini);
         progressBar.setVisibility(View.VISIBLE);
+
+        // Inizializza la data corrente
+        final Calendar c = Calendar.getInstance();
+        mYear = c.get(Calendar.YEAR);
+        mMonth = c.get(Calendar.MONTH);
+        mDay = c.get(Calendar.DAY_OF_MONTH);
+
+        setDateOnButton();
 
         String from = getActivity().getIntent().getStringExtra("from");
         if (from != null && from.equals("homeLogopedista")) {
@@ -82,11 +99,47 @@ public class BambiniListFragment extends Fragment {
             isFromHomeLogopedista = true;
         }
 
+        // se non si vuole far selezionare la data al genitore spostare nell'if sopra
+        btnScegliData.setOnClickListener(v -> showDatePickerDialog());
+
+        // se non si vuole far selezionare la data al genitore
+        /*
+        if (!isFromHomeLogopedista) {
+            tvScegliData.setVisibility(View.GONE);
+            btnScegliData.setClickable(false);
+        }
+         */
+
         if (genitorePath != null) {
             getBambiniFromFirestore(genitorePath);
         }
 
         return view;
+    }
+
+    private void showDatePickerDialog() {
+        DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(),
+                (view, year, monthOfYear, dayOfMonth) -> {
+                    mYear = year;
+                    mMonth = monthOfYear;
+                    mDay = dayOfMonth;
+
+                    setDateOnButton();
+
+                    linearLayoutBambini.removeAllViews();
+                    progressBar.setVisibility(View.VISIBLE);
+
+                    if (genitorePath != null) {
+                        getBambiniFromFirestore(genitorePath);
+                    }
+                }, mYear, mMonth, mDay);
+
+        datePickerDialog.show();
+    }
+
+    private void setDateOnButton() {
+        selectedDate = String.format("%02d-%02d-%04d", mDay, mMonth + 1, mYear);
+        btnScegliData.setText(selectedDate);
     }
 
     private void getBambiniFromFirestore(String genitorePath) {
@@ -124,58 +177,80 @@ public class BambiniListFragment extends Fragment {
             int progresso = bambinoSnapshot.getLong("progresso").intValue();
             int coins = bambinoSnapshot.getLong("coins").intValue();
 
-            DocumentReference esercizioTipo1Ref = bambinoSnapshot.getDocumentReference("esercizioTipo1");
-            DocumentReference esercizioTipo2Ref = bambinoSnapshot.getDocumentReference("esercizioTipo2");
-            DocumentReference esercizioTipo3Ref = bambinoSnapshot.getDocumentReference("esercizioTipo3");
+            DocumentReference esercizioTipo1Ref = db.document("esercizi/" + bambinoSnapshot.getId() + "/tipo1/" + selectedDate);
+            DocumentReference esercizioTipo2Ref = db.document("esercizi/" + bambinoSnapshot.getId() + "/tipo2/" + selectedDate);
+            DocumentReference esercizioTipo3Ref = db.document("esercizi/" + bambinoSnapshot.getId() + "/tipo3/" + selectedDate);
 
             Log.d("HomeGenitoreActivity", "Nome bambino: " + nome);
             Log.d("HomeGenitoreActivity", "Progresso bambino: " + progresso);
 
             // Otteniamo i dettagli di ogni esercizio
-            getEserciziDetails(esercizioTipo1Ref, esercizioTipo2Ref, esercizioTipo3Ref, (eserciziTipo1, eserciziTipo2, eserciziTipo3) -> {
+            getEserciziDetails(esercizioTipo1Ref, esercizioTipo2Ref, esercizioTipo3Ref, (esercizioTipo1, esercizioTipo2, esercizioTipo3) -> {
                 Child child = new Child(
                         nome,
                         progresso,
                         coins,
-                        eserciziTipo1,
-                        eserciziTipo2,
-                        eserciziTipo3);
+                        esercizioTipo1,
+                        esercizioTipo2,
+                        esercizioTipo3);
                 child.putDocId(bambinoSnapshot.getId());
-                if (esercizioTipo1Ref != null) child.putEsercizioTipo1Ref(esercizioTipo1Ref.getPath());
-                if (esercizioTipo2Ref != null) child.putEsercizioTipo2Ref(esercizioTipo2Ref.getPath());
-                if (esercizioTipo3Ref != null) child.putEsercizioTipo3Ref(esercizioTipo3Ref.getPath());
+                if (esercizioTipo1.getPlaceholder() == null) child.putEsercizioTipo1Ref(esercizioTipo1Ref.getPath());
+                if (esercizioTipo2.getPlaceholder() == null) child.putEsercizioTipo2Ref(esercizioTipo2Ref.getPath());
+                if (esercizioTipo3.getPlaceholder() == null) child.putEsercizioTipo3Ref(esercizioTipo3Ref.getPath());
+//                if (esercizioTipo1Ref != null) child.putEsercizioTipo1Ref(esercizioTipo1Ref.getPath());
+//                if (esercizioTipo2Ref != null) child.putEsercizioTipo2Ref(esercizioTipo2Ref.getPath());
+//                if (esercizioTipo3Ref != null) child.putEsercizioTipo3Ref(esercizioTipo3Ref.getPath());
                 addChildDashboard(child);
             });
         }
     }
 
     private void getEserciziDetails(DocumentReference tipo1Ref, DocumentReference tipo2Ref, DocumentReference tipo3Ref, BambiniListFragment.EserciziCallback callback) {
+        DocumentReference placeholderTipo1Ref = db.document("/esercizi/placeholder/tipo1/16-08-2024");
+        DocumentReference placeholderTipo2Ref = db.document("/esercizi/placeholder/tipo2/16-08-2024");
+        DocumentReference placeholderTipo3Ref = db.document("/esercizi/placeholder/tipo3/16-08-2024");
+
         Task<EsercizioTipo1> esercizioTipo1Task = tipo1Ref != null
-                ? tipo1Ref.get().continueWith(task -> {
+                ? tipo1Ref.get().continueWithTask(task -> {
                     if (task.isSuccessful() && task.getResult() != null) {
-                        return task.getResult().toObject(EsercizioTipo1.class);
+                        EsercizioTipo1 esercizioTipo1 = task.getResult().toObject(EsercizioTipo1.class);
+                        return esercizioTipo1 != null
+                                ? Tasks.forResult(esercizioTipo1)
+                                : placeholderTipo1Ref.get().continueWith(placeholderTask ->
+                                placeholderTask.getResult().toObject(EsercizioTipo1.class));
                     }
-                    return null;
+                    return placeholderTipo1Ref.get().continueWith(placeholderTask ->
+                            placeholderTask.getResult().toObject(EsercizioTipo1.class));
                 })
-                : Tasks.forResult(null);
+                : placeholderTipo1Ref.get().continueWith(task -> task.getResult().toObject(EsercizioTipo1.class));
 
         Task<EsercizioTipo2> esercizioTipo2Task = tipo2Ref != null
-                ? tipo2Ref.get().continueWith(task -> {
+                ? tipo2Ref.get().continueWithTask(task -> {
                     if (task.isSuccessful() && task.getResult() != null) {
-                        return task.getResult().toObject(EsercizioTipo2.class);
+                        EsercizioTipo2 esercizioTipo2 = task.getResult().toObject(EsercizioTipo2.class);
+                        return esercizioTipo2 != null
+                                ? Tasks.forResult(esercizioTipo2)
+                                : placeholderTipo2Ref.get().continueWith(placeholderTask ->
+                                placeholderTask.getResult().toObject(EsercizioTipo2.class));
                     }
-                    return null;
+                    return placeholderTipo2Ref.get().continueWith(placeholderTask ->
+                            placeholderTask.getResult().toObject(EsercizioTipo2.class));
                 })
-                : Tasks.forResult(null);
+                : placeholderTipo2Ref.get().continueWith(task ->task.getResult().toObject(EsercizioTipo2.class));
 
         Task<EsercizioTipo3> esercizioTipo3Task = tipo3Ref != null
-                ? tipo3Ref.get().continueWith(task -> {
+                ? tipo3Ref.get().continueWithTask(task -> {
                     if (task.isSuccessful() && task.getResult() != null) {
-                        return task.getResult().toObject(EsercizioTipo3.class);
+                        EsercizioTipo3 esercizioTipo3 = task.getResult().toObject(EsercizioTipo3.class);
+                        return esercizioTipo3 != null
+                                ? Tasks.forResult(esercizioTipo3)
+                                : placeholderTipo3Ref.get().continueWith(placeholderTask ->
+                                placeholderTask.getResult().toObject(EsercizioTipo3.class));
                     }
-                    return null;
+                    return placeholderTipo3Ref.get().continueWith(placeholderTask ->
+                            placeholderTask.getResult().toObject(EsercizioTipo3.class));
                 })
-                : Tasks.forResult(null);
+                : placeholderTipo3Ref.get().continueWith(task -> task.getResult().toObject(EsercizioTipo3.class));
 
         // Attendi il completamento di tutti i task
         Tasks.whenAllComplete(esercizioTipo1Task, esercizioTipo2Task, esercizioTipo3Task)

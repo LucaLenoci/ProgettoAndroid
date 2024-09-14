@@ -10,6 +10,33 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <TextView
+            android:id="@+id/tvScegliData"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:text="Seleziona data ->"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/btnScegliData"
+            app:layout_constraintEnd_toStartOf="@+id/btnScegliData"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/btnScegliData" />
+
+        <Button
+            android:id="@+id/btnScegliData"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/tvScegliData"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="GG-MM-AAAA" />
+
         <ProgressBar
             android:id="@+id/progressBarListaBambini"
             style="?android:attr/progressBarStyle"
@@ -29,10 +56,10 @@
             android:layout_margin="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight="match_constraint"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.5">
+            app:layout_constraintTop_toBottomOf="@+id/btnScegliData">
 
             <LinearLayout
                 android:id="@+id/linearLayoutBambini"
