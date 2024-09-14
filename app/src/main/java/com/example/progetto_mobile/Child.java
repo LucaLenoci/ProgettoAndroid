@@ -19,6 +19,7 @@ public class Child extends User implements Serializable {
     private String esercizioTipo2Ref;
     private String esercizioTipo3Ref;
     private String docId;
+    private String logopedistaRef;
 
     public Child() {}
 

@@ -90,17 +90,19 @@ public class DashboardGenitoreActivity extends AppCompatActivity {
                     db = FirebaseFirestore.getInstance();
                     if (!nome.isEmpty() && !cognome.isEmpty() && !eta.isEmpty() && !sesso.isEmpty()) {
                         List<String> ownedAvatars = new ArrayList<>();
-                        ownedAvatars.add("");
+                        ownedAvatars.add("1");
                         Map<String, Object> child = new HashMap<>();
                         child.put("nome", nome);
                         child.put("cognome", cognome);
                         child.put("eta", Integer.parseInt(eta));
                         child.put("sesso", sesso);
                         child.put("tipologia", 0);
-                        child.put("avatarCorrente", "");
+                        child.put("avatarCorrente", "1");
+                        child.put("tema", "supereroi");
                         child.put("ownedAvatars", ownedAvatars);
                         child.put("progresso", 0);
                         child.put("coins", 0);
+                        child.put("logopedistaRef", db.document(logopedistaPath));
                         child.put("esercizioTipo1", db.document("/esercizi/placeholder/tipo1/16-08-2024")); //placeholder
                         child.put("esercizioTipo2", db.document("/esercizi/placeholder/tipo2/16-08-2024")); //placeholder
                         child.put("esercizioTipo3", db.document("/esercizi/placeholder/tipo3/16-08-2024")); //placeholder

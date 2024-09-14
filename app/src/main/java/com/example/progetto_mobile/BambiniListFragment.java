@@ -272,6 +272,7 @@ public class BambiniListFragment extends Fragment {
         LayoutInflater inflater = LayoutInflater.from(getContext());
         View childDashboard = inflater.inflate(R.layout.layout_child_dashboard, linearLayoutBambini, false);
 
+        // todo: fai il fetch delle immagini
         ImageView imageViewChild = childDashboard.findViewById(R.id.imageViewChild);
         TextView textViewChildName = childDashboard.findViewById(R.id.textViewChildName);
         TextView textViewChildCoins = childDashboard.findViewById(R.id.textViewChildCoins);
