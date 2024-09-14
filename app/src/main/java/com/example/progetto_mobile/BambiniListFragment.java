@@ -46,7 +46,6 @@ public class BambiniListFragment extends Fragment {
     private FirebaseFirestore db;
     private String genitorePath;
     private boolean isFromHomeLogopedista = false;
-    private ProgressBar progressBar;
     private Button btnScegliData;
     private String selectedDate;
     private int mYear;
@@ -132,7 +131,6 @@ public class BambiniListFragment extends Fragment {
                     setDateOnButton();
 
                     linearLayoutBambini.removeAllViews();
-                    progressBar.setVisibility(View.VISIBLE);
 
                     if (genitorePath != null) {
                         getBambiniFromFirestore(genitorePath);
@@ -155,13 +153,11 @@ public class BambiniListFragment extends Fragment {
                         List<DocumentReference> bambiniRefs = (List<DocumentReference>) documentSnapshot.get("bambiniRef");
 
                         if (bambiniRefs == null || bambiniRefs.isEmpty()) {
-                            progressBar.setVisibility(View.GONE);
                             showEmptyChildrenMessage();
                         } else {
                             Log.d(TAG, "Numero di bambini: " + bambiniRefs.size());
                             for (DocumentReference bambinoRef : bambiniRefs) {
                                 bambinoRef.get().addOnSuccessListener(this::processChildData);
-                                progressBar.setVisibility(View.GONE);
                             }
                         }
                     }

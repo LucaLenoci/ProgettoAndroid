@@ -37,6 +37,7 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:text="GG-MM-AAAA" />
 
+
         <ScrollView
             android:id="@+id/scrollViewBambini"
             android:layout_width="match_parent"
