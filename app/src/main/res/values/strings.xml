@@ -9,6 +9,26 @@
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
     <string name="indietro">Indietro</string>
+
+    <!-- Plurali per i tentativi -->
+    <plurals name="tentativi">
+        <item quantity="one">Esercizio completato in %d tentativo</item>
+        <item quantity="other">Esercizio completato in %d tentativi</item>
+    </plurals>
+
+    <!-- Plurali per i suggerimenti usati -->
+    <plurals name="suggerimenti_usati">
+        <item quantity="one">%d/3 suggerimento usato</item>
+        <item quantity="other">%d/3 suggerimenti usati</item>
+    </plurals>
+
+    <!-- Altri testi per i vari esercizi -->
+    <string name="parola_da_ripetere">Parola da ripetere: %s</string>
+    <string name="immagine_da_scegliere">Immagine da scegliere: %s</string>
+    <string name="immagine_da_evitare">Immagine da evitare: %s</string>
+    <string name="parole_da_ripetere">Parole da ripetere: %s</string>
+    <string name="esercizio_in_corso">Esercizio in corso…</string>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="password_dimenticata"><u>Password dimenticata?</u></string>

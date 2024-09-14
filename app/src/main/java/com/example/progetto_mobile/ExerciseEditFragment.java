@@ -364,7 +364,7 @@ public class ExerciseEditFragment extends Fragment {
     private Object createExerciseObject() {
         switch (exerciseType) {
             case "tipo1":
-                return new EsercizioTipo1("", false, "", selectedCorrectImageName,
+                return new EsercizioTipo1("", false, selectedCorrectImageName,
                         Arrays.asList(false, false, false), inputLayout1.getEditText().getText().toString(), inputLayout2.getEditText().getText().toString(),
                         inputLayout3.getEditText().getText().toString(), 0, 0, "", "tipo1");
             case "tipo2":

@@ -117,7 +117,7 @@ public class DashboardBambinoActivity extends AppCompatActivity {
         } else {
             Object exercise = getExerciseFromChild(exerciseType);
             if (exercise != null) {
-                displayExercise(exercise, exerciseType);
+                displayExercise(exercise);
                 if (isFromHomeLogopedista) {
                     showEditExerciseButton(exerciseType);
                 }
@@ -166,7 +166,7 @@ public class DashboardBambinoActivity extends AppCompatActivity {
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
                         Object exercise = documentSnapshot.toObject(getExerciseClass(exerciseType));
-                        displayExercise(exercise, exerciseType);
+                        displayExercise(exercise);
                     } else {
                         if (isFromHomeLogopedista) {
                             showAddExerciseButton(exerciseType);
@@ -317,16 +317,16 @@ public class DashboardBambinoActivity extends AppCompatActivity {
         }
     }
 
-    private void displayExercise(Object exercise, String exerciseType) {
+    private void displayExercise(Object exercise) {
         View exerciseView = LayoutInflater.from(this).inflate(R.layout.layout_item_esercizio, contentLayout, false);
-        TextView titleTextView = exerciseView.findViewById(R.id.esercizioTitleTextView);
-        TextView detailsTextView = exerciseView.findViewById(R.id.esercizioDetailsTextView);
+        LinearLayout detailsContainer = exerciseView.findViewById(R.id.esercizioDetailsContainer);
         LinearLayout barraAudio = exerciseView.findViewById(R.id.layoutBarraAudio);
         Button playPauseButton = exerciseView.findViewById(R.id.playPauseButton);
         SeekBar audioSeekBar = exerciseView.findViewById(R.id.audioSeekBar);
 
-        titleTextView.setText(exerciseType);
-        detailsTextView.setText(getExerciseDetails(exercise));
+        // Aggiungi i dettagli dell'esercizio al container
+        View detailsView = getExerciseDetails(exercise);
+        detailsContainer.addView(detailsView);
 
         String audioUrl = null;
         if (exercise instanceof EsercizioTipo1) {
@@ -404,21 +404,69 @@ public class DashboardBambinoActivity extends AppCompatActivity {
     }
 
     // todo: rivedi quali campi far vedere
-    private String getExerciseDetails(Object exercise) {
+    private View getExerciseDetails(Object exercise) {
+        View view = LayoutInflater.from(this).inflate(R.layout.layout_exercise_details, null);
+        TextView tvExerciseStatus = view.findViewById(R.id.tvExerciseStatus);
+        TextView tvAttempts = view.findViewById(R.id.tvAttempts);
+        TextView tvCorrectAnswer = view.findViewById(R.id.tvCorrectAnswer);
+        TextView tvAdditionalInfo = view.findViewById(R.id.tvAdditionalInfo);
+
         if (exercise instanceof EsercizioTipo1) {
             EsercizioTipo1 es = (EsercizioTipo1) exercise;
-            return String.format("Corretto: %s\nRisposta: %s\nRisposta corretta: %s\nSuggerimento: %s",
-                    es.isEsercizio_corretto(), es.getRisposta(), es.getRisposta_corretta(), es.getSuggerimento());
+
+            if (!es.isEsercizio_corretto()) {
+                tvExerciseStatus.setText(getString(R.string.esercizio_in_corso));
+                tvAttempts.setVisibility(View.GONE);
+                tvCorrectAnswer.setText(getString(R.string.parola_da_ripetere, es.getRisposta_corretta()));
+                tvAdditionalInfo.setVisibility(View.GONE);
+                return view;
+            }
+
+            tvExerciseStatus.setVisibility(View.GONE);
+            tvAttempts.setText(getResources().getQuantityString(R.plurals.tentativi, es.getTentativi(), es.getTentativi()));
+            tvCorrectAnswer.setText(getString(R.string.parola_da_ripetere, es.getRisposta_corretta()));
+            tvAdditionalInfo.setText(getResources().getQuantityString(R.plurals.suggerimenti_usati, es.getSuggerimentiUsati(), es.getSuggerimentiUsati()));
+
         } else if (exercise instanceof EsercizioTipo2) {
             EsercizioTipo2 es = (EsercizioTipo2) exercise;
-            return String.format("Corretto: %s\nRisposta corretta: %s\nRisposta sbagliata: %s\nImmagine corretta: %d",
-                    es.isEsercizio_corretto(), es.getRisposta_corretta(), es.getRisposta_sbagliata(), es.getImmagine_corretta());
+
+            if (!es.isEsercizio_corretto()) {
+                tvExerciseStatus.setText(getString(R.string.esercizio_in_corso));
+                tvAttempts.setVisibility(View.GONE);
+                tvCorrectAnswer.setText(getString(R.string.immagine_da_scegliere, es.getRisposta_corretta()));
+                tvAdditionalInfo.setText(getString(R.string.immagine_da_evitare, es.getRisposta_sbagliata()));
+                return view;
+            }
+
+            tvExerciseStatus.setVisibility(View.GONE);
+            tvAttempts.setText(getResources().getQuantityString(R.plurals.tentativi, es.getTentativi(), es.getTentativi()));
+            tvCorrectAnswer.setText(getString(R.string.immagine_da_scegliere, es.getRisposta_corretta()));
+            tvAdditionalInfo.setText(getString(R.string.immagine_da_evitare, es.getRisposta_sbagliata()));
+
         } else if (exercise instanceof EsercizioTipo3) {
             EsercizioTipo3 es = (EsercizioTipo3) exercise;
-            return String.format("Corretto: %s\nRisposta corretta: %s",
-                    es.isEsercizio_corretto(), es.getRisposta_corretta());
+
+            if (!es.isEsercizio_corretto()) {
+                tvExerciseStatus.setText(getString(R.string.esercizio_in_corso));
+                tvAttempts.setVisibility(View.GONE);
+                tvCorrectAnswer.setText(getString(R.string.parole_da_ripetere, es.getRisposta_corretta()));
+                tvAdditionalInfo.setVisibility(View.GONE);
+                return view;
+            }
+
+            tvExerciseStatus.setVisibility(View.GONE);
+            tvAttempts.setText(getResources().getQuantityString(R.plurals.tentativi, es.getTentativi(), es.getTentativi()));
+            tvCorrectAnswer.setText(getString(R.string.parole_da_ripetere, es.getRisposta_corretta()));
+            tvAdditionalInfo.setVisibility(View.GONE);
+
+        } else {
+            tvExerciseStatus.setText("Tipo di esercizio sconosciuto");
+            tvAttempts.setVisibility(View.GONE);
+            tvCorrectAnswer.setVisibility(View.GONE);
+            tvAdditionalInfo.setVisibility(View.GONE);
         }
-        return "Tipo di esercizio sconosciuto";
+
+        return view;
     }
 
     @Override
