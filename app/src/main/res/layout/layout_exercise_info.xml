@@ -4,7 +4,6 @@
     android:layout_height="wrap_content"
     android:layout_marginEnd="5dp"
     android:layout_marginBottom="5dp"
-    android:background="@drawable/border_grey"
     android:orientation="vertical">
 
     <TextView
@@ -13,7 +12,9 @@
         android:layout_height="wrap_content"
         android:gravity="center_horizontal|center_vertical"
         android:padding="5dp"
-        android:textSize="14sp" />
+        android:textSize="14sp"
+        android:fontFamily="@font/adlam_display"
+        android:textColor="@color/black"/>
 
     <TextView
         android:id="@+id/textViewExerciseStatus"
@@ -21,6 +22,8 @@
         android:layout_height="wrap_content"
         android:gravity="center_horizontal|center_vertical"
         android:padding="5dp"
-        android:textSize="12sp" />
+        android:textSize="15sp"
+        android:textColor="@color/black"
+        android:fontFamily="@font/adlam_display"/>
 
 </LinearLayout>
