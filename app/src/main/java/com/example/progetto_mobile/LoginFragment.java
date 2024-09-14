@@ -72,7 +72,7 @@ public class LoginFragment extends Fragment {
 
 
         View genitoreButton = view.findViewById(R.id.buttonLoginGenitore);
-        genitoreButton.setOnClickListener(v -> startActivity(new Intent(getContext(), HomeGenitoreActivity.class)));
+        genitoreButton.setOnClickListener(v -> startActivity(new Intent(getContext(), GenitoreActivity.class)));
 
         View accediButton = view.findViewById(R.id.buttonResetPassword);
         accediButton.setOnClickListener(v -> {

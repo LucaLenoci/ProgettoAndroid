@@ -37,12 +37,6 @@
             android:name=".DashboardBambinoActivity"
             android:exported="false" />
         <activity
-            android:name=".GestisciSingoloTemaActivity"
-            android:exported="false" />
-        <activity
-            android:name=".GestisciTemiActivity"
-            android:exported="false" />
-        <activity
             android:name=".CorreggiEserciziActivity"
             android:exported="false" />
         <activity
@@ -54,10 +48,11 @@
             android:exported="false" />
 
         <activity
-            android:name=".HomeGenitoreActivity"
+            android:name=".BambinoActivity"
             android:exported="false" />
+
         <activity
-            android:name=".Bambino"
+            android:name=".GenitoreActivity"
             android:exported="false" />
 
         <activity

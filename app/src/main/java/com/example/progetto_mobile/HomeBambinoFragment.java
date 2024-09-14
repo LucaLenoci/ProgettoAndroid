@@ -50,6 +50,7 @@ public class HomeBambinoFragment extends Fragment {
     private int currentStreak = 0;
     private TextView numerostreak;
     private Button classifica;
+    CalendarView calendarView;
 
     public static HomeBambinoFragment newInstance(String bambinoId) {
         HomeBambinoFragment fragment = new HomeBambinoFragment();
@@ -82,7 +83,7 @@ public class HomeBambinoFragment extends Fragment {
         tvCoins = view.findViewById(R.id.Coins);
         progressBar = view.findViewById(R.id.progressBar);
 
-        CalendarView calendarView = view.findViewById(R.id.calendarView);
+        calendarView = view.findViewById(R.id.calendarView);
         Button esercizioButton = view.findViewById(R.id.button);
 
         // Set default selected date to the current date
@@ -540,4 +541,5 @@ public class HomeBambinoFragment extends Fragment {
                     });
         }
     }
+
 }

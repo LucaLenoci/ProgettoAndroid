@@ -142,7 +142,7 @@ public class ScegliAccountActivity extends AppCompatActivity {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         Log.d(TAG, "Re-autenticazione riuscita.");
-                        Intent intent = new Intent(ScegliAccountActivity.this, HomeGenitoreActivity.class);
+                        Intent intent = new Intent(ScegliAccountActivity.this, GenitoreActivity.class);
                         intent.putExtra("genitore", genitorePath);
                         startActivity(intent);
                     } else {
@@ -222,7 +222,7 @@ public class ScegliAccountActivity extends AppCompatActivity {
         tvNomeBambino.setText(bambino.getNome());
 
         accountItemView.setOnClickListener(v -> {
-            Intent intent = new Intent(ScegliAccountActivity.this, Bambino.class);
+            Intent intent = new Intent(ScegliAccountActivity.this, BambinoActivity.class);
             intent.putExtra("bambinoId", bambino.getDocRef());
             startActivity(intent);
         });

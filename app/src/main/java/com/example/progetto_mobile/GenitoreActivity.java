@@ -5,29 +5,27 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
-public class Bambino extends AppCompatActivity {
+public class GenitoreActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.bambino);
+        setContentView(R.layout.genitore);
 
-        String bambinoIdraw = getIntent().getStringExtra("bambinoId");
-        int lastSlashIndex = bambinoIdraw.lastIndexOf('/');
-        String bambinoId = bambinoIdraw.substring(lastSlashIndex + 1);
+        String genitorePath = getIntent().getStringExtra("genitore");
 
         // Create a Bundle to hold the arguments
         Bundle bundle = new Bundle();
-        bundle.putString("bambinoId", bambinoId);
+        bundle.putString("genitore", genitorePath);
 
         // Create a new instance of the Fragment and set the arguments
-        HomeBambinoFragment homeBambinoFragment = new HomeBambinoFragment();
-        homeBambinoFragment.setArguments(bundle);
+        HomeGenitoreFragment homeGenitoreFragment = new HomeGenitoreFragment();
+        homeGenitoreFragment.setArguments(bundle);
 
         // Load the Fragment
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, homeBambinoFragment)
+                    .replace(R.id.fragment_container, homeGenitoreFragment)
                     .commit();
         }
     }

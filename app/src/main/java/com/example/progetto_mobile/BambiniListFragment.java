@@ -20,11 +20,14 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -272,7 +275,6 @@ public class BambiniListFragment extends Fragment {
         LayoutInflater inflater = LayoutInflater.from(getContext());
         View childDashboard = inflater.inflate(R.layout.layout_child_dashboard, linearLayoutBambini, false);
 
-        // todo: fai il fetch delle immagini
         ImageView imageViewChild = childDashboard.findViewById(R.id.imageViewChild);
         TextView textViewChildName = childDashboard.findViewById(R.id.textViewChildName);
         TextView textViewChildCoins = childDashboard.findViewById(R.id.textViewChildCoins);
@@ -280,6 +282,7 @@ public class BambiniListFragment extends Fragment {
         LinearLayout linearLayoutExercises = childDashboard.findViewById(R.id.linearLayoutExercises);
 
         textViewChildName.setText(child.getNome());
+        loadCurrentAvatar( child.getDocId(), imageViewChild);
         textViewChildCoins.setText(String.format("%s: %d", "Coins", child.getCoins()));
         progressBarChild.setProgress(child.getProgresso());
 
@@ -446,4 +449,48 @@ public class BambiniListFragment extends Fragment {
         container.addView(exerciseView);
     }
 
+    private void loadCurrentAvatar(String bambinoId, ImageView ProfilePic) {
+        db.collection("bambini")
+                .document(bambinoId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        String avatarFilename = documentSnapshot.getString("avatarCorrente");
+                        String temaCorrente =  documentSnapshot.getString("tema");
+                        String sessoBambino = documentSnapshot.getString("sesso");
+                        String personaggi_da_visualizzare = "";
+                        if (sessoBambino.equals("M")){
+                            personaggi_da_visualizzare = "personaggi";
+                        }else{
+                            personaggi_da_visualizzare = "personaggi_femminili";
+                        }
+                        if (avatarFilename != null) {
+                            db.collection("avatars").document(temaCorrente).collection(personaggi_da_visualizzare).document(avatarFilename).get()
+                                    .addOnCompleteListener(task -> {
+                                        if (task.isSuccessful()) {
+                                            DocumentSnapshot document = task.getResult();
+                                            if (document.exists()) {
+                                                String imagePath = document.getString("imageUrl");
+
+                                                if (imagePath != null && !imagePath.isEmpty()) {
+                                                    StorageReference imageRef = FirebaseStorage.getInstance().getReferenceFromUrl(imagePath);
+                                                    imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                                                        Log.d(TAG, "Image URL retrieved successfully for " + avatarFilename);
+                                                        Glide.with(getContext()).load(uri).into(ProfilePic);
+                                                    }).addOnFailureListener(exception -> {
+                                                        Log.e(TAG, "Failed to get download URL for " + avatarFilename, exception);
+                                                    });
+                                                } else {
+                                                    Log.e(TAG, "Image path is null or empty for " + avatarFilename);
+                                                }
+                                            }
+                                        }
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Log.e("LoadAvatar", "Failed to load avatar image", e);
+                                    });
+                        }
+                    }
+                });
+    }
 }
