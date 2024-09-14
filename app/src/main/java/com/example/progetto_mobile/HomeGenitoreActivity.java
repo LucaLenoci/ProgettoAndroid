@@ -1,9 +1,7 @@
 package com.example.progetto_mobile;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,7 +29,6 @@ public class HomeGenitoreActivity extends AppCompatActivity {
         });
 
         TextView tvBenvenuto = findViewById(R.id.textViewBenvenutoGenitore);
-        Button btnGestisciTemi = findViewById(R.id.buttonGestisciTemi);
 
         String genitorePath = getIntent().getStringExtra("genitore");
 
@@ -55,8 +52,5 @@ public class HomeGenitoreActivity extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragmentContainerBambini, bambiniListFragment)
                 .commit();
-
-        btnGestisciTemi.setOnClickListener(v ->
-                startActivity(new Intent(HomeGenitoreActivity.this, GestisciTemiActivity.class)));
     }
 }

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.icu.util.Calendar;
 import android.os.Bundle;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -15,6 +16,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.Task;
@@ -23,6 +26,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -118,7 +122,7 @@ public class BambiniListFragment extends Fragment {
     }
 
     private void showDatePickerDialog() {
-        DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(),
+        DatePickerDialog datePickerDialog = new DatePickerDialog(requireContext(),
                 (view, year, monthOfYear, dayOfMonth) -> {
                     mYear = year;
                     mMonth = monthOfYear;
@@ -184,7 +188,6 @@ public class BambiniListFragment extends Fragment {
             Log.d("HomeGenitoreActivity", "Nome bambino: " + nome);
             Log.d("HomeGenitoreActivity", "Progresso bambino: " + progresso);
 
-            // Otteniamo i dettagli di ogni esercizio
             getEserciziDetails(esercizioTipo1Ref, esercizioTipo2Ref, esercizioTipo3Ref, (esercizioTipo1, esercizioTipo2, esercizioTipo3) -> {
                 Child child = new Child(
                         nome,
@@ -197,9 +200,6 @@ public class BambiniListFragment extends Fragment {
                 if (esercizioTipo1.getPlaceholder() == null) child.putEsercizioTipo1Ref(esercizioTipo1Ref.getPath());
                 if (esercizioTipo2.getPlaceholder() == null) child.putEsercizioTipo2Ref(esercizioTipo2Ref.getPath());
                 if (esercizioTipo3.getPlaceholder() == null) child.putEsercizioTipo3Ref(esercizioTipo3Ref.getPath());
-//                if (esercizioTipo1Ref != null) child.putEsercizioTipo1Ref(esercizioTipo1Ref.getPath());
-//                if (esercizioTipo2Ref != null) child.putEsercizioTipo2Ref(esercizioTipo2Ref.getPath());
-//                if (esercizioTipo3Ref != null) child.putEsercizioTipo3Ref(esercizioTipo3Ref.getPath());
                 addChildDashboard(child);
             });
         }
@@ -300,7 +300,97 @@ public class BambiniListFragment extends Fragment {
             startActivity(intent);
         });
 
+        if (!isFromHomeLogopedista) {
+            childDashboard.setOnLongClickListener(v -> showEditChildThemeDialog(child));
+        }
+
         linearLayoutBambini.addView(childDashboard);
+    }
+
+    private boolean showEditChildThemeDialog(Child child) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle("Modifica tema avatar");
+
+        LayoutInflater inflater = requireActivity().getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.layout_dialog_edit_theme, null);
+        builder.setView(dialogView);
+
+        RadioGroup radioGroup = dialogView.findViewById(R.id.radioGroupThemes);
+        ProgressBar progressBar = dialogView.findViewById(R.id.progressBarThemes);
+
+        progressBar.setVisibility(View.VISIBLE);
+        radioGroup.setVisibility(View.GONE);
+
+        fetchAvatarsAndPopulateRadioButtons(radioGroup, progressBar, child);
+
+        builder.setPositiveButton("Conferma", (dialog, which) -> {
+            int selectedId = radioGroup.getCheckedRadioButtonId();
+            if (selectedId != -1) {
+                RadioButton selectedRadioButton = dialogView.findViewById(selectedId);
+                String newTheme = selectedRadioButton.getText().toString();
+                updateChildTheme(child, newTheme);
+            }
+        });
+        builder.setNegativeButton("Annulla", (dialog, which) -> dialog.cancel());
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        return true;
+    }
+
+    private void fetchAvatarsAndPopulateRadioButtons(RadioGroup radioGroup, ProgressBar progressBar, Child child) {
+        db.collection("avatars")
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<String> avatarIds = new ArrayList<>();
+                    for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                        avatarIds.add(documentSnapshot.getId());
+                    }
+                    populateRadioButtons(radioGroup, avatarIds, child);
+                    progressBar.setVisibility(View.GONE);
+                    radioGroup.setVisibility(View.VISIBLE);
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Error fetching avatars", e);
+                    progressBar.setVisibility(View.GONE);
+                });
+    }
+
+    private void populateRadioButtons(RadioGroup radioGroup, List<String> avatarIds, Child child) {
+        for (String avatarId : avatarIds) {
+            RadioButton radioButton = new RadioButton(requireContext());
+            radioButton.setText(avatarId);
+            radioButton.setId(View.generateViewId());
+            radioGroup.addView(radioButton);
+        }
+
+        db.document("bambini/" + child.getDocId())
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    String currentTheme = documentSnapshot.getString("tema");
+                    if (currentTheme != null) {
+                        for (int i = 0; i < radioGroup.getChildCount(); i++) {
+                            RadioButton radioButton = (RadioButton) radioGroup.getChildAt(i);
+                            if (radioButton.getText().toString().equals(currentTheme)) {
+                                radioButton.setChecked(true);
+                                break;
+                            }
+                        }
+                    }
+                })
+                .addOnFailureListener(e -> Log.e(TAG, "Error fetching child theme", e));
+    }
+
+    private void updateChildTheme(Child child, String newTheme) {
+        db.document("bambini/" + child.getDocId())
+                .update("tema", newTheme)
+                .addOnSuccessListener(aVoid -> {
+                    Log.d(TAG, "Theme updated successfully");
+                    linearLayoutBambini.removeAllViews();
+                    getBambiniFromFirestore(genitorePath);
+                })
+                .addOnFailureListener(e -> Log.e(TAG, "Error updating theme", e));
     }
 
     private void addExerciseInfo(LinearLayout container, List<?> allEsercizi) {

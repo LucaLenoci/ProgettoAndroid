@@ -1,12 +1,15 @@
 package com.example.progetto_mobile;
 
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -318,11 +321,86 @@ public class DashboardBambinoActivity extends AppCompatActivity {
         View exerciseView = LayoutInflater.from(this).inflate(R.layout.layout_item_esercizio, contentLayout, false);
         TextView titleTextView = exerciseView.findViewById(R.id.esercizioTitleTextView);
         TextView detailsTextView = exerciseView.findViewById(R.id.esercizioDetailsTextView);
+        LinearLayout barraAudio = exerciseView.findViewById(R.id.layoutBarraAudio);
+        Button playPauseButton = exerciseView.findViewById(R.id.playPauseButton);
+        SeekBar audioSeekBar = exerciseView.findViewById(R.id.audioSeekBar);
 
         titleTextView.setText(exerciseType);
         detailsTextView.setText(getExerciseDetails(exercise));
 
+        String audioUrl = null;
+        if (exercise instanceof EsercizioTipo1) {
+            EsercizioTipo1 es = (EsercizioTipo1) exercise;
+            audioUrl = es.getAudio_url();
+        } else if (exercise instanceof EsercizioTipo3) {
+            EsercizioTipo3 es = (EsercizioTipo3) exercise;
+            audioUrl = es.getAudio_url();
+        }
+
+        if (audioUrl != null && !audioUrl.isEmpty()) {
+            barraAudio.setVisibility(View.VISIBLE);
+            MediaPlayer mediaPlayer = new MediaPlayer();
+            Handler handler = new Handler(); // Handler per aggiornare la SeekBar
+
+            try {
+                mediaPlayer.setDataSource(audioUrl);
+                mediaPlayer.prepareAsync();
+
+                // Quando il MediaPlayer è pronto, imposta la durata della SeekBar
+                mediaPlayer.setOnPreparedListener(mp -> {
+                    playPauseButton.setText("Play");
+                    audioSeekBar.setMax(mp.getDuration()); // Imposta la durata massima della SeekBar
+
+                    playPauseButton.setOnClickListener(v -> {
+                        if (mediaPlayer.isPlaying()) {
+                            mediaPlayer.pause();
+                            playPauseButton.setText("Play");
+                        } else {
+                            mediaPlayer.start();
+                            playPauseButton.setText("Pause");
+                            updateSeekBar(mediaPlayer, audioSeekBar, handler); // Aggiorna la SeekBar durante la riproduzione
+                        }
+                    });
+                });
+
+                // Rilascia il MediaPlayer alla fine
+                mediaPlayer.setOnCompletionListener(mp -> {
+                    playPauseButton.setText("Play");
+                    audioSeekBar.setProgress(0);
+                    mediaPlayer.seekTo(0); // Torna all'inizio
+                });
+
+            } catch (Exception e) {
+                Log.e(TAG, "Errore nella riproduzione dell'audio", e);
+                Toast.makeText(this, "Errore nella riproduzione dell'audio", Toast.LENGTH_SHORT).show();
+            }
+
+            // Listener per l'interazione con la SeekBar
+            audioSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    if (fromUser) {
+                        mediaPlayer.seekTo(progress); // Permetti all'utente di saltare in avanti o indietro
+                    }
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {}
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {}
+            });
+        }
+
         contentLayout.addView(exerciseView);
+    }
+
+    private void updateSeekBar(MediaPlayer mediaPlayer, SeekBar audioSeekBar, Handler handler) {
+        audioSeekBar.setProgress(mediaPlayer.getCurrentPosition());
+        if (mediaPlayer.isPlaying()) {
+            // Aggiorna la SeekBar ogni 100ms
+            handler.postDelayed(() -> updateSeekBar(mediaPlayer, audioSeekBar, handler), 20);
+        }
     }
 
     // todo: rivedi quali campi far vedere

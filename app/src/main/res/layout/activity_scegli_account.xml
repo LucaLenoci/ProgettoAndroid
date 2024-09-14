@@ -62,7 +62,7 @@
         android:layout_height="548dp"
         android:layout_margin="10dp"
         android:contentDescription="Lista bambini"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/btnLogout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight="match_constraint"
         app:layout_constraintStart_toStartOf="parent"

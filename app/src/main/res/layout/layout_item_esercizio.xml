@@ -18,4 +18,30 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp" />
 
+    <!-- Contenitore per il pulsante Play e la SeekBar -->
+    <LinearLayout
+        android:id="@+id/layoutBarraAudio"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <!-- Pulsante per Play/Pause -->
+        <Button
+            android:id="@+id/playPauseButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Play" />
+
+        <!-- Barra di avanzamento dell'audio -->
+        <SeekBar
+            android:id="@+id/audioSeekBar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" /> <!-- Default a 'gone' -->
+
+    </LinearLayout>
+
 </LinearLayout>
