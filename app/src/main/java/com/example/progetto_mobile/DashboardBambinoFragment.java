@@ -1,6 +1,5 @@
 package com.example.progetto_mobile;
 
-import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
@@ -82,7 +81,8 @@ public class DashboardBambinoFragment extends Fragment {
             public void onTabSelected(TabLayout.Tab tab) {
                 Log.d(TAG, "Tab selected: " + tab.getPosition()); // Debugging log
                 try {
-                    if (requireActivity().getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                    Log.d(TAG, "BackStack entry count: " + requireActivity().getSupportFragmentManager().getBackStackEntryCount());
+                    if (requireActivity().getSupportFragmentManager().getBackStackEntryCount() > 2) {
                         closeExerciseEditFragment();
                     }
                     updateContent(tab.getPosition());
