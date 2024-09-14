@@ -104,9 +104,9 @@ public class RegisterFragment extends Fragment {
                 String password = etPassword.getText().toString().trim();
 
                 if (nome.isEmpty() || cognome.isEmpty() || eta.isEmpty() || email.isEmpty() || password.isEmpty())
-                    Toast.makeText(getContext(), "Empty credentials", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "credenziali vuote", Toast.LENGTH_SHORT).show();
                 else if (password.length() < 6)
-                    Toast.makeText(getContext(), "Password too short", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Password troppo corta", Toast.LENGTH_SHORT).show();
                 else registerUser(nome, cognome, eta, email, password);
             }
         });
@@ -130,7 +130,7 @@ public class RegisterFragment extends Fragment {
                                 Log.d(TAG, "Error signing in");
                             }
                         } else {
-                            Toast.makeText(getContext(), "Error while registering user", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), "Errore durante la registrazione", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -153,7 +153,7 @@ public class RegisterFragment extends Fragment {
                     public void onSuccess(DocumentReference documentReference) {
                         Log.d(TAG, "DocumentSnapshot/Reference added with ID: " + documentReference.getId());
                         Log.d(TAG, "DocumentReference path: " + documentReference.getPath());
-                        Toast.makeText(getContext(), "User registered successfully", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Utente registrato con successo", Toast.LENGTH_SHORT).show();
                         if(tipologia==1)
                             addGenitoreRefToLogopedista(logopedistaPath, documentReference.getPath());
                         addToGeneralUsersCollection(email, documentReference.getId());
@@ -171,7 +171,7 @@ public class RegisterFragment extends Fragment {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Log.w(TAG, "Error adding document", e);
-                        Toast.makeText(getContext(), "Error saving user data", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Errore nel salvataggio dei dati", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
