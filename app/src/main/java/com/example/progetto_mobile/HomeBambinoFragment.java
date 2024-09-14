@@ -84,6 +84,13 @@ public class HomeBambinoFragment extends Fragment {
         progressBar = view.findViewById(R.id.progressBar);
 
         calendarView = view.findViewById(R.id.calendarView);
+        // Ottieni la data corrente
+        Calendar calendar = Calendar.getInstance();
+        long currentTime = calendar.getTimeInMillis();
+
+        // Imposta la data minima e massima per la selezione
+        calendarView.setMinDate(currentTime);
+        calendarView.setMaxDate(currentTime);
         Button esercizioButton = view.findViewById(R.id.button);
 
         // Set default selected date to the current date
