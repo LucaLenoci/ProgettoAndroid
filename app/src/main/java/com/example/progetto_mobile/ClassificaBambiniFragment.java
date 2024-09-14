@@ -2,6 +2,7 @@ package com.example.progetto_mobile;
 
 import static android.content.Intent.getIntent;
 
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -147,7 +148,14 @@ public class ClassificaBambiniFragment extends Fragment {
 
         // Incrementa il conteggio dei bambini prima di impostare la posizione
         childCount++;
-        textViewChildPosition.setText(String.format("#%d", childCount));  // Use the updated count here
+        textViewChildPosition.setText(String.format("#%d", childCount));
+
+        // Modifica la dimensione del testo e lo stile per le prime tre posizioni
+        if (childCount == 1 || childCount == 2 || childCount == 3) {
+            textViewChildPosition.setTextSize(24);  // Aumenta la dimensione del testo
+            textViewChildPosition.setTypeface(null, Typeface.BOLD);  // Imposta il grassetto
+        }// Use the updated count here
+
         Log.d("addChildItemList", "Posizione bambino settata: " + childCount);
 
         textViewChildName.setText(String.format("%s %s", child.getNome(), child.getCognome()));

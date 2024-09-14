@@ -113,7 +113,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:backgroundTint="@android:color/transparent"
-        android:text="Password dimenticata?"
+        android:text="@string/password_dimenticata"
         android:textColor="@color/design_default_color_secondary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
