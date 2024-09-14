@@ -89,8 +89,6 @@ public class BambiniListFragment extends Fragment {
 
         linearLayoutBambini = view.findViewById(R.id.linearLayoutBambini);
         btnScegliData = view.findViewById(R.id.btnScegliData);
-        progressBar = view.findViewById(R.id.progressBarListaBambini);
-        progressBar.setVisibility(View.VISIBLE);
 
         // Inizializza la data corrente
         final Calendar c = Calendar.getInstance();

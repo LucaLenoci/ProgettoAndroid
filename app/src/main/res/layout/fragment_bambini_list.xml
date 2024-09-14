@@ -37,23 +37,12 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:text="GG-MM-AAAA" />
 
-        <ProgressBar
-            android:id="@+id/progressBarListaBambini"
-            style="?android:attr/progressBarStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.5" />
-
         <ScrollView
             android:id="@+id/scrollViewBambini"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="10dp"
+            android:contentDescription="Lista Bambini"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHeight="match_constraint"
