@@ -134,9 +134,14 @@ public class LoginFragment extends Fragment {
     private void updateUI(FirebaseUser user) {
         if (user != null) {
             Toast.makeText(getContext(), "Login Successful", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(getContext(), DataAccess.class);
-            intent.putExtra("key", emailField.getText().toString().trim());
-            startActivity(intent);
+            // Assuming you are in an Activity or Fragment
+            DataAccess dataAccess = new DataAccess(getContext()); // Pass context if needed
+
+// Retrieve the email from the field
+            String email = emailField.getText().toString().trim();
+
+// Call the method to get the collection
+            dataAccess.getCollection(email);
         } else {
             Toast.makeText(getContext(), "Login Failed", Toast.LENGTH_SHORT).show();
         }
