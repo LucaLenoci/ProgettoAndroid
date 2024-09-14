@@ -39,6 +39,7 @@ import java.util.List;
 public class BambiniListFragment extends Fragment {
 
     private static final String ARG_GENITORE_PATH = "genitorePath";
+    private static final String ARG_IS_FROM_HOME_LOGOPEDISTA = "isFromHomeLogopedista";
 
     private static final String TAG = "BambiniListFragment";
     private LinearLayout linearLayoutBambini;
@@ -62,11 +63,12 @@ public class BambiniListFragment extends Fragment {
      * @param genitorePath il path del genitore da cui prendere i bambini
      * @return A new instance of fragment BambiniListFragment.
      */
-    public static BambiniListFragment newInstance(String genitorePath) {
+    public static BambiniListFragment newInstance(String genitorePath, boolean isFromHomeLogopedista) {
         Log.d(TAG, "newInstance");
         BambiniListFragment fragment = new BambiniListFragment();
         Bundle args = new Bundle();
         args.putString(ARG_GENITORE_PATH, genitorePath);
+        args.putBoolean(ARG_IS_FROM_HOME_LOGOPEDISTA, isFromHomeLogopedista);
         fragment.setArguments(args);
         return fragment;
     }
@@ -76,6 +78,7 @@ public class BambiniListFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             genitorePath = getArguments().getString(ARG_GENITORE_PATH);
+            isFromHomeLogopedista = getArguments().getBoolean(ARG_IS_FROM_HOME_LOGOPEDISTA);
         }
         db = FirebaseFirestore.getInstance();
 
@@ -101,7 +104,7 @@ public class BambiniListFragment extends Fragment {
 
         setDateOnButton();
 
-        String from = getActivity().getIntent().getStringExtra("from");
+        String from = getArguments().getString("from");
         if (from != null && from.equals("homeLogopedista")) {
             Log.d(TAG, "from: " + from);
             isFromHomeLogopedista = true;
@@ -295,11 +298,8 @@ public class BambiniListFragment extends Fragment {
             fragment = DashboardBambinoFragment.newInstance(child, isFromHomeLogopedista);
             Bundle args = new Bundle();
 
-            if (isFromHomeLogopedista) {
-                args.putBoolean("from", true);
-            }else{
-                args.putBoolean("from", false);
-            }
+            args.putBoolean("from", isFromHomeLogopedista);
+            Log.d(TAG, "isFromHomeLogopedista: " + isFromHomeLogopedista);
 
             args.putSerializable("child", child);
             fragment.setArguments(args);

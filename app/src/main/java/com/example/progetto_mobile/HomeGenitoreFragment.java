@@ -5,24 +5,17 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 
-import com.bumptech.glide.Glide;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 public class HomeGenitoreFragment extends Fragment {
 
@@ -74,7 +67,7 @@ public class HomeGenitoreFragment extends Fragment {
                     });
         }
 
-        BambiniListFragment bambiniListFragment = BambiniListFragment.newInstance(genitorePath);
+        BambiniListFragment bambiniListFragment = BambiniListFragment.newInstance(genitorePath, false);
         getActivity().getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragmentContainerBambini, bambiniListFragment)
                 .commit();

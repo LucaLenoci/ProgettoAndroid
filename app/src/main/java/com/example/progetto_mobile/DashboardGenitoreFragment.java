@@ -32,6 +32,7 @@ public class DashboardGenitoreFragment extends Fragment {
     private static final String TAG = "DashboardGenitoreFragment";
     private String genitorePath = "", logopedistaPath = "";
     private FirebaseFirestore db;
+    private boolean isFromHomeLogopedista = false;
 
     public DashboardGenitoreFragment() {
         // Required empty public constructor
@@ -78,6 +79,10 @@ public class DashboardGenitoreFragment extends Fragment {
 
         if (getArguments() != null) {
             logopedistaPath = getArguments().getString("logopedista");
+            String from = getArguments().getString("from");
+            if (from != null && from.equals("homeLogopedista")) {
+                isFromHomeLogopedista = true;
+            }
         }
 
         Button btnRegistraBambino = view.findViewById(R.id.buttonRegistraBambino);
@@ -95,7 +100,7 @@ public class DashboardGenitoreFragment extends Fragment {
         final Fragment content = fragmentManager.findFragmentById(R.id.fragmentContainerBambini);
         if (content == null || !(content instanceof BambiniListFragment)) {
             final FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            final BambiniListFragment myFragment = BambiniListFragment.newInstance(genitorePath);
+            final BambiniListFragment myFragment = BambiniListFragment.newInstance(genitorePath, true);
             fragmentTransaction.replace(R.id.fragmentContainerBambini, myFragment, "MyFragment");
             fragmentTransaction.commitAllowingStateLoss();
         Log.d(TAG, "Fragment: " + myFragment);
