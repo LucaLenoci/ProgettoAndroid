@@ -287,14 +287,27 @@ public class BambiniListFragment extends Fragment {
         }
 
         childDashboard.setOnClickListener(v -> {
-            Intent intent = new Intent(getContext(), DashboardBambinoActivity.class);
-            intent.putExtra("child", child);
+            Fragment fragment;
+            fragment = new DashboardBambinoFragment();
+            Bundle args = new Bundle();
 
             if (isFromHomeLogopedista) {
-                intent.putExtra("from", "homeLogopedista");
+                args.putString("from", "homeLogopedista");
             }
 
-            startActivity(intent);
+            args.putSerializable("child", child);
+            fragment.setArguments(args);
+
+            if (fragment != null) {
+
+                if (getParentFragmentManager() != null) {
+                    getParentFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.fragment_container, fragment)
+                            .addToBackStack(null)
+                            .commit();
+                }
+            }
         });
 
         if (!isFromHomeLogopedista) {

@@ -349,15 +349,15 @@ public class ExerciseEditFragment extends Fragment {
     }
 
     private void onCancelClick() {
-        ((DashboardBambinoActivity) requireActivity()).closeExerciseEditFragment();
+        ((DashboardBambinoFragment) requireParentFragment()).closeExerciseEditFragment();
     }
 
     private void onConfirmClick() {
         Object newExercise = createExerciseObject();
         if (isEditing) {
-            ((DashboardBambinoActivity) requireActivity()).updateExercise(exerciseType, newExercise);
+            ((DashboardBambinoFragment) requireParentFragment()).updateExercise(exerciseType, newExercise);
         } else {
-            ((DashboardBambinoActivity) requireActivity()).addExercise(exerciseType, newExercise);
+            ((DashboardBambinoFragment) requireParentFragment()).addExercise(exerciseType, newExercise);
         }
     }
 

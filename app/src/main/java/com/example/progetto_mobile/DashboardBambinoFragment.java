@@ -7,17 +7,17 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.Fragment;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.firestore.DocumentReference;
@@ -27,33 +27,40 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class DashboardBambinoActivity extends AppCompatActivity {
+public class DashboardBambinoFragment extends Fragment {
 
-    private static final String TAG = "DashboardBambinoActivity";
+    private static final String TAG = "DashboardBambinoFragment";
     private TabLayout tabLayout;
     private LinearLayout contentLayout;
     private Child child;
     private boolean isFromHomeLogopedista = false;
     private FirebaseFirestore db;
 
+    public static DashboardBambinoFragment newInstance(Child child, boolean isFromHomeLogopedista) {
+        DashboardBambinoFragment fragment = new DashboardBambinoFragment();
+        Bundle args = new Bundle();
+        args.putSerializable("child", child);
+        args.putBoolean("fromHomeLogopedista", isFromHomeLogopedista);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_dashboard_bambino);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.activity_dashboard_bambino, container, false);
+
+        ViewCompat.setOnApplyWindowInsetsListener(view.findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
 
-        tabLayout = findViewById(R.id.tabLayout);
-        contentLayout = findViewById(R.id.contentLayout);
+        tabLayout = view.findViewById(R.id.tabLayout);
+        contentLayout = view.findViewById(R.id.contentLayout);
         db = FirebaseFirestore.getInstance();
 
-        Intent intent = getIntent();
-        child = (Child) intent.getSerializableExtra("child");
-        String from = intent.getStringExtra("from");
+        child = (Child) getArguments().getSerializable("child");
+        String from = getArguments().getString("from");
         Log.d(TAG, "From: " + from);
         if (from != null && from.equals("homeLogopedista"))
             isFromHomeLogopedista = true;
@@ -61,6 +68,8 @@ public class DashboardBambinoActivity extends AppCompatActivity {
         if (child != null) {
             setupTabs();
         }
+
+        return view;
     }
 
     private void setupTabs() {
@@ -71,7 +80,7 @@ public class DashboardBambinoActivity extends AppCompatActivity {
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                if (getActivity().getSupportFragmentManager().getBackStackEntryCount() > 0) {
                     closeExerciseEditFragment();
                 }
                 updateContent(tab.getPosition());
@@ -177,7 +186,7 @@ public class DashboardBambinoActivity extends AppCompatActivity {
                 })
                 .addOnFailureListener(e -> {
                     Log.e(TAG, "Error fetching exercise", e);
-                    Toast.makeText(this, "Error fetching exercise", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Error fetching exercise", Toast.LENGTH_SHORT).show();
                 });
     }
 
@@ -195,14 +204,14 @@ public class DashboardBambinoActivity extends AppCompatActivity {
     }
 
     private void showAddExerciseButton(String exerciseType) {
-        Button addButton = new Button(this);
+        Button addButton = new Button(getContext());
         addButton.setText("Aggiungi esercizio");
         addButton.setOnClickListener(v -> openExerciseEditFragment(exerciseType, false, null));
         contentLayout.addView(addButton);
     }
 
     private void showEditExerciseButton(String exerciseType) {
-        Button editButton = new Button(this);
+        Button editButton = new Button(getContext());
         editButton.setText("Modifica esercizio");
         editButton.setOnClickListener(v -> {
             Object exercise = getExerciseFromChild(exerciseType);
@@ -213,7 +222,7 @@ public class DashboardBambinoActivity extends AppCompatActivity {
 
     private void openExerciseEditFragment(String exerciseType, boolean isEditing, Object exercise) {
         ExerciseEditFragment fragment = ExerciseEditFragment.newInstance(exerciseType, isEditing, exercise);
-        getSupportFragmentManager().beginTransaction()
+        getActivity().getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragmentContainer, fragment)
                 .addToBackStack(null)
                 .commit();
@@ -221,7 +230,7 @@ public class DashboardBambinoActivity extends AppCompatActivity {
     }
 
     public void closeExerciseEditFragment() {
-        getSupportFragmentManager().popBackStack();
+       getActivity().getSupportFragmentManager().popBackStack();
         displayExercises(getCurrentExerciseType());
     }
 
@@ -241,7 +250,7 @@ public class DashboardBambinoActivity extends AppCompatActivity {
     }
 
     private void showNoExercisesMessage() {
-        TextView messageView = new TextView(this);
+        TextView messageView = new TextView(getContext());
         messageView.setText("Nessun esercizio disponibile");
         contentLayout.addView(messageView);
     }
@@ -259,13 +268,13 @@ public class DashboardBambinoActivity extends AppCompatActivity {
             transaction.update(childDocRef, "esercizio" + exerciseType.substring(0, 1).toUpperCase() + exerciseType.substring(1), exerciseDocRef);
             return null;
         }).addOnSuccessListener(aVoid -> {
-            Toast.makeText(this, "Esercizio aggiunto con successo", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Esercizio aggiunto con successo", Toast.LENGTH_SHORT).show();
             updateChildExerciseRef(exerciseType, exerciseDocRef.getPath());
             updateLocalChild(exerciseType, exerciseDocRef, exercise);
             displayExercises(exerciseType);
         }).addOnFailureListener(e -> {
             Log.e(TAG, "Error adding exercise", e);
-            Toast.makeText(this, "Errore nell'aggiunta dell'esercizio", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Errore nell'aggiunta dell'esercizio", Toast.LENGTH_SHORT).show();
         });
     }
 
@@ -292,13 +301,13 @@ public class DashboardBambinoActivity extends AppCompatActivity {
             DocumentReference exerciseDocRef = db.document(exerciseRef);
             exerciseDocRef.set(exercise)
                     .addOnSuccessListener(aVoid -> {
-                        Toast.makeText(this, "Esercizio aggiornato con successo", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Esercizio aggiornato con successo", Toast.LENGTH_SHORT).show();
                         updateLocalChild(exerciseType, exerciseDocRef, exercise);
                         displayExercises(exerciseType);
                     })
                     .addOnFailureListener(e -> {
                         Log.e(TAG, "Error updating exercise", e);
-                        Toast.makeText(this, "Errore nell'aggiornamento dell'esercizio", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Errore nell'aggiornamento dell'esercizio", Toast.LENGTH_SHORT).show();
                     });
         }
     }
@@ -318,7 +327,7 @@ public class DashboardBambinoActivity extends AppCompatActivity {
     }
 
     private void displayExercise(Object exercise) {
-        View exerciseView = LayoutInflater.from(this).inflate(R.layout.layout_item_esercizio, contentLayout, false);
+        View exerciseView = LayoutInflater.from(getContext()).inflate(R.layout.layout_item_esercizio, contentLayout, false);
         LinearLayout detailsContainer = exerciseView.findViewById(R.id.esercizioDetailsContainer);
         LinearLayout barraAudio = exerciseView.findViewById(R.id.layoutBarraAudio);
         Button playPauseButton = exerciseView.findViewById(R.id.playPauseButton);
@@ -372,7 +381,7 @@ public class DashboardBambinoActivity extends AppCompatActivity {
 
             } catch (Exception e) {
                 Log.e(TAG, "Errore nella riproduzione dell'audio", e);
-                Toast.makeText(this, "Errore nella riproduzione dell'audio", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Errore nella riproduzione dell'audio", Toast.LENGTH_SHORT).show();
             }
 
             // Listener per l'interazione con la SeekBar
@@ -405,7 +414,7 @@ public class DashboardBambinoActivity extends AppCompatActivity {
 
     // todo: rivedi quali campi far vedere
     private View getExerciseDetails(Object exercise) {
-        View view = LayoutInflater.from(this).inflate(R.layout.layout_exercise_details, null);
+        View view = LayoutInflater.from(getContext()).inflate(R.layout.layout_exercise_details, null);
         TextView tvExerciseStatus = view.findViewById(R.id.tvExerciseStatus);
         TextView tvAttempts = view.findViewById(R.id.tvAttempts);
         TextView tvCorrectAnswer = view.findViewById(R.id.tvCorrectAnswer);
@@ -469,12 +478,4 @@ public class DashboardBambinoActivity extends AppCompatActivity {
         return view;
     }
 
-    @Override
-    public void onBackPressed() {
-        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
-            closeExerciseEditFragment();
-        } else {
-            super.onBackPressed();
-        }
-    }
 }

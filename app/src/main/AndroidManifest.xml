@@ -26,15 +26,7 @@
             android:exported="false" />
 
         <activity
-            android:name=".ClassificaBambiniActivity"
-            android:exported="false" />
-
-        <activity
             android:name=".LogopedistaActivity"
-            android:exported="false" />
-
-        <activity
-            android:name=".DashboardBambinoActivity"
             android:exported="false" />
 
         <activity

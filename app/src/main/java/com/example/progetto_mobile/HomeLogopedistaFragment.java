@@ -82,9 +82,22 @@ public class HomeLogopedistaFragment extends Fragment {
         btnVediClassificaBambini.setOnClickListener(v -> {
             if (logopedistaPath == null)
                 Toast.makeText(getContext(), "Errore: logopedista non trovato", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(getContext(), ClassificaBambiniActivity.class);
-            intent.putExtra("logopedista", logopedistaPath);
-            startActivity(intent);
+
+            Fragment fragment;
+            fragment = new ClassificaBambiniFragment();
+            Bundle args = new Bundle();
+            args.putString("logopedista", logopedistaPath);
+            fragment.setArguments(args);
+            if (fragment != null) {
+
+                if (getParentFragmentManager() != null) {
+                    getParentFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.fragment_container, fragment)
+                            .addToBackStack(null)
+                            .commit();
+                }
+            }
         });
 
         Button btnRegistraGenitore = view.findViewById(R.id.buttonRegistraGenitore);
