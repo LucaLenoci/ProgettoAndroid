@@ -295,7 +295,7 @@ public class ScegliAccountActivity extends AppCompatActivity {
         FirebaseAuth.getInstance().signOut();
 
         // Reindirizza l'utente alla schermata di login
-        Intent intent = new Intent(ScegliAccountActivity.this, LoginActivity.class);
+        Intent intent = new Intent(ScegliAccountActivity.this, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish(); // Chiudi l'activity corrente

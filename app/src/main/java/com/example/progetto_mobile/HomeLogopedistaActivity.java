@@ -72,9 +72,10 @@ public class HomeLogopedistaActivity extends AppCompatActivity {
 
         Button btnRegistraGenitore = findViewById(R.id.buttonRegistraGenitore);
         btnRegistraGenitore.setOnClickListener(v -> {
-            Intent intent = new Intent(HomeLogopedistaActivity.this, RegisterActivity.class);
+            Intent intent = new Intent(HomeLogopedistaActivity.this, MainActivity.class);
             intent.putExtra("from", "registraGenitore");
             startActivity(intent);
+
         });
 
         // Recupera il riferimento al pulsante di logout
@@ -189,7 +190,7 @@ public class HomeLogopedistaActivity extends AppCompatActivity {
         FirebaseAuth.getInstance().signOut();
 
         // Reindirizza l'utente alla schermata di login
-        Intent intent = new Intent(HomeLogopedistaActivity.this, LoginActivity.class);
+        Intent intent = new Intent(HomeLogopedistaActivity.this, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish(); // Chiudi l'activity corrente

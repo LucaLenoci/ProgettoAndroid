@@ -48,41 +48,18 @@
         <activity
             android:name=".BambinoClassificaActivity"
             android:exported="false" />
-        <activity
-            android:name=".RegisterActivity"
-            android:exported="false"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:name=".DenominazioneImmaginiActivity"
-            android:exported="false" />
-        <activity
-            android:name=".AvatarActivity"
-            android:exported="false" />
-        <activity
-            android:name=".LoginActivity"
-            android:exported="false"
-            android:windowSoftInputMode="adjustPan" />
+
         <activity
             android:name=".DataAccess"
             android:exported="false" />
-        <activity
-            android:name=".RipetizioneSequenzeParoleActivity"
-            android:exported="false" />
-        <activity
-            android:name=".RiconoscimentoCoppieMinimeActivity"
-            android:exported="false" />
+
         <activity
             android:name=".HomeGenitoreActivity"
             android:exported="false" />
         <activity
             android:name=".Bambino"
             android:exported="false" />
-        <activity
-            android:name=".HomeEserciziBambinoActivity"
-            android:exported="false" />
-        <activity
-            android:name=".HomeBambinoActivity"
-            android:exported="false" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true">

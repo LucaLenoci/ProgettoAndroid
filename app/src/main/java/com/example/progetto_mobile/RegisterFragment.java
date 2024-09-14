@@ -1,9 +1,13 @@
 package com.example.progetto_mobile;
 
+import static android.content.Intent.getIntent;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -11,10 +15,13 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -30,7 +37,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RegisterActivity extends AppCompatActivity {
+public class RegisterFragment extends Fragment {
 
     private String from;
     private int tipologia;
@@ -41,30 +48,35 @@ public class RegisterActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private CollectionReference collectionRef;
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_register);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        // Inflate the layout for the fragment
+        View view = inflater.inflate(R.layout.activity_register, container, false);
+
+        ViewCompat.setOnApplyWindowInsetsListener(view.findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
 
-        TextView tvLabel = findViewById(R.id.textViewRegisterLabel);
-        etNome = findViewById(R.id.editTextNome);
-        etCognome = findViewById(R.id.editTextCognome);
-        etEta = findViewById(R.id.editTextEta);
-        etEmail = findViewById(R.id.editTextTextEmail);
-        etPassword = findViewById(R.id.editTextTextPassword2);
-        Button btnRegister = findViewById(R.id.buttonRegistrati2);
+        TextView tvLabel = view.findViewById(R.id.textViewRegisterLabel);
+        etNome = view.findViewById(R.id.editTextNome);
+        etCognome = view.findViewById(R.id.editTextCognome);
+        etEta = view.findViewById(R.id.editTextEta);
+        etEmail = view.findViewById(R.id.editTextTextEmail);
+        etPassword = view.findViewById(R.id.editTextTextPassword2);
+        Button btnRegister = view.findViewById(R.id.buttonRegistrati2);
 
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
-        Intent intent = getIntent();
-        from = intent.getStringExtra("from");
+        // Handle arguments
+        if (getArguments() != null) {
+            from = getArguments().getString("from");
+        }
+
+
         if (from != null && from.equals("registraLogopedista")){
             tvLabel.setText("Registrati come un nuovo logopedista");
             collectionRef = db.collection("logopedisti");
@@ -89,17 +101,19 @@ public class RegisterActivity extends AppCompatActivity {
                 String password = etPassword.getText().toString().trim();
 
                 if (nome.isEmpty() || cognome.isEmpty() || eta.isEmpty() || email.isEmpty() || password.isEmpty())
-                    Toast.makeText(RegisterActivity.this, "Empty credentials", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Empty credentials", Toast.LENGTH_SHORT).show();
                 else if (password.length() < 6)
-                    Toast.makeText(RegisterActivity.this, "Password too short", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Password too short", Toast.LENGTH_SHORT).show();
                 else registerUser(nome, cognome, eta, email, password);
             }
         });
+
+        return view;
     }
 
     private void registerUser(String nome, String cognome, String eta, String email, String password) {
         auth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(RegisterActivity.this, new OnCompleteListener<AuthResult>() {
+                .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
@@ -113,7 +127,7 @@ public class RegisterActivity extends AppCompatActivity {
                                 Log.d(TAG, "Error signing in");
                             }
                         } else {
-                            Toast.makeText(RegisterActivity.this, "Error while registering user", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), "Error while registering user", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -136,12 +150,15 @@ public class RegisterActivity extends AppCompatActivity {
                     public void onSuccess(DocumentReference documentReference) {
                         Log.d(TAG, "DocumentSnapshot/Reference added with ID: " + documentReference.getId());
                         Log.d(TAG, "DocumentReference path: " + documentReference.getPath());
-                        Toast.makeText(RegisterActivity.this, "User registered successfully", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "User registered successfully", Toast.LENGTH_SHORT).show();
                         addToGeneralUsersCollection(email, documentReference.getId());
                         if (from.equals("registraLogopedista")) {
                             FirebaseAuth.getInstance().signOut();
-                            startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
-                            finish();
+                            startActivity(new Intent(getContext(), MainActivity.class));
+                            FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+                            if (fragmentManager.getBackStackEntryCount() > 0) {
+                                fragmentManager.popBackStack();
+                            }
                         }
                     }
                 })
@@ -149,7 +166,7 @@ public class RegisterActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Log.w(TAG, "Error adding document", e);
-                        Toast.makeText(RegisterActivity.this, "Error saving user data", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Error saving user data", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -157,7 +174,7 @@ public class RegisterActivity extends AppCompatActivity {
     // TODO: togliere la funzione duplicata 'signIn'
     private void signIn(String email, String password) {
         auth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {

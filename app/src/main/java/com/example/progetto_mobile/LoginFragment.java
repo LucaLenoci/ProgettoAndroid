@@ -5,13 +5,17 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -19,7 +23,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginFragment extends Fragment {
 
     private FirebaseAuth mAuth;
     private static final String TAG = "EmailPassword";
@@ -30,21 +34,22 @@ public class LoginActivity extends AppCompatActivity {
     private EditText emailField;
     private EditText passwordField;
     private CheckBox rememberMeCheckbox;
-    View accediButton;
+    private View accediButton;
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        // Inflate the layout for the fragment
+        View view = inflater.inflate(R.layout.activity_login, container, false);
 
-        // Initialize Firebase Auth
+// Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
 
         // UI References
-        emailField = findViewById(R.id.editTextTextEmail);
-        passwordField = findViewById(R.id.editTextTextPassword);
-        rememberMeCheckbox = findViewById(R.id.checkBoxRememberMe);
-        accediButton = findViewById(R.id.buttonAccedi);
+        emailField = view.findViewById(R.id.editTextTextEmail);
+        passwordField = view.findViewById(R.id.editTextTextPassword);
+        rememberMeCheckbox = view.findViewById(R.id.checkBoxRememberMe);
+        accediButton = view.findViewById(R.id.buttonAccedi);
 
         // Load saved email if it exists
 
@@ -56,18 +61,36 @@ public class LoginActivity extends AppCompatActivity {
             if (!email.isEmpty() && !password.isEmpty()) {
                 signIn(email, password);
             } else {
-                Toast.makeText(LoginActivity.this, "Please enter email and password", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Please enter email and password", Toast.LENGTH_SHORT).show();
             }
         });
 
         loadSavedEmail();
 
         // Example buttons to simulate login for different users
-        View bambinoButton = findViewById(R.id.buttonLoginBambino);
+        View bambinoButton = view.findViewById(R.id.buttonLoginBambino);
 
 
-        View genitoreButton = findViewById(R.id.buttonLoginGenitore);
-        genitoreButton.setOnClickListener(v -> startActivity(new Intent(LoginActivity.this, HomeGenitoreActivity.class)));
+        View genitoreButton = view.findViewById(R.id.buttonLoginGenitore);
+        genitoreButton.setOnClickListener(v -> startActivity(new Intent(getContext(), HomeGenitoreActivity.class)));
+
+        View accediButton = view.findViewById(R.id.buttonResetPassword);
+        accediButton.setOnClickListener(v -> {
+            Fragment fragment;
+            fragment = new ResetPasswordFragment();
+            if (fragment != null) {
+
+                if (getParentFragmentManager() != null) {
+                    getParentFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.fragment_container_2, fragment)
+                            .addToBackStack(null)
+                            .commit();
+                }
+            }
+        });
+
+        return view;
     }
 
     @Override
@@ -83,7 +106,7 @@ public class LoginActivity extends AppCompatActivity {
     // Method to handle user sign-in
     private void signIn(String email, String password) {
         mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
@@ -97,7 +120,7 @@ public class LoginActivity extends AppCompatActivity {
                             updateUI(user);
                         } else {
                             Log.w(TAG, "signInWithEmail:failure", task.getException());
-                            Toast.makeText(LoginActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), "Authentication failed.", Toast.LENGTH_SHORT).show();
                             updateUI(null);
                         }
                     }
@@ -110,18 +133,18 @@ public class LoginActivity extends AppCompatActivity {
 
     private void updateUI(FirebaseUser user) {
         if (user != null) {
-            Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(LoginActivity.this, DataAccess.class);
+            Toast.makeText(getContext(), "Login Successful", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(getContext(), DataAccess.class);
             intent.putExtra("key", emailField.getText().toString().trim());
             startActivity(intent);
         } else {
-            Toast.makeText(this, "Login Failed", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Login Failed", Toast.LENGTH_SHORT).show();
         }
     }
 
     // Save login to SharedPreferences
     private void saveLogin(String email, String password) {
-        SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(PREF_EMAIL, email);
         editor.putString(PREF_PASSWORD, password);
@@ -130,7 +153,7 @@ public class LoginActivity extends AppCompatActivity {
 
     // Load saved email from SharedPreferences
     private void loadSavedEmail() {
-        SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         String savedEmail = sharedPreferences.getString(PREF_EMAIL, null);
         String savedPassword = sharedPreferences.getString(PREF_PASSWORD, null);
         if (savedEmail != null) {
@@ -143,9 +166,10 @@ public class LoginActivity extends AppCompatActivity {
 
     // Clear saved login from SharedPreferences
     private void clearSavedLogin() {
-        SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.remove(PREF_EMAIL);
         editor.apply();
     }
 }
+

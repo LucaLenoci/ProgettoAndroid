@@ -9,6 +9,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -16,25 +18,40 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_main);
+
+        setContentView(R.layout.main);
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
 
-        View accediButton = findViewById(R.id.buttonAccedi);
-        accediButton.setOnClickListener(v -> {
-            // Start the login activity
-            startActivity(new Intent(MainActivity.this, LoginActivity.class));
-        });
+        LandingFragment landingFragment = new LandingFragment();
 
-        View registratiButton = findViewById(R.id.buttonRegistrati);
-        registratiButton.setOnClickListener(v -> {
-            // Start the registration activity
-            Intent intent = new Intent(MainActivity.this, RegisterActivity.class);
-            intent.putExtra("from", "registraLogopedista");
-            startActivity(intent);
-        });
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container_2, landingFragment)
+                    .commit();
+        }
+
+        // Check for intent extras
+        Intent intent = getIntent();
+        if (intent != null && intent.hasExtra("from")) {
+            String from = intent.getStringExtra("from");
+
+            if ("registraGenitore".equals(from)) {
+                // Show RegisterFragment with arguments
+                RegisterFragment registerFragment = new RegisterFragment();
+                Bundle args = new Bundle();
+                args.putString("from", "registraGenitore");
+                registerFragment.setArguments(args);
+
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container_2, registerFragment)
+                        .addToBackStack(null)
+                        .commit();
+            }
+        }
     }
 }
