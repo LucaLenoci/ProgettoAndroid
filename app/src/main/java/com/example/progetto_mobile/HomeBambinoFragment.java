@@ -23,6 +23,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
@@ -45,6 +47,7 @@ public class HomeBambinoFragment extends Fragment {
     private String bambinoId;
     private int currentStreak = 0;
     private TextView numerostreak;
+    private Button classifica;
 
     public static HomeBambinoFragment newInstance(String bambinoId) {
         HomeBambinoFragment fragment = new HomeBambinoFragment();
@@ -96,6 +99,18 @@ public class HomeBambinoFragment extends Fragment {
 
         esercizioButton.setOnClickListener(v -> checkAndProceedToExercises());
 
+        // -- PER VEDERE LA CLASSIFICA --
+        classifica = view.findViewById(R.id.button5);
+        classifica.setOnClickListener(v -> {
+            getLogopedistaPathFromBambino(bambinoId)
+                    .addOnSuccessListener(logopedistaPath -> {
+                        Intent intent = new Intent(requireContext(), ClassificaBambiniActivity.class);
+                        intent.putExtra("logopedista", logopedistaPath);
+                        startActivity(intent);
+                    })
+                    .addOnFailureListener(e -> Log.e("ClassificaClick", "Errore nel recuperare il path del logopedista", e));
+        });
+
         ProfilePic.setOnClickListener(v -> {
             Fragment fragment;
             fragment = new AvatarFragment();
@@ -114,6 +129,29 @@ public class HomeBambinoFragment extends Fragment {
                 }
             }
         });
+    }
+
+    // -- IL TIPO DI RITORNO 'TASK' TI PERMETTE DI FARE '.addOnSuccessListener' E '.addOnFailureListener'
+    private Task<String> getLogopedistaPathFromBambino(String bambinoId) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        return db.collection("bambini")
+                .document(bambinoId)
+                .get()
+                .continueWith(task -> {
+                    if (task.isSuccessful() && task.getResult() != null && task.getResult().exists()) {
+                        DocumentSnapshot documentSnapshot = task.getResult();
+                        DocumentReference logopedistaRef = documentSnapshot.getDocumentReference("logopedistaRef");
+
+                        if (logopedistaRef != null) {
+                            return logopedistaRef.getPath();
+                        } else {
+                            throw new Exception("logopedistaRef non trovato.");
+                        }
+                    } else {
+                        throw new Exception("Documento bambino non trovato o errore nella query.");
+                    }
+                });
     }
 
     @Override
