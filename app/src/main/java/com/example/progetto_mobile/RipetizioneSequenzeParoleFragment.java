@@ -263,7 +263,7 @@ public class RipetizioneSequenzeParoleFragment extends Fragment implements TextT
         tvText.setText(recognizedText);
 
         if (currentExercise != null && recognizedText.equalsIgnoreCase(currentExercise.getRisposta_corretta())) {
-            Toast.makeText(getContext(), "Correct!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Corretto!", Toast.LENGTH_SHORT).show();
             showConfettiEffect();
 
             disableButtons();
@@ -284,7 +284,7 @@ public class RipetizioneSequenzeParoleFragment extends Fragment implements TextT
 
         } else {
             incrementTentativiInFirebase();
-            Toast.makeText(getContext(), "Try again!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Riprova!", Toast.LENGTH_SHORT).show();
         }
     }
 

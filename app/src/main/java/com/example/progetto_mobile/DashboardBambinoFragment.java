@@ -220,7 +220,7 @@ public class DashboardBambinoFragment extends Fragment {
                 })
                 .addOnFailureListener(e -> {
                     Log.e(TAG, "Error fetching exercise", e);
-                    Toast.makeText(getContext(), "Error fetching exercise", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Errore durante il recupero dell'esercizio", Toast.LENGTH_SHORT).show();
                 });
     }
 

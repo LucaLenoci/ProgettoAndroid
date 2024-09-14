@@ -45,7 +45,7 @@ public class ResetPasswordFragment extends Fragment {
             if (!email.isEmpty()) {
                 resetPassword(email);
             } else {
-                Toast.makeText(getContext(), "Please enter your email", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Inserisci la tua email", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -71,10 +71,10 @@ public class ResetPasswordFragment extends Fragment {
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
                             Log.d(TAG, "Email sent.");
-                            Toast.makeText(getContext(), "Password reset email sent.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), "email per il reset inviata.", Toast.LENGTH_SHORT).show();
                         } else {
                             Log.w(TAG, "sendPasswordResetEmail:failure", task.getException());
-                            Toast.makeText(getContext(), "Failed to send reset email.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), "errore nell'invio dell'email.", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });

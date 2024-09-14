@@ -312,7 +312,7 @@ public class DenominazioneImmaginiFragment extends Fragment implements TextToSpe
         tvText.setText(recognizedText);
 
         if (currentExercise != null && recognizedText.equalsIgnoreCase(currentExercise.getRisposta_corretta())) {
-            Toast.makeText(getContext(), "Correct!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Corretto!", Toast.LENGTH_SHORT).show();
             showConfettiEffect();
 
             disableButtons();
@@ -332,7 +332,7 @@ public class DenominazioneImmaginiFragment extends Fragment implements TextToSpe
                 }            }, 3000); // Aspetta 3 secondi (modifica se necessario per adattare la durata dell'animazione)
 
         } else {
-            Toast.makeText(getContext(), "Try again!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Riprova!", Toast.LENGTH_SHORT).show();
             incrementTentativiInFirebase();
             requireView().findViewById(R.id.btn_button).setClickable(true);
         }
