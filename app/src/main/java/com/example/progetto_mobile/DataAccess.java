@@ -85,7 +85,7 @@ public class DataAccess extends AppCompatActivity {
 
             case 2:
                 key = "logopedista";
-                intent = new Intent(DataAccess.this, HomeLogopedistaActivity.class);
+                intent = new Intent(DataAccess.this, LogopedistaActivity.class);
                 break;
 
             default:

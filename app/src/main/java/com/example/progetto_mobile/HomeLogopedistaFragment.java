@@ -7,16 +7,21 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
@@ -29,9 +34,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class HomeLogopedistaActivity extends AppCompatActivity {
+public class HomeLogopedistaFragment extends Fragment {
 
-    private static final String TAG = "HomeLogopedistaActivity";
+    private static final String TAG = "HomeLogopedistaFragment";
+    private static final String ARG_LOGOPEDISTA_PATH = "logopedista";
     private LinearLayout linearLayoutGenitori;
     private List<String> genitoriPaths;
     private List<Genitore> genitoriList;
@@ -41,51 +47,64 @@ public class HomeLogopedistaActivity extends AppCompatActivity {
     private static final String PREF_EMAIL = "savedemail";
     private static final String PREF_PASSWORD = "savedpassword";
 
+    public static HomeLogopedistaFragment newInstance(String logopedistaPath) {
+        HomeLogopedistaFragment fragment = new HomeLogopedistaFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_LOGOPEDISTA_PATH, logopedistaPath);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_home_logopedista);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.activity_home_logopedista, container, false);
+
+        ViewCompat.setOnApplyWindowInsetsListener(view.findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
 
-        linearLayoutGenitori = findViewById(R.id.linearLayoutGenitori);
+        linearLayoutGenitori = view.findViewById(R.id.linearLayoutGenitori);
         genitoriPaths = new ArrayList<>();
         genitoriList = new ArrayList<>();
 
-        logopedistaPath = getIntent().getStringExtra("logopedista");
+        if (getArguments() != null) {
+            logopedistaPath = getArguments().getString("logopedista");
+        }
+
         if (logopedistaPath != null) {
             getGenitoriFromLogopedistaPath(logopedistaPath);
         }
 
-        Button btnVediClassificaBambini = findViewById(R.id.buttonClassificaBambini);
+        Button btnVediClassificaBambini = view.findViewById(R.id.buttonClassificaBambini);
         btnVediClassificaBambini.setOnClickListener(v -> {
             if (logopedistaPath == null)
-                Toast.makeText(this, "Errore: logopedista non trovato", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(HomeLogopedistaActivity.this, ClassificaBambiniActivity.class);
+                Toast.makeText(getContext(), "Errore: logopedista non trovato", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(getContext(), ClassificaBambiniActivity.class);
             intent.putExtra("logopedista", logopedistaPath);
             startActivity(intent);
         });
 
-        Button btnRegistraGenitore = findViewById(R.id.buttonRegistraGenitore);
+        Button btnRegistraGenitore = view.findViewById(R.id.buttonRegistraGenitore);
         btnRegistraGenitore.setOnClickListener(v -> {
-            Intent intent = new Intent(HomeLogopedistaActivity.this, MainActivity.class);
+            Intent intent = new Intent(getContext(), MainActivity.class);
             intent.putExtra("from", "registraGenitore");
             startActivity(intent);
 
         });
 
         // Recupera il riferimento al pulsante di logout
-        Button buttonLogout = findViewById(R.id.btnLogout);
+        Button buttonLogout = view.findViewById(R.id.btnLogout);
 
         // Imposta il listener per il pulsante di logout
         ((View) buttonLogout).setOnClickListener(v -> {
             // Chiama il metodo per il logout
             logout();
         });
+
+        return view;
     }
 
     private void getGenitoriFromLogopedistaPath(String logopedistaPath) {
@@ -149,7 +168,7 @@ public class HomeLogopedistaActivity extends AppCompatActivity {
     }
 
     private void addParentItemList(Genitore genitore) {
-        LayoutInflater inflater = LayoutInflater.from(this);
+        LayoutInflater inflater = LayoutInflater.from(getContext());
         View parentItem = inflater.inflate(R.layout.layout_parent_item_list, linearLayoutGenitori, false);
 
         TextView textViewParentName = parentItem.findViewById(R.id.textViewParentName);
@@ -159,19 +178,31 @@ public class HomeLogopedistaActivity extends AppCompatActivity {
         textViewParentChildCount.setText(String.format("%s:\n%d", "Bambini", genitore.getBambiniRef().size()));
 
         parentItem.setOnClickListener(v -> {
-            Log.d(TAG, "Genitore cliccato: " + genitore);
-            Intent intent = new Intent(HomeLogopedistaActivity.this, DashboardGenitoreActivity.class);
-            intent.putExtra("genitore", genitore);
-            intent.putExtra("from", "homeLogopedista");
-            intent.putExtra("logopedista", logopedistaPath);
-            startActivity(intent);
+            Fragment fragment;
+            fragment = new DashboardGenitoreFragment();
+            Bundle args = new Bundle();
+            args.putSerializable("genitore", genitore);
+            args.putString("logopedista", logopedistaPath);
+            args.putString("from", "homeLogopedista");
+            fragment.setArguments(args);
+
+            if (fragment != null) {
+
+                if (getParentFragmentManager() != null) {
+                    getParentFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.fragment_container, fragment)
+                            .addToBackStack(null)
+                            .commit();
+                }
+            }
         });
 
         linearLayoutGenitori.addView(parentItem);
     }
 
     private void showEmptyParentsMessage() {
-        TextView tvNessunGenitore = new TextView(this);
+        TextView tvNessunGenitore = new TextView(getContext());
         tvNessunGenitore.setText("Nessun genitore trovato.");
         tvNessunGenitore.setTextSize(18);
         linearLayoutGenitori.addView(tvNessunGenitore);
@@ -180,7 +211,7 @@ public class HomeLogopedistaActivity extends AppCompatActivity {
     private void logout() {
         // Elimina i dati dalle SharedPreferences
 
-        SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(PREF_EMAIL, "");
         editor.putString(PREF_PASSWORD, "");
@@ -190,10 +221,13 @@ public class HomeLogopedistaActivity extends AppCompatActivity {
         FirebaseAuth.getInstance().signOut();
 
         // Reindirizza l'utente alla schermata di login
-        Intent intent = new Intent(HomeLogopedistaActivity.this, MainActivity.class);
+        Intent intent = new Intent(getContext(), MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
-        finish(); // Chiudi l'activity corrente
+        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+        if (fragmentManager.getBackStackEntryCount() > 0) {
+            fragmentManager.popBackStack();
+        }
 
 
     }
