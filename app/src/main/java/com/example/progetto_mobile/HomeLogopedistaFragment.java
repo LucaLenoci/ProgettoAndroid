@@ -13,10 +13,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -53,6 +51,11 @@ public class HomeLogopedistaFragment extends Fragment {
         args.putString(ARG_LOGOPEDISTA_PATH, logopedistaPath);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
     }
 
     @Nullable
@@ -106,7 +109,6 @@ public class HomeLogopedistaFragment extends Fragment {
             intent.putExtra("from", "registraGenitore");
             intent.putExtra("logopedistaPath", logopedistaPath);
             startActivity(intent);
-
         });
 
         // Recupera il riferimento al pulsante di logout
@@ -193,7 +195,7 @@ public class HomeLogopedistaFragment extends Fragment {
 
         parentItem.setOnClickListener(v -> {
             Fragment fragment;
-            fragment = new DashboardGenitoreFragment();
+            fragment = DashboardGenitoreFragment.newInstance(genitore, logopedistaPath);
             Bundle args = new Bundle();
             args.putSerializable("genitore", genitore);
             args.putString("logopedista", logopedistaPath);

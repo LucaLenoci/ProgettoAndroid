@@ -5,15 +5,14 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".DashboardGenitoreActivity">
+    tools:context=".DashboardGenitoreFragment">
 
-    <androidx.fragment.app.FragmentContainerView
+    <FrameLayout
         android:id="@+id/fragmentContainerBambini"
-        android:name="com.example.progetto_mobile.BambiniListFragment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/buttonRegistraBambino"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight="match_constraint"
         app:layout_constraintHorizontal_bias="0.5"
