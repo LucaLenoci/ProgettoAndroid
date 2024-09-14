@@ -162,7 +162,7 @@ public class RiconoscimentoCoppieMinimeFragment extends Fragment implements Text
     private void checkAnswer(int selectedButton) {
         if (currentExercise != null) {
             if (selectedButton == currentExercise.getImmagine_corretta()) {
-                Toast.makeText(getContext(), "Correct!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Corretto!", Toast.LENGTH_SHORT).show();
                 showConfettiEffect();
 
                 disableButtons();
@@ -181,7 +181,7 @@ public class RiconoscimentoCoppieMinimeFragment extends Fragment implements Text
                     }                  }, 3000); // Aspetta 3 secondi (modifica se necessario per adattare la durata dell'animazione)
 
             } else {
-                Toast.makeText(getContext(), "Incorrect. Try again!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Sbagliato, riprova!", Toast.LENGTH_SHORT).show();
                 incrementTentativiInFirebase();
             }
         }

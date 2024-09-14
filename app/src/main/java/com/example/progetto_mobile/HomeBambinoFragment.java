@@ -482,7 +482,7 @@ public class HomeBambinoFragment extends Fragment {
                     calculateDayStreak(calendar.getTime());
                 } else {
                     // Not all exercises are completed for this day, streak ends
-                    Toast.makeText(requireContext(), "Current Streak: " + currentStreak + " days", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), "Serie attuale: " + currentStreak + " giorni", Toast.LENGTH_SHORT).show();
                     Log.d(TAG, "Current Streak: " + currentStreak + " days");
                     numerostreak.setText(String.valueOf(currentStreak));
 

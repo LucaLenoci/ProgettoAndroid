@@ -61,7 +61,7 @@ public class LoginFragment extends Fragment {
             if (!email.isEmpty() && !password.isEmpty()) {
                 signIn(email, password);
             } else {
-                Toast.makeText(getContext(), "Please enter email and password", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Inserisci email e password", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -120,7 +120,7 @@ public class LoginFragment extends Fragment {
                             updateUI(user);
                         } else {
                             Log.w(TAG, "signInWithEmail:failure", task.getException());
-                            Toast.makeText(getContext(), "Authentication failed.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), "Autenticazione fallita.", Toast.LENGTH_SHORT).show();
                             updateUI(null);
                         }
                     }
@@ -133,7 +133,7 @@ public class LoginFragment extends Fragment {
 
     private void updateUI(FirebaseUser user) {
         if (user != null) {
-            Toast.makeText(getContext(), "Login Successful", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Login eseguito con successo", Toast.LENGTH_SHORT).show();
             // Assuming you are in an Activity or Fragment
             DataAccess dataAccess = new DataAccess(getContext()); // Pass context if needed
 
@@ -143,7 +143,7 @@ public class LoginFragment extends Fragment {
 // Call the method to get the collection
             dataAccess.getCollection(email);
         } else {
-            Toast.makeText(getContext(), "Login Failed", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Login fallito", Toast.LENGTH_SHORT).show();
         }
     }
 
