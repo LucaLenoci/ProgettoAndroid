@@ -20,6 +20,8 @@ public class Child extends User implements Serializable {
     private String esercizioTipo3Ref;
     private String docId;
     private String logopedistaRef;
+    private String sesso;
+    private String tema;
 
     public Child() {}
 
@@ -49,9 +51,9 @@ public class Child extends User implements Serializable {
         this.eserciziTipo3 = eserciziTipo3;
     }
 
-    public Child(String nome, String cognome, int eta, String email, int tipologia,
+    public Child(String nome, String cognome, int eta, int tipologia,
                  String avatarCorrente, int progresso, int coins) {
-        super(nome, cognome, eta, email, tipologia);
+        super(nome, cognome, eta, tipologia);
         this.avatarCorrente = avatarCorrente;
         this.progresso = progresso;
         this.coins = coins;
@@ -166,6 +168,41 @@ public class Child extends User implements Serializable {
         this.ownedAvatars = ownedAvatars;
     }
 
+    public String getLogopedistaRef() {
+        return logopedistaRef;
+    }
+
+    public Child putLogopedistaRef(String logopedistaRef) {
+        this.logopedistaRef = logopedistaRef;
+        return this;
+    }
+
+    public String getSesso() {
+        return sesso;
+    }
+
+    public void setSesso(String sesso) {
+        this.sesso = sesso;
+    }
+
+    public String getTema() {
+        return tema;
+    }
+
+    public void setTema(String tema) {
+        this.tema = tema;
+    }
+
+    @Override
+    public String getEmail() {
+        return null;
+    }
+
+    @Override
+    public void setEmail(String email) {
+        super.setEmail(null);
+    }
+
     @NonNull
     @Override
     @SuppressLint("DefaultLocale")
@@ -175,12 +212,11 @@ public class Child extends User implements Serializable {
                         "\tNome: <%s>\n" +
                         "\tCognome: <%s>\n" +
                         "\tEta': <%d>\n" +
-                        "\tEmail: <%s>\n" +
                         "\tTipologia: <%d>\n" +
                         "\tAvatar Corrente: <%s>\n" +
                         "\tProgresso: <%d>\n" +
                         "\tCoins: <%d>\n}",
-                getNome(), getCognome(), getEta(), getEmail(), getTipologia(),
+                getNome(), getCognome(), getEta(), getTipologia(),
                 getAvatarCorrente(), getProgresso(), getCoins());
     }
 

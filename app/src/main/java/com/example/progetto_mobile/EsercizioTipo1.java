@@ -3,6 +3,7 @@ package com.example.progetto_mobile;
 import androidx.annotation.NonNull;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class EsercizioTipo1 implements Serializable {
 
@@ -10,14 +11,34 @@ public class EsercizioTipo1 implements Serializable {
     private boolean esercizio_corretto;
     private String risposta;
     private String risposta_corretta;
+    private List<Boolean> suggerimenti;
     private String suggerimento;
     private String suggerimento2;
     private String suggerimento3;
     private int suggerimentiUsati;
+    private int tentativi;
     private String audio_url;
+    private String tipo;
 
     public EsercizioTipo1() {
         // Default constructor required for serialization or other purposes
+    }
+
+    public EsercizioTipo1(String placeholder, boolean esercizioCorretto, String risposta, String rispostaCorretta,
+                          List<Boolean> suggerimenti, String suggerimento, String suggerimento2, String suggerimento3,
+                          int suggerimentiUsati, int tentativi, String audio_url, String tipo) {
+        this.placeholder = placeholder;
+        this.esercizio_corretto = esercizioCorretto;
+        this.risposta = risposta;
+        this.risposta_corretta = rispostaCorretta;
+        this.suggerimenti = suggerimenti;
+        this.suggerimento = suggerimento;
+        this.suggerimento2 = suggerimento2;
+        this.suggerimento3 = suggerimento3;
+        this.suggerimentiUsati = suggerimentiUsati;
+        this.tentativi = tentativi;
+        this.audio_url = audio_url;
+        this.tipo = tipo;
     }
 
     public EsercizioTipo1(String placeholder, boolean esercizioCorretto, String risposta, String rispostaCorretta,
@@ -114,6 +135,30 @@ public class EsercizioTipo1 implements Serializable {
 
     public void setAudio_url(String audio_url) {
         this.audio_url = audio_url;
+    }
+
+    public List<Boolean> getSuggerimenti() {
+        return suggerimenti;
+    }
+
+    public void setSuggerimenti(List<Boolean> suggerimenti) {
+        this.suggerimenti = suggerimenti;
+    }
+
+    public int getTentativi() {
+        return tentativi;
+    }
+
+    public void setTentativi(int tentativi) {
+        this.tentativi = tentativi;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
     }
 
     @NonNull
