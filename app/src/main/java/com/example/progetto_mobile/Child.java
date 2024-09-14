@@ -33,6 +33,12 @@ public class Child extends User implements Serializable {
         this.coins = coins;
     }
 
+    public Child(String id, String nome, String cognome, int coins) {
+        super(nome, cognome);
+        this.coins = coins;
+        this.docId = id;
+    }
+
     public Child(String nome, int progresso, int coins, EsercizioTipo1 eserciziTipo1,
                  EsercizioTipo2 eserciziTipo2, EsercizioTipo3 eserciziTipo3) {
         super(nome);

@@ -98,18 +98,31 @@ public class HomeBambinoFragment extends Fragment {
         loadCurrentAvatar(bambinoId);
 
         esercizioButton.setOnClickListener(v -> checkAndProceedToExercises());
-
-        // -- PER VEDERE LA CLASSIFICA --
         classifica = view.findViewById(R.id.button5);
         classifica.setOnClickListener(v -> {
             getLogopedistaPathFromBambino(bambinoId)
                     .addOnSuccessListener(logopedistaPath -> {
-                        Intent intent = new Intent(requireContext(), ClassificaBambiniActivity.class);
-                        intent.putExtra("logopedista", logopedistaPath);
-                        startActivity(intent);
+                        Fragment fragment = new ClassificaBambiniFragment();
+
+                        // Create a new Bundle and add data to it
+                        Bundle bundle = new Bundle();
+                        bundle.putString("logopedista", logopedistaPath);
+
+                        // Set the arguments for the fragment
+                        fragment.setArguments(bundle);
+
+                        // Begin the fragment transaction and replace the container with the new fragment
+                        if (getParentFragmentManager() != null) {
+                            getParentFragmentManager()
+                                    .beginTransaction()
+                                    .replace(R.id.fragment_container, fragment)
+                                    .addToBackStack(null)
+                                    .commit();
+                        }
                     })
                     .addOnFailureListener(e -> Log.e("ClassificaClick", "Errore nel recuperare il path del logopedista", e));
         });
+
 
         ProfilePic.setOnClickListener(v -> {
             Fragment fragment;

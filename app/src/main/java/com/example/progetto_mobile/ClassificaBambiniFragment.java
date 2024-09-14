@@ -1,14 +1,19 @@
 package com.example.progetto_mobile;
 
+import static android.content.Intent.getIntent;
+
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -26,31 +31,37 @@ import com.google.firebase.storage.StorageReference;
 import java.util.ArrayList;
 import java.util.List;
 
-// todo: aggiustare il cropping. quando ci sono troppi bambini, vengono tagliati
-public class ClassificaBambiniActivity extends AppCompatActivity {
 
-    private static final String TAG = "ClassificaBambiniActivity";
+import androidx.fragment.app.Fragment;
+
+public class ClassificaBambiniFragment extends Fragment {
+
+    private static final String TAG = "ClassificaBambiniFragment";
     private LinearLayout linearLayoutBambini;
     private int childCount = 0;
     private List<Child> childList;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_classifica_bambini);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.activity_classifica_bambini, container, false);
+
+        ViewCompat.setOnApplyWindowInsetsListener(view.findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
 
-        linearLayoutBambini = findViewById(R.id.linearLayoutBambini);
+        linearLayoutBambini = view.findViewById(R.id.linearLayoutBambini);
         childList = new ArrayList<>();
 
-        String logopedistaPath = getIntent().getStringExtra("logopedista");
+        String logopedistaPath = getArguments().getString("logopedista");
+
         getBambiniFromFirestore(logopedistaPath);
+
+        return view;
     }
 
     private void getBambiniFromFirestore(String logopedistaPath) {
@@ -98,15 +109,24 @@ public class ClassificaBambiniActivity extends AppCompatActivity {
 
     private void displaySortedChildren() {
         if (!childList.isEmpty()) {
-            // todo: comparare in base all'esperienza
+            Log.d(TAG, "Before sorting: " + childList);
+
+            // Sorting children by coins, but make sure all children have valid coin values
             childList.sort((child1, child2) -> Integer.compare(child2.getCoins(), child1.getCoins()));
-            for (Child child : childList)
+            Log.d(TAG, "After sorting: " + childList);
+
+            for (Child child : childList) {
+                Log.d(TAG, "Child: " + child.getNome() + " " + child.getCognome() + " Coins: " + child.getCoins());
                 addChildItemList(child);
-        } else showEmptyChildrenMessage();
+            }
+        } else {
+            showEmptyChildrenMessage();
+        }
     }
 
+
     private void showEmptyChildrenMessage() {
-        TextView tvNessunBambino = new TextView(this);
+        TextView tvNessunBambino = new TextView(getContext());
         tvNessunBambino.setText("Nessun bambino trovato.");
         tvNessunBambino.setTextSize(18);
         linearLayoutBambini.addView(tvNessunBambino);
@@ -116,7 +136,7 @@ public class ClassificaBambiniActivity extends AppCompatActivity {
         // Crea il LayoutInflater per aggiungere il nuovo item alla lista
         Log.d("addChildItemList", "Inizio creazione item per bambino: " + child.getNome() + " " + child.getCognome());
 
-        LayoutInflater inflater = LayoutInflater.from(this);
+        LayoutInflater inflater = LayoutInflater.from(getContext());
         View childItem = inflater.inflate(R.layout.layout_child_item_list, linearLayoutBambini, false);
 
         // Trova i componenti nel layout
@@ -125,8 +145,9 @@ public class ClassificaBambiniActivity extends AppCompatActivity {
         TextView textViewChildCoins = childItem.findViewById(R.id.textViewChildCoins);
         ImageView profilePic = childItem.findViewById(R.id.imageViewChild);
 
-        // Imposta i valori per i TextView
-        textViewChildPosition.setText(String.format("#%d", ++childCount));
+        // Incrementa il conteggio dei bambini prima di impostare la posizione
+        childCount++;
+        textViewChildPosition.setText(String.format("#%d", childCount));  // Use the updated count here
         Log.d("addChildItemList", "Posizione bambino settata: " + childCount);
 
         textViewChildName.setText(String.format("%s %s", child.getNome(), child.getCognome()));
@@ -144,6 +165,7 @@ public class ClassificaBambiniActivity extends AppCompatActivity {
         linearLayoutBambini.addView(childItem);
         Log.d("addChildItemList", "Item bambino aggiunto alla lista.");
     }
+
 
 
     private void loadCurrentAvatar(String bambinoId, ImageView ProfilePic) {
@@ -173,7 +195,7 @@ public class ClassificaBambiniActivity extends AppCompatActivity {
                                                     StorageReference imageRef = FirebaseStorage.getInstance().getReferenceFromUrl(imagePath);
                                                     imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
                                                         Log.d(TAG, "Image URL retrieved successfully for " + avatarFilename);
-                                                        Glide.with(ClassificaBambiniActivity.this).load(uri).into(ProfilePic);
+                                                        Glide.with(getContext()).load(uri).into(ProfilePic);
                                                     }).addOnFailureListener(exception -> {
                                                         Log.e(TAG, "Failed to get download URL for " + avatarFilename, exception);
                                                     });
