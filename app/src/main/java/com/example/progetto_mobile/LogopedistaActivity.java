@@ -43,5 +43,51 @@ public class LogopedistaActivity extends AppCompatActivity {
         transaction.addToBackStack(null); // Aggiungi alla backstack per consentire il "Back" corretto
         transaction.commit();
     }
+
+    public void closeExerciseEditFragment() {
+        Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+        if (currentFragment instanceof DashboardBambinoFragment) {
+            ((DashboardBambinoFragment) currentFragment).closeExerciseEditFragment();
+        } else {
+            getSupportFragmentManager().popBackStack();
+        }
+    }
+
+    public void updateExercise(String exerciseType, Object newExercise) {
+        DashboardBambinoFragment dashboardFragment = (DashboardBambinoFragment) getSupportFragmentManager().findFragmentByTag("DASHBOARD_FRAGMENT_TAG");
+        if (dashboardFragment != null) {
+            dashboardFragment.updateExercise(exerciseType, newExercise);
+        }
+    }
+
+    public void addExercise(String exerciseType, Object newExercise) {
+        DashboardBambinoFragment dashboardFragment = (DashboardBambinoFragment) getSupportFragmentManager().findFragmentByTag("DASHBOARD_FRAGMENT_TAG");
+        if (dashboardFragment != null) {
+            dashboardFragment.addExercise(exerciseType, newExercise);
+        }
+    }
+
+    public void handleExerciseResult(String exerciseType, Object newExercise, boolean isEditing) {
+        Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+        if (currentFragment instanceof DashboardBambinoFragment) {
+            DashboardBambinoFragment dashboardFragment = (DashboardBambinoFragment) currentFragment;
+            if (isEditing) {
+                dashboardFragment.updateExercise(exerciseType, newExercise);
+            } else {
+                dashboardFragment.addExercise(exerciseType, newExercise);
+            }
+        }
+        // Non rimuovere immediatamente il Fragment
+        // getSupportFragmentManager().popBackStack();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (getSupportFragmentManager().getBackStackEntryCount() > 1) {
+            getSupportFragmentManager().popBackStack();
+        } else {
+            super.onBackPressed();
+        }
+    }
 }
 

@@ -238,14 +238,14 @@ public class DashboardBambinoFragment extends Fragment {
     }
 
     private void showAddExerciseButton(String exerciseType) {
-        Button addButton = new Button(getContext());
+        Button addButton = new Button(requireContext());
         addButton.setText("Aggiungi esercizio");
         addButton.setOnClickListener(v -> openExerciseEditFragment(exerciseType, false, null));
         contentLayout.addView(addButton);
     }
 
     private void showEditExerciseButton(String exerciseType) {
-        Button editButton = new Button(getContext());
+        Button editButton = new Button(requireContext());
         editButton.setText("Modifica esercizio");
         editButton.setOnClickListener(v -> {
             Object exercise = getExerciseFromChild(exerciseType);
@@ -257,9 +257,9 @@ public class DashboardBambinoFragment extends Fragment {
     private void openExerciseEditFragment(String exerciseType, boolean isEditing, Object exercise) {
         ExerciseEditFragment fragment = ExerciseEditFragment.newInstance(exerciseType, isEditing, exercise);
         getActivity().getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragmentContainer, fragment)
+                .replace(R.id.fragmentContainer, fragment/*, "DASHBOARD_FRAGMENT_TAG"*/)
                 .addToBackStack(null)
-                .commit();
+                .commitAllowingStateLoss();
         contentLayout.removeAllViews();
     }
 
@@ -284,7 +284,7 @@ public class DashboardBambinoFragment extends Fragment {
     }
 
     private void showNoExercisesMessage() {
-        TextView messageView = new TextView(getContext());
+        TextView messageView = new TextView(requireContext());
         messageView.setText("Nessun esercizio disponibile");
         contentLayout.addView(messageView);
     }
@@ -302,13 +302,13 @@ public class DashboardBambinoFragment extends Fragment {
             transaction.update(childDocRef, "esercizio" + exerciseType.substring(0, 1).toUpperCase() + exerciseType.substring(1), exerciseDocRef);
             return null;
         }).addOnSuccessListener(aVoid -> {
-            Toast.makeText(getContext(), "Esercizio aggiunto con successo", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), "Esercizio aggiunto con successo", Toast.LENGTH_SHORT).show();
             updateChildExerciseRef(exerciseType, exerciseDocRef.getPath());
             updateLocalChild(exerciseType, exerciseDocRef, exercise);
             displayExercises(exerciseType);
         }).addOnFailureListener(e -> {
             Log.e(TAG, "Error adding exercise", e);
-            Toast.makeText(getContext(), "Errore nell'aggiunta dell'esercizio", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), "Errore nell'aggiunta dell'esercizio", Toast.LENGTH_SHORT).show();
         });
     }
 
@@ -335,13 +335,13 @@ public class DashboardBambinoFragment extends Fragment {
             DocumentReference exerciseDocRef = db.document(exerciseRef);
             exerciseDocRef.set(exercise)
                     .addOnSuccessListener(aVoid -> {
-                        Toast.makeText(getContext(), "Esercizio aggiornato con successo", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(requireContext(), "Esercizio aggiornato con successo", Toast.LENGTH_SHORT).show();
                         updateLocalChild(exerciseType, exerciseDocRef, exercise);
                         displayExercises(exerciseType);
                     })
                     .addOnFailureListener(e -> {
                         Log.e(TAG, "Error updating exercise", e);
-                        Toast.makeText(getContext(), "Errore nell'aggiornamento dell'esercizio", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(requireContext(), "Errore nell'aggiornamento dell'esercizio", Toast.LENGTH_SHORT).show();
                     });
         }
     }
@@ -364,7 +364,7 @@ public class DashboardBambinoFragment extends Fragment {
         Log.d(TAG, "Displaying exercise: " + exercise.toString()); // Log the exercise object being displayed
 
         // Inflate the layout for the exercise
-        View exerciseView = LayoutInflater.from(getContext()).inflate(R.layout.layout_item_esercizio, contentLayout, false);
+        View exerciseView = LayoutInflater.from(requireContext()).inflate(R.layout.layout_item_esercizio, contentLayout, false);
         Log.d(TAG, "Exercise layout inflated."); // Log after inflating the layout
 
         LinearLayout detailsContainer = exerciseView.findViewById(R.id.esercizioDetailsContainer);
@@ -433,7 +433,7 @@ public class DashboardBambinoFragment extends Fragment {
 
             } catch (Exception e) {
                 Log.e(TAG, "Error in audio playback", e); // Log any errors during audio playback
-                Toast.makeText(getContext(), "Error in audio playback", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Error in audio playback", Toast.LENGTH_SHORT).show();
             }
 
             // Listener for SeekBar interaction
@@ -475,7 +475,7 @@ public class DashboardBambinoFragment extends Fragment {
 
     // todo: rivedi quali campi far vedere
     private View getExerciseDetails(Object exercise) {
-        View view = LayoutInflater.from(getContext()).inflate(R.layout.layout_exercise_details, null);
+        View view = LayoutInflater.from(requireContext()).inflate(R.layout.layout_exercise_details, null);
         TextView tvExerciseStatus = view.findViewById(R.id.tvExerciseStatus);
         TextView tvAttempts = view.findViewById(R.id.tvAttempts);
         TextView tvCorrectAnswer = view.findViewById(R.id.tvCorrectAnswer);

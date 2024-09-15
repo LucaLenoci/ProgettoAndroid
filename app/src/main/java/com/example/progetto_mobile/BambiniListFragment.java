@@ -201,9 +201,9 @@ public class BambiniListFragment extends Fragment {
                         esercizioTipo2,
                         esercizioTipo3);
                 child.putDocId(bambinoSnapshot.getId());
-                if (esercizioTipo1.getPlaceholder() == null) child.putEsercizioTipo1Ref(esercizioTipo1Ref.getPath());
-                if (esercizioTipo2.getPlaceholder() == null) child.putEsercizioTipo2Ref(esercizioTipo2Ref.getPath());
-                if (esercizioTipo3.getPlaceholder() == null) child.putEsercizioTipo3Ref(esercizioTipo3Ref.getPath());
+                if (esercizioTipo1.getPlaceholder() != null) child.putEsercizioTipo1Ref(esercizioTipo1Ref.getPath());
+                if (esercizioTipo2.getPlaceholder() != null) child.putEsercizioTipo2Ref(esercizioTipo2Ref.getPath());
+                if (esercizioTipo3.getPlaceholder() != null) child.putEsercizioTipo3Ref(esercizioTipo3Ref.getPath());
                 addChildDashboard(child);
             });
         }
